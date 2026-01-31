@@ -2,6 +2,8 @@ export const config = {
     runtime: 'edge',
 };
 
+declare const process: { env: { [key: string]: string | undefined } };
+
 export default async function handler(request: Request) {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('q');
