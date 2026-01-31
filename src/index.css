@@ -1,0 +1,175 @@
+@import "tailwindcss";
+
+/* Apply Croissant One font globally */
+body {
+    font-family: 'Croissant One', cursive;
+}
+
+/* Custom green-themed scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+    border-radius: 10px;
+    border: 2px solid #f0fdf4;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #16a34a 0%, #15803d 100%);
+}
+
+/* Firefox scrollbar */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #22c55e #f0fdf4;
+}
+
+/* Scrollbar utility classes for dropdowns */
+.scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+    background: #f9fafb;
+    border-radius: 10px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #e9d5ff;
+    border-radius: 10px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #d8b4fe;
+}
+
+.scrollbar-thumb-purple-200::-webkit-scrollbar-thumb {
+    background: #e9d5ff;
+}
+
+.scrollbar-track-gray-50::-webkit-scrollbar-track {
+    background: #f9fafb;
+}
+
+/* Custom font class for Croissant One */
+.font-croissant {
+    font-family: 'Croissant One', cursive;
+}
+
+/* Inter font for specific sections */
+.font-inter {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Gravitas One font for header */
+.font-gravitas {
+    font-family: 'Gravitas One', cursive;
+}
+
+/* Background with image and green overlay */
+.bg-nirbachon {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: url('./assets/nirbachon-bhaban.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.15;
+}
+
+.green-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.03) 0%, rgba(22, 163, 74, 0.05) 100%);
+    pointer-events: none;
+}
+
+/* Smooth water wave animation for My Future text */
+@keyframes smoothWave {
+    0% {
+        transform: translateX(-50%);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        opacity: 0.4;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+
+    100% {
+        opacity: 0.4;
+    }
+}
+
+/* Smooth boat floating animation - sine wave motion */
+@keyframes floatBoat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-4px);
+    }
+}
+
+.water-fill-container {
+    position: relative;
+    display: inline-block;
+    padding: 10px 24px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: rgba(200, 230, 255, 0.2);
+    border: 2px solid rgba(56, 189, 248, 0.4);
+}
+
+.water-fill-container::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 50'%3E%3Cpath d='M0 25 Q 25 10, 50 25 T 100 25 T 150 25 T 200 25 L 200 50 L 0 50 Z' fill='rgba(56, 189, 248, 0.5)'/%3E%3C/svg%3E") repeat-x,
+        linear-gradient(180deg, rgba(125, 211, 252, 0.3) 0%, rgba(14, 165, 233, 0.5) 100%);
+    background-size: 100px 100%, 100% 100%;
+    background-position: 0 bottom, 0 0;
+    animation: smoothWave 2s linear infinite;
+    z-index: 0;
+}
+
+.water-fill-container::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+    animation: shimmer 2s ease-in-out infinite;
+    z-index: 1;
+}
+
+.water-fill-text {
+    position: relative;
+    z-index: 2;
+    animation: floatBoat 2.5s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite;
+    display: inline-block;
+}
