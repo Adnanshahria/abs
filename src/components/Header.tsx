@@ -5,7 +5,7 @@ import logoImg from '../assets/logo.png';
 import { translations } from '../data/translations';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
-import { getUpdates, getRumors, getUnreadNotificationCount, type ElectionUpdate, type Rumor } from '../lib/api';
+import { getUpdates, getRumors, getUnreadNotificationCount, getPageContent, type ElectionUpdate, type Rumor } from '../lib/api';
 
 
 export default function Header() {
@@ -21,6 +21,7 @@ export default function Header() {
     const [notifications, setNotifications] = useState<(ElectionUpdate | Rumor)[]>([]);
     const [loadingNotifications, setLoadingNotifications] = useState(false);
     const [unreadCount, setUnreadCount] = useState(0);
+    const [dynamicLogo, setDynamicLogo] = useState<string | null>(null);
 
     // Fetch notifications when modal opens
     useEffect(() => {
@@ -41,6 +42,15 @@ export default function Header() {
             }
         };
         fetchUnreadCount();
+    }, []);
+
+    // Fetch dynamic logo from branding settings
+    useEffect(() => {
+        getPageContent('branding').then(content => {
+            if (content.branding_logo?.en) {
+                setDynamicLogo(content.branding_logo.en);
+            }
+        });
     }, []);
 
     const fetchNotifications = async () => {
@@ -90,12 +100,12 @@ export default function Header() {
     return (
         <header className="sticky top-0 z-50 px-2 pt-1">
             {/* Header Container with boxy shape */}
-            <div className="bg-gradient-to-r from-green-50 to-green-100 shadow-sm rounded-lg border border-green-200">
+            <div className="bg-gradient-to-r from-green-50 to-green-100 shadow-sm rounded-lg border border-purple-300">
                 <div className="w-full px-2 sm:px-4 lg:px-6">
                     <div className="flex justify-between items-center h-10 md:h-11">
                         {/* Logo - Smaller */}
                         <Link to="/" className="flex items-center gap-1 bg-white px-2 py-1 rounded-md border border-gray-200 shadow-sm hover:scale-105 transition-transform">
-                            <img src={logoImg} alt="Amar Ballot" className="h-5 md:h-6 w-auto" />
+                            <img src={dynamicLogo || logoImg} alt="Amar Ballot" className="h-5 md:h-6 w-auto" />
                             <span className="font-bold text-xs md:text-sm text-green-700 italic">Amar Ballot</span>
                         </Link>
 

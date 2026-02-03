@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider } from './context/AuthContext';
 import Header from './components/Header';
+import Footer from './components/Footer';
 import AdminRoute from './components/AdminRoute';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminUsers from './pages/AdminUsers';
@@ -11,6 +12,7 @@ import AdminUpdates from './pages/AdminUpdates';
 import AdminRumors from './pages/AdminRumors';
 import AdminIncidents from './pages/AdminIncidents';
 import AdminTrainAI from './pages/AdminTrainAI';
+import AdminContent from './pages/AdminContent';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import VoteCenter from './pages/VoteCenter';
@@ -48,59 +50,63 @@ import Chat from './pages/Chat';
 
 import { useEffect } from 'react';
 import { checkConnection } from './lib/db';
+import { useLocation } from 'react-router-dom';
 
 import SEO from './components/SEO';
 
-function App() {
+function AppContent() {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/adm');
+
   useEffect(() => {
     checkConnection();
   }, []);
 
+
   return (
-    <LanguageProvider>
-      <AuthProvider>
-        <Router>
-          <SEO /> {/* Default SEO */}
-          <div className="min-h-screen flex flex-col relative">
-            {/* Background Image */}
-            <div className="bg-nirbachon"></div>
+    <>
+      <SEO /> {/* Default SEO */}
+      <div className="min-h-screen flex flex-col relative">
+        {/* Background Image */}
+        <div className="bg-nirbachon"></div>
 
-            {/* Green Overlay */}
-            <div className="green-overlay"></div>
+        {/* Green Overlay */}
+        <div className="green-overlay"></div>
 
-            {/* Base gradient background */}
-            <div className="fixed inset-0 -z-2 bg-gradient-to-br from-green-50/80 via-white/90 to-green-100/80"></div>
+        {/* Base gradient background */}
+        <div className="fixed inset-0 -z-2 bg-gradient-to-br from-green-50/80 via-white/90 to-green-100/80"></div>
 
-            <Header />
+        <Header />
 
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/vote-center" element={<VoteCenter />} />
-              <Route path="/cast-vote" element={<CastVote />} />
-              <Route path="/candidate-list" element={<CandidateList />} />
-              <Route path="/sign-up" element={<SignUp />} />
-              <Route path="/verify-nid" element={<NIDVerification />} />
-              <Route path="/status" element={<Status />} />
-              <Route path="/video-tutorials" element={<VideoTutorials />} />
-              <Route path="/about" element={<AboutUs />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/contact" element={<ContactUs />} />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/vote-center" element={<VoteCenter />} />
+          <Route path="/cast-vote" element={<CastVote />} />
+          <Route path="/candidate-list" element={<CandidateList />} />
+          <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/verify-nid" element={<NIDVerification />} />
+          <Route path="/status" element={<Status />} />
+          <Route path="/video-tutorials" element={<VideoTutorials />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/contact" element={<ContactUs />} />
 
-              {/* Admin Routes */}
-              <Route path="/adm" element={<AdminRoute />}>
-                <Route index element={<AdminDashboard />} />
-                <Route path="users" element={<AdminUsers />} />
-                <Route path="candidates" element={<AdminCandidates />} />
-                <Route path="centers" element={<AdminCenters />} />
-                <Route path="updates" element={<AdminUpdates />} />
-                <Route path="rumors" element={<AdminRumors />} />
-                <Route path="incidents" element={<AdminIncidents />} />
-                <Route path="train-ai" element={<AdminTrainAI />} />
-              </Route>
+          {/* Admin Routes */}
+          <Route path="/adm" element={<AdminRoute />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="users" element={<AdminUsers />} />
+            <Route path="candidates" element={<AdminCandidates />} />
+            <Route path="centers" element={<AdminCenters />} />
+            <Route path="updates" element={<AdminUpdates />} />
+            <Route path="rumors" element={<AdminRumors />} />
+            <Route path="incidents" element={<AdminIncidents />} />
+            <Route path="train-ai" element={<AdminTrainAI />} />
+            <Route path="content" element={<AdminContent />} />
+          </Route>
 
-              {/* New Pages */}
-              {/* <Route path="/candidate-details" element={<CandidateDetails />} />
+          {/* New Pages */}
+          {/* <Route path="/candidate-details" element={<CandidateDetails />} />
               <Route path="/voter-guide" element={<VoterGuide />} />
               <Route path="/faq" element={<FAQ />} />
               <Route path="/rules" element={<ElectionRules />} />
@@ -109,27 +115,40 @@ function App() {
               <Route path="/volunteer" element={<Volunteer />} />
               <Route path="/press" element={<PressKit />} />
               <Route path="/accessibility" element={<Accessibility />} /> */}
-              <Route path="/report" element={<ReportIncident />} />
-              <Route path="/observers" element={<ObserverInfo />} />
-              <Route path="/archive" element={<PastResults />} />
+          <Route path="/report" element={<ReportIncident />} />
+          <Route path="/observers" element={<ObserverInfo />} />
+          <Route path="/archive" element={<PastResults />} />
 
-              {/* Chatbot */}
-              <Route path="/chat" element={<Chat />} />
+          {/* Chatbot */}
+          <Route path="/chat" element={<Chat />} />
 
-              {/* Menu Pages from Image */}
-              <Route path="/election-updates" element={<ElectionUpdates />} />
-              <Route path="/course" element={<Course />} />
-              <Route path="/compare" element={<Navigate to="/candidate-list" replace />} />
-              <Route path="/rumor-check" element={<RumorCheck />} />
-              <Route path="/civic-badge" element={<CivicBadge />} />
-              <Route path="/creator" element={<Creator />} />
+          {/* Menu Pages from Image */}
+          <Route path="/election-updates" element={<ElectionUpdates />} />
+          <Route path="/course" element={<Course />} />
+          <Route path="/compare" element={<Navigate to="/candidate-list" replace />} />
+          <Route path="/rumor-check" element={<RumorCheck />} />
+          <Route path="/civic-badge" element={<CivicBadge />} />
+          <Route path="/creator" element={<Creator />} />
 
-              <Route path="*" element={<Placeholder />} />
-            </Routes>
+          <Route path="*" element={<Placeholder />} />
+        </Routes>
 
-            {/* Navigation Map Floating Button */}
-            <NavigationMap />
-          </div>
+        {/* Navigation Map Floating Button */}
+        <NavigationMap />
+
+        {/* Universal Footer - Hidden on admin pages */}
+        {!isAdminRoute && <Footer />}
+      </div>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <LanguageProvider>
+      <AuthProvider>
+        <Router>
+          <AppContent />
         </Router>
       </AuthProvider>
     </LanguageProvider>

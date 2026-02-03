@@ -10,7 +10,9 @@ import {
     Brain,
     LogOut,
     Menu,
-    X
+    X,
+    FileText,
+    AlertCircle
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -30,6 +32,8 @@ export default function AdminLayout() {
         { name: 'Candidates', href: '/adm/candidates', icon: Vote },
         { name: 'Vote Centers', href: '/adm/centers', icon: MapPin },
         { name: 'Updates', href: '/adm/updates', icon: Calendar },
+        { name: 'Content', href: '/adm/content', icon: FileText },
+        { name: 'Reports', href: '/adm/incidents', icon: AlertCircle },
         { name: 'Rumor Check', href: '/adm/rumors', icon: ShieldAlert },
         { name: 'Train AI', href: '/adm/train-ai', icon: Brain },
     ];

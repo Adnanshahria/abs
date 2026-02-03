@@ -1,0 +1,47 @@
+# Caching headers for Cloudflare Pages
+# These headers reduce DB reads by caching static assets and API responses
+
+# Cache static assets for 1 year
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache images for 1 week
+*.png
+  Cache-Control: public, max-age=604800
+
+*.jpg
+  Cache-Control: public, max-age=604800
+
+*.svg
+  Cache-Control: public, max-age=604800
+
+*.ico
+  Cache-Control: public, max-age=604800
+
+# Cache fonts for 1 year
+*.woff
+  Cache-Control: public, max-age=31536000, immutable
+
+*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+
+# Cache JS/CSS for 1 year (Vite adds hashes)
+*.js
+  Cache-Control: public, max-age=31536000, immutable
+
+*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+# HTML pages - cache for 5 minutes, revalidate
+/*.html
+  Cache-Control: public, max-age=300
+
+/
+  Cache-Control: public, max-age=300
+
+# Security headers
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin

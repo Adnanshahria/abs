@@ -2,8 +2,15 @@ import { db } from './db';
 import type { Candidate, VoteCenter, User, ElectionUpdate, Rumor, Review, Incident, Volunteer } from './types';
 export type { ElectionUpdate, Rumor };
 import bcrypt from 'bcryptjs';
+import { cachedFetch, CACHE_KEYS, CACHE_TTL, clearCache } from './cache';
 
+// Cached version of getCandidates - reduces DB reads
 export async function getCandidates(): Promise<Candidate[]> {
+    return cachedFetch(CACHE_KEYS.CANDIDATES, fetchCandidatesFromDB, CACHE_TTL.MEDIUM);
+}
+
+// Direct DB fetch for candidates (used internally)
+async function fetchCandidatesFromDB(): Promise<Candidate[]> {
     try {
         const result = await db.execute('SELECT * FROM candidates');
         return result.rows.map(row => ({
@@ -230,6 +237,7 @@ export async function addCandidate(candidateData: any) {
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             args: [name, name_bn, party, party_bn, symbol, image_url, manifesto, manifesto_bn, education, experience, age, status, division, district, area, alliance]
         });
+        clearCache(CACHE_KEYS.CANDIDATES); // Invalidate cache
         return { success: true };
     } catch (error) {
         console.error("Add candidate error:", error);
@@ -248,6 +256,7 @@ export async function updateCandidate(id: number, candidateData: any) {
                   WHERE id = ?`,
             args: [name, name_bn, party, party_bn, symbol, image_url, manifesto, manifesto_bn, education, experience, age, status, division, district, area, alliance, id]
         });
+        clearCache(CACHE_KEYS.CANDIDATES); // Invalidate cache
         return { success: true };
     } catch (error) {
         console.error("Update candidate error:", error);
@@ -261,6 +270,7 @@ export async function deleteCandidate(id: number) {
             sql: 'DELETE FROM candidates WHERE id = ?',
             args: [id]
         });
+        clearCache(CACHE_KEYS.CANDIDATES); // Invalidate cache
         return { success: true };
     } catch (error) {
         console.error("Delete candidate error:", error);
@@ -1237,5 +1247,231 @@ export async function removeDuplicateAIKnowledge(): Promise<{ success: boolean; 
     } catch (error) {
         console.error('Remove duplicates error:', error);
         return { success: false, removed: 0, error };
+    }
+}
+// ... existing code ...
+
+// --- PAST ELECTIONS MANAGEMENT ---
+
+export interface PastElection {
+    id: number;
+    year: number;
+    date: string;
+    turnout_percentage: number;
+    total_seats: number;
+    winner_party: string;
+    description: string;
+    results: {
+        party_name: string;
+        seats_won: number;
+        color: string;
+    }[];
+}
+
+async function migratePastElections() {
+    try {
+        // Check if table exists
+        const check = await db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='past_elections'");
+        if (check.rows.length === 0) {
+            console.log("Migrating past elections schema...");
+
+            // 1. Create Tables
+            await db.execute(`
+                CREATE TABLE IF NOT EXISTS past_elections (
+                    id INTEGER PRIMARY KEY,
+                    year INTEGER NOT NULL,
+                    date TEXT NOT NULL,
+                    turnout_percentage REAL,
+                    total_seats INTEGER DEFAULT 300,
+                    winner_party TEXT NOT NULL,
+                    description TEXT
+                )
+            `);
+
+            await db.execute(`
+                CREATE TABLE IF NOT EXISTS past_election_results (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    election_id INTEGER NOT NULL,
+                    party_name TEXT NOT NULL,
+                    seats_won INTEGER NOT NULL,
+                    color TEXT DEFAULT '#808080',
+                    FOREIGN KEY (election_id) REFERENCES past_elections(id)
+                )
+            `);
+
+            // 2. Insert Data
+            // 2024
+            await db.execute("INSERT INTO past_elections (id, year, date, turnout_percentage, winner_party, description) VALUES (2024, 2024, 'Jan 07, 2024', 41.8, 'Awami League', '12th National Parliamentary Election')");
+            await db.execute("INSERT INTO past_election_results (election_id, party_name, seats_won, color) VALUES (2024, 'Awami League', 225, '#00A859'), (2024, 'Independent', 62, '#808080'), (2024, 'Jatiya Party (Ershad)', 11, '#FFD700'), (2024, 'Workers Party', 1, '#FF0000'), (2024, 'Kalyan Party', 1, '#008000')");
+
+            // 2018
+            await db.execute("INSERT INTO past_elections (id, year, date, turnout_percentage, winner_party, description) VALUES (2018, 2018, 'Dec 30, 2018', 80.0, 'Awami League', '11th National Parliamentary Election')");
+            await db.execute("INSERT INTO past_election_results (election_id, party_name, seats_won, color) VALUES (2018, 'Awami League', 257, '#00A859'), (2018, 'Jatiya Party (Ershad)', 24, '#FFD700'), (2018, 'BNP', 6, '#2E8B57'), (2018, 'Others', 13, '#808080')");
+
+            // 2014
+            await db.execute("INSERT INTO past_elections (id, year, date, turnout_percentage, winner_party, description) VALUES (2014, 2014, 'Jan 05, 2014', 40.0, 'Awami League', '10th National Parliamentary Election')");
+            await db.execute("INSERT INTO past_election_results (election_id, party_name, seats_won, color) VALUES (2014, 'Awami League', 234, '#00A859'), (2014, 'Jatiya Party (Ershad)', 34, '#FFD700'), (2014, 'Independent', 16, '#808080'), (2014, 'Others', 16, '#A9A9A9')");
+
+            // 2008
+            await db.execute("INSERT INTO past_elections (id, year, date, turnout_percentage, winner_party, description) VALUES (2008, 2008, 'Dec 29, 2008', 87.1, 'Awami League', '9th National Parliamentary Election')");
+            await db.execute("INSERT INTO past_election_results (election_id, party_name, seats_won, color) VALUES (2008, 'Awami League', 230, '#00A859'), (2008, 'BNP', 30, '#2E8B57'), (2008, 'Jatiya Party (Ershad)', 27, '#FFD700'), (2008, 'Jamaat-e-Islami', 2, '#006400'), (2008, 'Others', 11, '#808080')");
+
+            // 2001
+            await db.execute("INSERT INTO past_elections (id, year, date, turnout_percentage, winner_party, description) VALUES (2001, 2001, 'Oct 01, 2001', 75.6, 'BNP', '8th National Parliamentary Election')");
+            await db.execute("INSERT INTO past_election_results (election_id, party_name, seats_won, color) VALUES (2001, 'BNP', 193, '#2E8B57'), (2001, 'Awami League', 62, '#00A859'), (2001, 'Jamaat-e-Islami', 17, '#006400'), (2001, 'Jatiya Party (Ershad)', 14, '#FFD700'), (2001, 'Others', 14, '#808080')");
+
+            console.log("Past elections migration completed.");
+        }
+    } catch (error) {
+        console.error("Migration error:", error);
+    }
+}
+
+migratePastElections().catch(console.error);
+
+export async function getPastElections(): Promise<PastElection[]> {
+    try {
+        const elections = await db.execute("SELECT * FROM past_elections ORDER BY year DESC");
+        const results = await db.execute("SELECT * FROM past_election_results");
+
+        return elections.rows.map(e => {
+            const id = e.id as number;
+            const electionResults = results.rows
+                .filter(r => r.election_id === id)
+                .map(r => ({
+                    party_name: r.party_name as string,
+                    seats_won: r.seats_won as number,
+                    color: r.color as string
+                }));
+
+            return {
+                id,
+                year: e.year as number,
+                date: e.date as string,
+                turnout_percentage: e.turnout_percentage as number,
+                total_seats: e.total_seats as number,
+                winner_party: e.winner_party as string,
+                description: e.description as string,
+                results: electionResults
+            };
+        });
+    } catch (error) {
+        console.error("Error fetching past elections:", error);
+        return [];
+    }
+}
+
+// --- PAGE CONTENT MANAGEMENT ---
+
+export interface PageContentItem {
+    id: string;
+    content: string;
+    content_bn: string;
+    updated_at: string;
+}
+
+async function migratePageContent() {
+    try {
+        const check = await db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='page_content'");
+        if (check.rows.length === 0) {
+            console.log("Migrating page content schema...");
+
+            await db.execute(`
+                CREATE TABLE IF NOT EXISTS page_content (
+                    id TEXT PRIMARY KEY,
+                    content TEXT NOT NULL,
+                    content_bn TEXT,
+                    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                )
+            `);
+
+            // About Page
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('about_title', 'About Us', 'আমাদের সম্পর্কে')");
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('about_desc', 'Amar Ballot is a civic platform designed to empower Bangladeshi voters.', 'আমার ব্যালট বাংলাদেশি ভোটারদের ক্ষমতায়িত করার জন্য ডিজাইন করা।')");
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('mission_title', 'Our Mission', 'আমাদের লক্ষ্য')");
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('mission_desc', 'To provide every citizen with accurate, unbiased election information.', 'প্রতিটি নাগরিককে সঠিক, নিরপেক্ষ নির্বাচন তথ্য প্রদান করা।')");
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('vision_title', 'Our Vision', 'আমাদের দৃষ্টিভঙ্গি')");
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('vision_desc', 'A Bangladesh where every voter makes informed decisions.', 'একটি বাংলাদেশ যেখানে প্রতিটি ভোটার সচেতন সিদ্ধান্ত নেয়।')");
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('trust_title', 'Trust & Transparency', 'বিশ্বাস ও স্বচ্ছতা')");
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('trust_desc', 'We provide verified, fact-checked information you can rely on.', 'আমরা যাচাইকৃত তথ্য প্রদান করি।')");
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('story_title', 'Our Story', 'আমাদের গল্প')");
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('story_desc', 'Born from the belief that informed citizens strengthen democracy.', 'সচেতন নাগরিকরা গণতন্ত্র শক্তিশালী করে।')");
+
+            // Contact Page
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('contact_email_1', 'support@amarballot.bd', 'support@amarballot.bd')");
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('contact_email_2', 'info@amarballot.bd', 'info@amarballot.bd')");
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('contact_phone', '+880 1711 000000', '+880 1711 000000')");
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('contact_address', 'Election Commission Secretariat, Agargaon, Dhaka-1207', 'নির্বাচন কমিশন সচিবালয়, আগারগাঁও, ঢাকা-১২০৭')");
+
+            // Services Page
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('service_1_title', 'Vote Center Locator', 'ভোট কেন্দ্র সন্ধানকারী')");
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('service_1_desc', 'Find your nearest voting center with ease.', 'সহজে আপনার নিকটতম ভোট কেন্দ্র খুঁজুন।')");
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('service_2_title', 'Candidate Search', 'প্রার্থী অনুসন্ধান')");
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('service_2_desc', 'Search and compare candidates in your constituency.', 'প্রার্থীদের অনুসন্ধান এবং তুলনা করুন।')");
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('service_3_title', 'Voter Education', 'ভোটার শিক্ষা')");
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('service_3_desc', 'Learn about your rights and how to vote.', 'আপনার অধিকার জানুন।')");
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('service_4_title', 'Rumor Check', 'গুজব যাচাই')");
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('service_4_desc', 'Verify election-related news and information.', 'নির্বাচন সম্পর্কিত তথ্য যাচাই করুন।')");
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('service_5_title', 'Sample Ballot', 'নমুনা ব্যালট')");
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('service_5_desc', 'Preview and practice with sample ballots.', 'নমুনা ব্যালট দিয়ে অনুশীলন করুন।')");
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('service_6_title', 'AI Assistant', 'এআই সহকারী')");
+            await db.execute("INSERT INTO page_content (id, content, content_bn) VALUES ('service_6_desc', 'Get instant answers to your election questions.', 'তাৎক্ষণিক উত্তর পান।')");
+
+            console.log("Page content migration completed.");
+        }
+    } catch (error) {
+        console.error("Page content migration error:", error);
+    }
+}
+
+migratePageContent().catch(console.error);
+
+export async function getPageContent(prefix?: string): Promise<Record<string, { en: string; bn: string }>> {
+    try {
+        let sql = "SELECT * FROM page_content";
+        if (prefix) {
+            sql += ` WHERE id LIKE '${prefix}%'`;
+        }
+        const result = await db.execute(sql);
+
+        const content: Record<string, { en: string; bn: string }> = {};
+        result.rows.forEach(row => {
+            content[row.id as string] = {
+                en: row.content as string,
+                bn: (row.content_bn as string) || (row.content as string)
+            };
+        });
+        return content;
+    } catch (error) {
+        console.error("Error fetching page content:", error);
+        return {};
+    }
+}
+
+export async function updatePageContent(id: string, content: string, content_bn: string) {
+    try {
+        await db.execute({
+            sql: "UPDATE page_content SET content = ?, content_bn = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+            args: [content, content_bn, id]
+        });
+        return { success: true };
+    } catch (error) {
+        console.error("Update page content error:", error);
+        return { success: false, error };
+    }
+}
+
+export async function getAllPageContent(): Promise<PageContentItem[]> {
+    try {
+        const result = await db.execute("SELECT * FROM page_content ORDER BY id");
+        return result.rows.map(row => ({
+            id: row.id as string,
+            content: row.content as string,
+            content_bn: (row.content_bn as string) || '',
+            updated_at: row.updated_at as string
+        }));
+    } catch (error) {
+        console.error("Error fetching all page content:", error);
+        return [];
     }
 }

@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../data/translations';
 import SEO from '../components/SEO';
-import { submitContactMessage } from '../lib/api';
+import { submitContactMessage, getPageContent } from '../lib/api';
 
 export default function ContactUs() {
     const { language } = useLanguage();
     const t = translations[language];
+    const [content, setContent] = useState<Record<string, { en: string; bn: string }>>({});
 
     const [formData, setFormData] = useState({
         name: '',
@@ -16,6 +17,17 @@ export default function ContactUs() {
         message: ''
     });
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+    useEffect(() => {
+        getPageContent('contact').then(setContent);
+    }, []);
+
+    const getContent = (key: string) => {
+        if (content[key]) {
+            return language === 'bn' ? content[key].bn : content[key].en;
+        }
+        return null;
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -132,8 +144,8 @@ export default function ContactUs() {
                             </div>
                             <div>
                                 <h3 className="text-xl font-bold text-gray-800 mb-1">{t.contact.info.emailTitle}</h3>
-                                <p className="text-gray-600">support@amarballot.bd</p>
-                                <p className="text-gray-600">info@amarballot.bd</p>
+                                <p className="text-gray-600">{getContent('contact_email_1') || 'support@amarballot.bd'}</p>
+                                <p className="text-gray-600">{getContent('contact_email_2') || 'info@amarballot.bd'}</p>
                             </div>
                         </div>
 
@@ -143,7 +155,7 @@ export default function ContactUs() {
                             </div>
                             <div>
                                 <h3 className="text-xl font-bold text-gray-800 mb-1">{t.contact.info.callTitle}</h3>
-                                <p className="text-gray-600">+880 1711 000000</p>
+                                <p className="text-gray-600">{getContent('contact_phone') || '+880 1711 000000'}</p>
                                 <p className="text-gray-600 leading-relaxed text-sm mt-1 text-gray-500">
                                     {language === 'bn' ? 'সোম-শুক্র সকাল ৯টা থেকে বিকাল ৫টা' : 'Mon-Fri from 9am to 5pm.'}
                                 </p>
@@ -157,7 +169,7 @@ export default function ContactUs() {
                             <div>
                                 <h3 className="text-xl font-bold text-gray-800 mb-1">{t.contact.info.visitTitle}</h3>
                                 <p className="text-gray-600 whitespace-pre-line">
-                                    {t.contact.info.address}
+                                    {getContent('contact_address') || t.contact.info.address}
                                 </p>
                             </div>
                         </div>
