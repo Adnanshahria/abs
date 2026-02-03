@@ -44,3 +44,7 @@ INSERT OR IGNORE INTO page_content (id, content, content_bn) VALUES
 ('service_5_desc', 'Preview and practice with sample ballots.', 'নমুনা ব্যালট দিয়ে প্রিভিউ এবং অনুশীলন করুন।'),
 ('service_6_title', 'AI Assistant', 'এআই সহকারী'),
 ('service_6_desc', 'Get instant answers to your election questions.', 'আপনার নির্বাচন সংক্রান্ত প্রশ্নের তাৎক্ষণিক উত্তর পান।');
+
+-- Good Citizen Inspiring Message (shown when all eligibility checks pass)
+INSERT OR IGNORE INTO page_content (id, content, content_bn) VALUES
+('citizen_inspiring_message', 'A responsible citizen is the backbone of a strong democracy. Your vote is your voice, your power, and your future!', 'একজন দায়িত্বশীল নাগরিক একটি শক্তিশালী গণতন্ত্রের মেরুদণ্ড। আপনার ভোট আপনার কণ্ঠস্বর, আপনার শক্তি এবং আপনার ভবিষ্যৎ!');

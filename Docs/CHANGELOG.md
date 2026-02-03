@@ -27,6 +27,13 @@
 ### Changed
 - **api.ts**: `getCandidates()` now uses caching with 10-minute TTL. Cache invalidation on add/update/delete.
 
+## [2026-02-03] - Good Citizen Popup Feature
+
+### Added
+- **EligibilityCard.tsx**: Enhanced success popup with sparkle animations and dynamic inspiring message
+- **AdminContent.tsx**: Added "Good Citizen Message" section for editing the inspiring message
+- **12_page_content.sql**: Added default inspiring message for good citizens
+
 ---
 
 ## [2026-02-03] - Universal Footer Redesign

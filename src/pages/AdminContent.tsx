@@ -33,6 +33,11 @@ export default function AdminContent() {
 
     const sections: ContentSection[] = [
         {
+            title: '🎖️ Good Citizen Message',
+            prefix: 'citizen',
+            items: content.filter(c => c.id.startsWith('citizen'))
+        },
+        {
             title: 'About Page',
             prefix: 'about',
             items: content.filter(c => c.id.startsWith('about') || c.id.startsWith('mission') || c.id.startsWith('vision') || c.id.startsWith('trust') || c.id.startsWith('story'))

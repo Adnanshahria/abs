@@ -40,7 +40,6 @@ import PastResults from './pages/PastResults';
 // import CompareCandidates from './pages/CompareCandidates';
 import CivicBadge from './pages/CivicBadge';
 import Placeholder from './pages/Placeholder';
-import NavigationMap from './components/NavigationMap';
 import './index.css';
 import ElectionUpdates from './pages/ElectionUpdates';
 import Course from './pages/Course';
@@ -132,9 +131,6 @@ function AppContent() {
 
           <Route path="*" element={<Placeholder />} />
         </Routes>
-
-        {/* Navigation Map Floating Button */}
-        <NavigationMap />
 
         {/* Universal Footer - Hidden on admin pages */}
         {!isAdminRoute && <Footer />}

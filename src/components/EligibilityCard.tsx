@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { X, ChevronRight, CheckCircle2, MapPin, FileText, Video, Shield } from 'lucide-react';
+import { X, ChevronRight, MapPin, FileText, Video, Shield, Sparkles } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../data/translations';
+import { getPageContent } from '../lib/api';
 
 export default function EligibilityCard() {
     const { language } = useLanguage();
@@ -11,6 +12,22 @@ export default function EligibilityCard() {
     const [checked, setChecked] = useState<Record<string, boolean>>({});
     const [showModal, setShowModal] = useState(false);
     const [suggestions, setSuggestions] = useState<any[]>([]);
+    const [inspiringMessage, setInspiringMessage] = useState<{ en: string; bn: string }>({
+        en: 'A responsible citizen is the backbone of a strong democracy. Your vote is your voice!',
+        bn: 'একজন দায়িত্বশীল নাগরিক একটি শক্তিশালী গণতন্ত্রের মেরুদণ্ড। আপনার ভোট আপনার কণ্ঠস্বর!'
+    });
+
+    // Fetch inspiring message from admin settings
+    useEffect(() => {
+        getPageContent('citizen').then(content => {
+            if (content.citizen_inspiring_message?.en) {
+                setInspiringMessage({
+                    en: content.citizen_inspiring_message.en,
+                    bn: content.citizen_inspiring_message.bn || content.citizen_inspiring_message.en
+                });
+            }
+        });
+    }, []);
 
     const eligibilityItems = [
         { id: 'nid', label: t.eligibility.checklist.nid },
@@ -28,16 +45,9 @@ export default function EligibilityCard() {
         const missing = eligibilityItems.filter(item => !checked[item.id]);
 
         if (missing.length === 0) {
-            // All checked - Success!
+            // All checked - Success! Show only good citizen message
             setSuggestions([{
-                status: 'success',
-                title: language === 'bn' ? 'অভিনন্দন! আপনি ভোট দিতে প্রস্তুত।' : 'Congratulations! You are ready to vote.',
-                desc: language === 'bn' ? 'আপনার এনআইডি ভেরিফিকেশন সম্পন্ন করুন।' : 'Complete your NID verification now.',
-                action: language === 'bn' ? 'যাচাই করুন' : 'Verify Now',
-                path: '/nid-verification',
-                icon: CheckCircle2,
-                color: 'text-green-600',
-                bgColor: 'bg-green-50'
+                status: 'success'
             }]);
             setShowModal(true);
         } else {
@@ -164,49 +174,58 @@ export default function EligibilityCard() {
                             </button>
                         </div>
 
-                        {/* Content */}
-                        <div className="p-4 space-y-3 max-h-[60vh] overflow-y-auto">
-                            {suggestions.map((item, idx) => (
-                                <div key={idx} className={`p-4 rounded-xl border ${item.bgColor} border-transparent hover:border-gray-200 transition-all`}>
-                                    <div className="flex items-start gap-4">
-                                        <div className={`p-2 rounded-full bg-white shadow-sm ${item.color}`}>
-                                            <item.icon className="w-6 h-6" />
-                                        </div>
-                                        <div className="flex-1">
-                                            <h4 className={`font-bold text-lg mb-1 text-gray-900`}>{item.title}</h4>
-                                            <p className="text-sm text-gray-600 mb-3 leading-relaxed">{item.desc}</p>
+                        {/* Content - Only show if there are actual suggestions (not success-only) */}
+                        {suggestions[0]?.title && (
+                            <div className="p-4 space-y-3 max-h-[60vh] overflow-y-auto">
+                                {suggestions.map((item, idx) => (
+                                    <div key={idx} className={`p-4 rounded-xl border ${item.bgColor} border-transparent hover:border-gray-200 transition-all`}>
+                                        <div className="flex items-start gap-4">
+                                            <div className={`p-2 rounded-full bg-white shadow-sm ${item.color}`}>
+                                                <item.icon className="w-6 h-6" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <h4 className={`font-bold text-lg mb-1 text-gray-900`}>{item.title}</h4>
+                                                <p className="text-sm text-gray-600 mb-3 leading-relaxed">{item.desc}</p>
 
-                                            {item.external ? (
-                                                <a
-                                                    href={item.path}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="inline-flex items-center gap-1.5 text-sm font-bold text-gray-700 hover:text-green-600 hover:gap-2 transition-all group"
-                                                >
-                                                    {item.action} <ChevronRight className="w-4 h-4 group-hover:text-green-500" />
-                                                </a>
-                                            ) : (
-                                                <button
-                                                    onClick={() => {
-                                                        navigate(item.path);
-                                                        setShowModal(false);
-                                                    }}
-                                                    className="inline-flex items-center gap-1.5 text-sm font-bold text-gray-700 hover:text-green-600 hover:gap-2 transition-all group"
-                                                >
-                                                    {item.action} <ChevronRight className="w-4 h-4 group-hover:text-green-500" />
-                                                </button>
-                                            )}
+                                                {item.external ? (
+                                                    <a
+                                                        href={item.path}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-1.5 text-sm font-bold text-gray-700 hover:text-green-600 hover:gap-2 transition-all group"
+                                                    >
+                                                        {item.action} <ChevronRight className="w-4 h-4 group-hover:text-green-500" />
+                                                    </a>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => {
+                                                            navigate(item.path);
+                                                            setShowModal(false);
+                                                        }}
+                                                        className="inline-flex items-center gap-1.5 text-sm font-bold text-gray-700 hover:text-green-600 hover:gap-2 transition-all group"
+                                                    >
+                                                        {item.action} <ChevronRight className="w-4 h-4 group-hover:text-green-500" />
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
-                        </div>
+                                ))}
+                            </div>
+                        )}
 
-                        {/* Footer */}
+                        {/* Footer - Good Citizen Message */}
                         {suggestions[0]?.status === 'success' && (
-                            <div className="p-4 bg-green-50 border-t border-green-100 text-center">
-                                <p className="text-green-800 text-sm font-medium">
-                                    {language === 'bn' ? 'আপনি এখন দায়িত্বশীল নাগরিক!' : 'You are now a responsible citizen!'}
+                            <div className="p-5 bg-gradient-to-r from-green-50 via-emerald-50 to-teal-50 border-t border-green-200 text-center">
+                                <div className="flex items-center justify-center gap-2 mb-2">
+                                    <Sparkles className="w-5 h-5 text-yellow-500 animate-pulse" />
+                                    <p className="text-green-800 font-bold text-base">
+                                        {language === 'bn' ? '🎖️ আপনি এখন দায়িত্বশীল নাগরিক!' : '🎖️ You are now a responsible citizen!'}
+                                    </p>
+                                    <Sparkles className="w-5 h-5 text-yellow-500 animate-pulse" />
+                                </div>
+                                <p className="text-green-700 text-sm italic leading-relaxed">
+                                    "{language === 'bn' ? inspiringMessage.bn : inspiringMessage.en}"
                                 </p>
                             </div>
                         )}
