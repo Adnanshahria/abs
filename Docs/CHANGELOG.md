@@ -1,5 +1,9 @@
 # Changelog
 
+## [2026-02-06] - Release to GitHub
+- **Push to Production**: Synchronized local changes with GitHub repository `abs.git`.
+- **Documentation**: Updated project documentation to reflect the latest feature sets.
+
 ## [2026-02-03] - Admin-Editable Content & Dynamic Archive
 
 ### Added
