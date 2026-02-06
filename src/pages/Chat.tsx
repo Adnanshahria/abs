@@ -16,9 +16,14 @@ export default function Chat() {
     const [loadingStatus, setLoadingStatus] = useState('');
     const [searchEnabled, setSearchEnabled] = useState(true);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const chatContainerRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        // Scroll the container directly instead of using scrollIntoView
+        // This prevents the whole page from scrolling
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
     };
 
     useEffect(() => {
@@ -59,7 +64,7 @@ export default function Chat() {
     return (
         <div className="flex flex-col h-[calc(100vh-50px)] bg-gray-50">
             {/* Chat Messages Area - Takes most space */}
-            <div className="flex-1 overflow-y-auto">
+            <div ref={chatContainerRef} className="flex-1 overflow-y-auto">
                 <div className="max-w-4xl mx-auto px-4 py-2">
                     {messages.map((message, index) => (
                         <div
