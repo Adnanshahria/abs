@@ -93,18 +93,19 @@ export default function AdminUpdates() {
     };
 
     return (
-        <div className="p-8 max-w-7xl mx-auto">
-            <div className="flex items-center justify-between mb-8">
+        <div className="p-4 sm:p-8 max-w-7xl mx-auto">
+            <div className="flex items-center justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">নির্বাচনী আপডেট</h1>
-                    <p className="text-gray-600">সংবাদ ও ঘোষণা পোস্ট করুন</p>
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-900">নির্বাচনী আপডেট</h1>
+                    <p className="text-gray-600 text-xs sm:text-sm">সংবাদ ও ঘোষণা পোস্ট করুন</p>
                 </div>
                 <button
                     onClick={() => setIsAddModalOpen(true)}
-                    className="flex items-center gap-2 bg-purple-600 text-white px-5 py-2.5 rounded-xl hover:bg-purple-700 transition-colors font-medium shadow-sm"
+                    className="flex items-center gap-1 bg-purple-600 text-white px-3 py-1.5 rounded-lg hover:bg-purple-700 transition-colors font-medium shadow-sm text-xs sm:text-sm whitespace-nowrap"
                 >
-                    <Plus className="w-5 h-5" />
-                    আপডেট পোস্ট করুন
+                    <Plus className="w-4 h-4" />
+                    <span className="hidden sm:inline">আপডেট পোস্ট</span>
+                    <span className="sm:hidden">পোস্ট</span>
                 </button>
             </div>
 

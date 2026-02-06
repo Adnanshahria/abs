@@ -392,7 +392,8 @@ async function migrateElectionUpdatesSchema() {
 // Run migration on module load
 migrateElectionUpdatesSchema().catch(console.error);
 
-export async function getUpdates(limit?: number): Promise<ElectionUpdate[]> {
+// Internal function to fetch updates from DB
+async function fetchUpdatesFromDB(limit?: number): Promise<ElectionUpdate[]> {
     try {
         let sql = 'SELECT * FROM election_updates ORDER BY published_at DESC';
         if (limit) {
@@ -415,6 +416,16 @@ export async function getUpdates(limit?: number): Promise<ElectionUpdate[]> {
         console.error("Error fetching updates:", error);
         return [];
     }
+}
+
+// Cached version of getUpdates - reduces DB load significantly
+export async function getUpdates(limit?: number): Promise<ElectionUpdate[]> {
+    // For limited queries, fetch directly (usually for homepage previews)
+    if (limit) {
+        return fetchUpdatesFromDB(limit);
+    }
+    // For full list, use cache
+    return cachedFetch(CACHE_KEYS.UPDATES, () => fetchUpdatesFromDB(), CACHE_TTL.SHORT);
 }
 
 export async function getUnreadNotificationCount(days: number = 7): Promise<number> {
@@ -453,6 +464,8 @@ export async function addUpdate(updateData: Omit<ElectionUpdate, 'id' | 'publish
             sql: `INSERT INTO election_updates (title, content, image_url, author_name, tags, read_time, view_count, source_url) VALUES (?, ?, ?, ?, ?, ?, 0, ?)`,
             args: [title, content, image_url || null, author_name || 'Admin', tagsString || null, read_time || 2, source_url || null] as any[]
         });
+        // Clear cache so next fetch gets fresh data
+        clearCache(CACHE_KEYS.UPDATES);
         return { success: true };
     } catch (error) {
         console.error("Add update error:", error);
@@ -481,6 +494,8 @@ export async function updateUpdate(id: number, updateData: Partial<ElectionUpdat
             sql: `UPDATE election_updates SET title = ?, content = ?, image_url = ?, author_name = ?, tags = ?, read_time = ?, source_url = ? WHERE id = ?`,
             args: [title, content, image_url || null, author_name || 'Admin', tagsString || null, read_time || 2, source_url || null, id] as any[]
         });
+        // Clear cache so next fetch gets fresh data
+        clearCache(CACHE_KEYS.UPDATES);
         return { success: true };
     } catch (error) {
         console.error("Update update error:", error);
@@ -494,6 +509,8 @@ export async function deleteUpdate(id: number) {
             sql: 'DELETE FROM election_updates WHERE id = ?',
             args: [id]
         });
+        // Clear cache so next fetch gets fresh data
+        clearCache(CACHE_KEYS.UPDATES);
         return { success: true };
     } catch (error) {
         console.error("Delete update error:", error);
@@ -503,24 +520,10 @@ export async function deleteUpdate(id: number) {
 
 // --- RUMORS MANAGEMENT ---
 
-export async function getRumors(searchQuery?: string, limit?: number): Promise<Rumor[]> {
+// Internal function to fetch rumors from DB
+async function fetchRumorsFromDB(): Promise<Rumor[]> {
     try {
-        let sql = 'SELECT * FROM rumors';
-        let args: any[] = [];
-
-        if (searchQuery) {
-            sql += ' WHERE title LIKE ? OR description LIKE ?';
-            const term = `%${searchQuery}%`;
-            args.push(term, term);
-        }
-
-        sql += ' ORDER BY published_at DESC';
-
-        if (limit) {
-            sql += ` LIMIT ${limit}`;
-        }
-
-        const result = await db.execute({ sql, args });
+        const result = await db.execute('SELECT * FROM rumors ORDER BY published_at DESC');
         return result.rows.map(row => ({
             id: row.id as number,
             title: row.title as string,
@@ -536,6 +539,30 @@ export async function getRumors(searchQuery?: string, limit?: number): Promise<R
     }
 }
 
+// Cached version of getRumors
+export async function getRumors(searchQuery?: string, limit?: number): Promise<Rumor[]> {
+    // For search queries, we need fresh data and filter client-side
+    const allRumors = await cachedFetch(CACHE_KEYS.RUMORS, fetchRumorsFromDB, CACHE_TTL.SHORT);
+
+    let filtered = allRumors;
+
+    // Apply search filter client-side
+    if (searchQuery) {
+        const term = searchQuery.toLowerCase();
+        filtered = filtered.filter(r =>
+            r.title.toLowerCase().includes(term) ||
+            r.description.toLowerCase().includes(term)
+        );
+    }
+
+    // Apply limit
+    if (limit) {
+        filtered = filtered.slice(0, limit);
+    }
+
+    return filtered;
+}
+
 export async function addRumor(rumorData: Omit<Rumor, 'id' | 'published_at'>) {
     const { title, description, status, source, image_url } = rumorData;
     try {
@@ -543,6 +570,8 @@ export async function addRumor(rumorData: Omit<Rumor, 'id' | 'published_at'>) {
             sql: `INSERT INTO rumors (title, description, status, source, image_url) VALUES (?, ?, ?, ?, ?)`,
             args: [title, description, status, source || null, image_url || null]
         });
+        // Clear cache so next fetch gets fresh data
+        clearCache(CACHE_KEYS.RUMORS);
         return { success: true };
     } catch (error) {
         console.error("Add rumor error:", error);
@@ -557,6 +586,8 @@ export async function updateRumor(id: number, rumorData: Partial<Rumor>) {
             sql: `UPDATE rumors SET title = ?, description = ?, status = ?, source = ?, image_url = ? WHERE id = ?`,
             args: [title, description, status, source || null, image_url || null, id] as any[]
         });
+        // Clear cache so next fetch gets fresh data
+        clearCache(CACHE_KEYS.RUMORS);
         return { success: true };
     } catch (error) {
         console.error("Update rumor error:", error);
@@ -570,6 +601,8 @@ export async function deleteRumor(id: number) {
             sql: 'DELETE FROM rumors WHERE id = ?',
             args: [id]
         });
+        // Clear cache so next fetch gets fresh data
+        clearCache(CACHE_KEYS.RUMORS);
         return { success: true };
     } catch (error) {
         console.error("Delete rumor error:", error);

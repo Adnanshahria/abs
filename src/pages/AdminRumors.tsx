@@ -109,25 +109,45 @@ export default function AdminRumors() {
     };
 
     return (
-        <div className="p-8 max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Rumor Verification</h1>
-                    <p className="text-gray-600">Manage fact-checking database</p>
+        <div className="p-4 sm:p-8 max-w-7xl mx-auto">
+            <div className="flex flex-col gap-4 mb-6">
+                {/* Header Row */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Rumor Verification</h1>
+                        <p className="text-gray-600 text-sm">Manage fact-checking database</p>
+                    </div>
+                    {/* Button + Filters - all in one row */}
+                    <div className="flex items-center gap-1.5 flex-nowrap">
+                        <input
+                            type="date"
+                            value={selectedDate}
+                            onChange={(e) => setSelectedDate(e.target.value)}
+                            className="w-[100px] p-1.5 rounded-lg border border-gray-200 bg-white text-xs"
+                        />
+                        <div className="relative">
+                            <ArrowUpDown className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 w-3 h-3" />
+                            <select
+                                value={sortOrder}
+                                onChange={(e) => setSortOrder(e.target.value as 'newest' | 'oldest')}
+                                className="pl-6 pr-2 py-1.5 rounded-lg border border-gray-200 bg-white text-xs appearance-none cursor-pointer"
+                            >
+                                <option value="newest">New</option>
+                                <option value="oldest">Old</option>
+                            </select>
+                        </div>
+                        <button
+                            onClick={handleOpenAdd}
+                            className="flex items-center gap-1 bg-purple-600 text-white px-2.5 py-1.5 rounded-lg hover:bg-purple-700 transition-colors font-medium shadow-sm text-xs whitespace-nowrap"
+                        >
+                            <Plus className="w-3.5 h-3.5" />
+                            Add
+                        </button>
+                    </div>
                 </div>
-                <div className="flex gap-2">
-                    <button
-                        onClick={handleOpenAdd}
-                        className="flex items-center gap-2 bg-purple-600 text-white px-5 py-2.5 rounded-xl hover:bg-purple-700 transition-colors font-medium shadow-sm self-start md:self-auto"
-                    >
-                        <Plus className="w-5 h-5" />
-                        Add Rumor Check
-                    </button>
-                </div>
-            </div>
 
-            <div className="flex flex-col md:flex-row gap-4 mb-6">
-                <div className="relative flex-1">
+                {/* Search Bar - Full Width */}
+                <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                     <input
                         type="text"
@@ -136,25 +156,6 @@ export default function AdminRumors() {
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all"
                     />
-                </div>
-                <div className="flex items-center gap-2">
-                    <input
-                        type="date"
-                        value={selectedDate}
-                        onChange={(e) => setSelectedDate(e.target.value)}
-                        className="p-2.5 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 text-sm"
-                    />
-                    <div className="relative">
-                        <ArrowUpDown className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
-                        <select
-                            value={sortOrder}
-                            onChange={(e) => setSortOrder(e.target.value as 'newest' | 'oldest')}
-                            className="pl-10 pr-8 py-2.5 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 appearance-none cursor-pointer"
-                        >
-                            <option value="newest">Newest First</option>
-                            <option value="oldest">Oldest First</option>
-                        </select>
-                    </div>
                 </div>
             </div>
 

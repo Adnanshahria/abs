@@ -88,11 +88,18 @@ export async function cachedFetch<T>(
     // Check cache first
     const cached = getFromCache<T>(key);
     if (cached !== null) {
+        console.log(`📦 [CACHE HIT] "${key}" - Loaded from localStorage cache`);
         return cached;
     }
 
+    console.log(`🌐 [DATABASE] "${key}" - Fetching from Turso database...`);
+    const startTime = performance.now();
+
     // Fetch from source
     const data = await fetchFn();
+
+    const duration = (performance.now() - startTime).toFixed(0);
+    console.log(`✅ [DATABASE] "${key}" - Fetched in ${duration}ms, caching for ${ttlMinutes} min`);
 
     // Cache the result
     setInCache(key, data, ttlMinutes);

@@ -234,103 +234,106 @@ export default function AdminTrainAI() {
     return (
         <div>
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-4">
-                <div>
-                    <h1 className="text-xl font-bold text-gray-900 font-serif flex items-center gap-2">
-                        <Brain className="w-5 h-5 text-purple-600" />
-                        Train AI
-                    </h1>
-                    <p className="text-gray-500 text-xs">AI কে শেখান আপনার ইচ্ছেমতো উত্তর দিতে</p>
+            <div className="flex flex-col gap-2 mb-4">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-lg font-bold text-gray-900 font-serif flex items-center gap-1.5">
+                            <Brain className="w-4 h-4 text-purple-600" />
+                            Train AI
+                        </h1>
+                        <p className="text-gray-500 text-xs">AI কে শেখান আপনার ইচ্ছেমতো উত্তর দিতে</p>
+                    </div>
+                    {/* All controls in one row */}
+                    <div className="flex items-center gap-1 flex-nowrap">
+                        <button
+                            onClick={handleRemoveDuplicates}
+                            disabled={removingDuplicates}
+                            className="flex items-center gap-1 bg-red-50 text-red-600 px-2 py-1 rounded-lg text-xs font-medium hover:bg-red-100 border border-red-200 disabled:opacity-50"
+                        >
+                            {removingDuplicates ? <Loader2 className="w-3 h-3 animate-spin" /> : <Copy className="w-3 h-3" />}
+                            <span className="hidden sm:inline">ডুপ্লিকেট</span>
+                        </button>
+                        <button
+                            onClick={() => setShowImportModal(true)}
+                            className="flex items-center gap-1 bg-blue-50 text-blue-600 px-2 py-1 rounded-lg text-xs font-medium hover:bg-blue-100 border border-blue-200"
+                        >
+                            <Upload className="w-3 h-3" />
+                            <span className="hidden sm:inline">JSON</span>
+                        </button>
+                        <button
+                            onClick={openAddModal}
+                            className="flex items-center gap-1 bg-purple-600 text-white px-2 py-1 rounded-lg text-xs font-medium hover:bg-purple-700"
+                        >
+                            <Plus className="w-3 h-3" />
+                            <span className="hidden sm:inline">নতুন</span>
+                        </button>
+                    </div>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                    <button
-                        onClick={handleRemoveDuplicates}
-                        disabled={removingDuplicates}
-                        className="flex items-center gap-1.5 bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors border border-red-200 disabled:opacity-50"
-                    >
-                        {removingDuplicates ? <Loader2 className="w-4 h-4 animate-spin" /> : <Copy className="w-4 h-4" />}
-                        ডুপ্লিকেট মুছুন
-                    </button>
-                    <button
-                        onClick={() => setShowImportModal(true)}
-                        className="flex items-center gap-1.5 bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors border border-blue-200"
-                    >
-                        <Upload className="w-4 h-4" />
-                        JSON ইম্পোর্ট
-                    </button>
-                    <button
-                        onClick={openAddModal}
-                        className="flex items-center gap-1.5 bg-purple-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
-                    >
-                        <Plus className="w-4 h-4" />
-                        নতুন প্রশ্ন যোগ করুন
-                    </button>
-                </div>
-            </div>
 
-            {/* Filters */}
-            <div className="flex flex-col sm:flex-row gap-2 mb-4">
-                <div className="relative flex-1">
-                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <input
-                        type="text"
-                        placeholder="প্রশ্ন বা উত্তর খুঁজুন..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-purple-500 focus:border-transparent"
-                    />
-                </div>
-                {/* Custom Dropdown */}
-                <div className="relative">
-                    <button
-                        type="button"
-                        onClick={() => setFilterDropdownOpen(!filterDropdownOpen)}
-                        className="flex items-center justify-between gap-2 px-3 py-1.5 text-sm border border-gray-200 rounded-lg bg-white hover:border-purple-300 transition-colors min-w-[160px]"
-                    >
-                        <span className="truncate">{filterDivision || 'সকল বিভাগ'}</span>
-                        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${filterDropdownOpen ? 'rotate-180' : ''}`} />
-                    </button>
+                {/* Filters Row */}
+                <div className="flex gap-2">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <input
+                            type="text"
+                            placeholder="প্রশ্ন বা উত্তর খুঁজুন..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-purple-500 focus:border-transparent"
+                        />
+                    </div>
+                    {/* Custom Dropdown */}
+                    <div className="relative">
+                        <button
+                            type="button"
+                            onClick={() => setFilterDropdownOpen(!filterDropdownOpen)}
+                            className="flex items-center gap-1 px-2.5 py-1.5 text-xs border border-gray-200 rounded-lg bg-white hover:border-purple-300 whitespace-nowrap"
+                        >
+                            <span className="truncate max-w-[80px]">{filterDivision || 'সকল'}</span>
+                            <ChevronDown className={`w-3 h-3 text-gray-400 transition-transform ${filterDropdownOpen ? 'rotate-180' : ''}`} />
+                        </button>
 
-                    {filterDropdownOpen && (
-                        <>
-                            {/* Backdrop to close dropdown */}
-                            <div
-                                className="fixed inset-0 z-10"
-                                onClick={() => setFilterDropdownOpen(false)}
-                            />
+                        {filterDropdownOpen && (
+                            <>
+                                {/* Backdrop to close dropdown */}
+                                <div
+                                    className="fixed inset-0 z-10"
+                                    onClick={() => setFilterDropdownOpen(false)}
+                                />
 
-                            {/* Dropdown menu */}
-                            <div className="absolute right-0 top-full mt-1 z-20 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden min-w-[200px]">
-                                <div className="max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-200 scrollbar-track-gray-50">
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setFilterDivision('');
-                                            setFilterDropdownOpen(false);
-                                        }}
-                                        className={`w-full text-left px-3 py-2 text-sm hover:bg-purple-50 transition-colors ${filterDivision === '' ? 'bg-purple-100 text-purple-700 font-medium' : 'text-gray-700'
-                                            }`}
-                                    >
-                                        সকল বিভাগ
-                                    </button>
-                                    {divisions.map((div: string) => (
+                                {/* Dropdown menu */}
+                                <div className="absolute right-0 top-full mt-1 z-20 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden min-w-[200px]">
+                                    <div className="max-h-64 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-200 scrollbar-track-gray-50">
                                         <button
-                                            key={div}
                                             type="button"
                                             onClick={() => {
-                                                setFilterDivision(div);
+                                                setFilterDivision('');
                                                 setFilterDropdownOpen(false);
                                             }}
-                                            className={`w-full text-left px-3 py-2 text-sm hover:bg-purple-50 transition-colors ${filterDivision === div ? 'bg-purple-100 text-purple-700 font-medium' : 'text-gray-700'
+                                            className={`w-full text-left px-3 py-2 text-sm hover:bg-purple-50 transition-colors ${filterDivision === '' ? 'bg-purple-100 text-purple-700 font-medium' : 'text-gray-700'
                                                 }`}
                                         >
-                                            {div}
+                                            সকল বিভাগ
                                         </button>
-                                    ))}
+                                        {divisions.map((div: string) => (
+                                            <button
+                                                key={div}
+                                                type="button"
+                                                onClick={() => {
+                                                    setFilterDivision(div);
+                                                    setFilterDropdownOpen(false);
+                                                }}
+                                                className={`w-full text-left px-3 py-2 text-sm hover:bg-purple-50 transition-colors ${filterDivision === div ? 'bg-purple-100 text-purple-700 font-medium' : 'text-gray-700'
+                                                    }`}
+                                            >
+                                                {div}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        </>
-                    )}
+                            </>
+                        )}
+                    </div>
                 </div>
             </div>
 
