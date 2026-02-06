@@ -57,6 +57,7 @@ import { checkConnection } from './lib/db';
 import { useLocation } from 'react-router-dom';
 
 import SEO from './components/SEO';
+import { getPageContent } from './lib/api';
 
 function AppContent() {
   const location = useLocation();
@@ -64,6 +65,23 @@ function AppContent() {
 
   useEffect(() => {
     checkConnection();
+  }, []);
+
+  // Load dynamic favicon from branding settings
+  useEffect(() => {
+    getPageContent('branding').then(content => {
+      if (content.branding_favicon?.en) {
+        // Update favicon dynamically
+        let link = document.querySelector("link[rel*='icon']") as HTMLLinkElement;
+        if (!link) {
+          link = document.createElement('link');
+          link.rel = 'shortcut icon';
+          document.head.appendChild(link);
+        }
+        link.type = 'image/x-icon';
+        link.href = content.branding_favicon.en;
+      }
+    });
   }, []);
 
 
