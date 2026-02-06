@@ -1498,13 +1498,16 @@ export async function getPageContent(prefix?: string): Promise<Record<string, { 
 
 export async function updatePageContent(id: string, content: string, content_bn: string) {
     try {
+        // Use INSERT OR REPLACE to handle both new and existing entries
         await db.execute({
-            sql: "UPDATE page_content SET content = ?, content_bn = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-            args: [content, content_bn, id]
+            sql: `INSERT OR REPLACE INTO page_content (id, content, content_bn, updated_at) 
+                  VALUES (?, ?, ?, CURRENT_TIMESTAMP)`,
+            args: [id, content, content_bn]
         });
         // Clear BOTH page content caches so all pages get fresh data
         clearCache(CACHE_KEYS.PAGE_CONTENT);
         clearCache(CACHE_KEYS.PAGE_CONTENT + '_public');
+        console.log(`✅ Page content "${id}" saved successfully`);
         return { success: true };
     } catch (error) {
         console.error("Update page content error:", error);

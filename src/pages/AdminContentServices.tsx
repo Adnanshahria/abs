@@ -44,35 +44,37 @@ export default function AdminContentServices() {
     const getContentItem = (id: string) => content.find(c => c.id === id);
 
     const handleUpdate = useCallback((id: string, field: 'content' | 'content_bn', value: string) => {
-        setContent(prev => prev.map(item =>
-            item.id === id ? { ...item, [field]: value } : item
-        ));
+        // Update local state immediately and save with the updated values
+        setContent(prev => {
+            const updated = prev.map(item =>
+                item.id === id ? { ...item, [field]: value } : item
+            );
 
-        if (pendingSaves[`${id}_${field}`]) {
-            clearTimeout(pendingSaves[`${id}_${field}`]);
-        }
-
-        setSaveStatus(prev => ({ ...prev, [id]: 'saving' }));
-
-        const timeout = setTimeout(async () => {
-            const item = content.find(c => c.id === id);
-            if (item) {
-                const newContent = field === 'content' ? value : item.content;
-                const newContentBn = field === 'content_bn' ? value : item.content_bn;
-
-                const result = await updatePageContent(id, newContent, newContentBn);
-                if (result.success) {
-                    setSaveStatus(prev => ({ ...prev, [id]: 'saved' }));
-                    setTimeout(() => setSaveStatus(prev => ({ ...prev, [id]: 'idle' })), 2000);
-                } else {
-                    setSaveStatus(prev => ({ ...prev, [id]: 'error' }));
-                    setTimeout(() => setSaveStatus(prev => ({ ...prev, [id]: 'idle' })), 3000);
-                }
+            if (pendingSaves[`${id}_${field}`]) {
+                clearTimeout(pendingSaves[`${id}_${field}`]);
             }
-        }, 800);
 
-        setPendingSaves(prev => ({ ...prev, [`${id}_${field}`]: timeout }));
-    }, [content, pendingSaves]);
+            setSaveStatus(prev => ({ ...prev, [id]: 'saving' }));
+
+            const timeout = setTimeout(async () => {
+                // Get current item from the updated state
+                const item = updated.find(c => c.id === id);
+                if (item) {
+                    const result = await updatePageContent(id, item.content, item.content_bn);
+                    if (result.success) {
+                        setSaveStatus(prev => ({ ...prev, [id]: 'saved' }));
+                        setTimeout(() => setSaveStatus(prev => ({ ...prev, [id]: 'idle' })), 2000);
+                    } else {
+                        setSaveStatus(prev => ({ ...prev, [id]: 'error' }));
+                        setTimeout(() => setSaveStatus(prev => ({ ...prev, [id]: 'idle' })), 3000);
+                    }
+                }
+            }, 800);
+
+            setPendingSaves(prev => ({ ...prev, [`${id}_${field}`]: timeout }));
+            return updated;
+        });
+    }, [pendingSaves]);
 
     const getStatusIcon = (id: string) => {
         const status = saveStatus[id];

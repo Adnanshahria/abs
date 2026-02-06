@@ -29,35 +29,38 @@ export default function AdminContentCitizen() {
     const handleUpdate = useCallback((field: 'content' | 'content_bn', value: string) => {
         const id = 'citizen_inspiring_message';
 
-        setContent(prev => prev.map(item =>
-            item.id === id ? { ...item, [field]: value } : item
-        ));
+        // Update local state immediately
+        setContent(prev => {
+            const updated = prev.map(item =>
+                item.id === id ? { ...item, [field]: value } : item
+            );
 
-        if (pendingSave) {
-            clearTimeout(pendingSave);
-        }
-
-        setSaveStatus('saving');
-
-        const timeout = setTimeout(async () => {
-            const item = content.find(c => c.id === id);
-            if (item) {
-                const newContent = field === 'content' ? value : item.content;
-                const newContentBn = field === 'content_bn' ? value : item.content_bn;
-
-                const result = await updatePageContent(id, newContent, newContentBn);
-                if (result.success) {
-                    setSaveStatus('saved');
-                    setTimeout(() => setSaveStatus('idle'), 2000);
-                } else {
-                    setSaveStatus('error');
-                    setTimeout(() => setSaveStatus('idle'), 3000);
-                }
+            // Schedule save with current values
+            if (pendingSave) {
+                clearTimeout(pendingSave);
             }
-        }, 800);
 
-        setPendingSave(timeout);
-    }, [content, pendingSave]);
+            setSaveStatus('saving');
+
+            const timeout = setTimeout(async () => {
+                // Get current item from the updated state
+                const item = updated.find(c => c.id === id);
+                if (item) {
+                    const result = await updatePageContent(id, item.content, item.content_bn);
+                    if (result.success) {
+                        setSaveStatus('saved');
+                        setTimeout(() => setSaveStatus('idle'), 2000);
+                    } else {
+                        setSaveStatus('error');
+                        setTimeout(() => setSaveStatus('idle'), 3000);
+                    }
+                }
+            }, 800);
+
+            setPendingSave(timeout);
+            return updated;
+        });
+    }, [pendingSave]);
 
     const getStatusDisplay = () => {
         if (saveStatus === 'saving') {
