@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../data/translations';
-import { Users, Vote, MapPin, Calendar, ShieldAlert } from 'lucide-react';
+import { Users, Vote, MapPin, Calendar, ShieldAlert, Database, RefreshCw, Brain } from 'lucide-react';
 import { getDashboardStats } from '../lib/api';
 import { useNavigate } from 'react-router-dom';
 
@@ -25,22 +25,70 @@ export default function AdminDashboard() {
 
     return (
         <div>
-            <div className="mb-8 flex justify-between items-end">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900">{t.admin.title}</h1>
-                    <p className="text-gray-600 mt-1">{t.admin.welcome}, {user?.name}</p>
+            <div className="mb-8">
+                <div className="flex justify-between items-end mb-4">
+                    <div>
+                        <h1 className="text-3xl font-bold text-gray-900">{t.admin.title}</h1>
+                        <p className="text-gray-600 mt-1">{t.admin.welcome}, {user?.name}</p>
+                    </div>
+                    <button
+                        onClick={async () => {
+                            const { fixDatabaseSchema } = await import('../lib/api');
+                            const result = await fixDatabaseSchema();
+                            if (result.success) alert(result.message);
+                            else alert("Update failed: " + JSON.stringify(result.error));
+                        }}
+                        className="text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded"
+                    >
+                        {t.admin.fixSchema}
+                    </button>
                 </div>
-                <button
-                    onClick={async () => {
-                        const { fixDatabaseSchema } = await import('../lib/api');
-                        const result = await fixDatabaseSchema();
-                        if (result.success) alert(result.message);
-                        else alert("Update failed: " + JSON.stringify(result.error));
-                    }}
-                    className="text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded"
-                >
-                    {t.admin.fixSchema}
-                </button>
+
+                {/* AI Cache Management */}
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <Database className="w-5 h-5 text-blue-600" />
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-gray-800">AI Knowledge Cache</h3>
+                                <p className="text-xs text-gray-500">Updates, Rumors, and Trained AI Data</p>
+                            </div>
+                        </div>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={async () => {
+                                    const { forceRefreshCache } = await import('../services/aiService');
+                                    await forceRefreshCache();
+                                    alert('✅ Cache refreshed! New data loaded from database.');
+                                }}
+                                className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg transition-colors"
+                            >
+                                <RefreshCw className="w-4 h-4" />
+                                Force Refresh
+                            </button>
+                            <button
+                                onClick={async () => {
+                                    const { forceRefreshCache } = await import('../services/aiService');
+                                    await forceRefreshCache();
+                                    alert('✅ Cache setup complete! AI is ready with latest data.');
+                                }}
+                                className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded-lg transition-colors"
+                            >
+                                <Database className="w-4 h-4" />
+                                Setup Cache
+                            </button>
+                            <button
+                                onClick={() => navigate('/adm/train-ai')}
+                                className="flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 text-white text-sm px-4 py-2 rounded-lg transition-colors"
+                            >
+                                <Brain className="w-4 h-4" />
+                                Add Knowledge
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

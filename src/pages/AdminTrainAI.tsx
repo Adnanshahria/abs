@@ -338,7 +338,7 @@ export default function AdminTrainAI() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-4 gap-2 mb-4">
+            <div className="grid grid-cols-5 gap-2 mb-4">
                 <div className="bg-white px-3 py-2 rounded-lg border border-gray-100">
                     <p className="text-gray-400 text-xs">মোট প্রশ্ন</p>
                     <p className="text-lg font-bold text-gray-900">{entries.length}</p>
@@ -354,6 +354,10 @@ export default function AdminTrainAI() {
                 <div className="bg-white px-3 py-2 rounded-lg border border-gray-100">
                     <p className="text-gray-400 text-xs">বিভাগ</p>
                     <p className="text-lg font-bold text-purple-600">{Object.keys(groupedEntries).length}</p>
+                </div>
+                <div className="bg-white px-3 py-2 rounded-lg border border-green-100">
+                    <p className="text-gray-400 text-xs">✨ Auto-learn</p>
+                    <p className="text-lg font-bold text-green-600">{entries.filter(e => e.priority === 1).length}</p>
                 </div>
             </div>
 
@@ -381,14 +385,21 @@ export default function AdminTrainAI() {
                                     <div
                                         key={entry.id}
                                         className={`bg-white rounded-lg border px-3 py-2 transition-all ${entry.is_active === 1
-                                            ? 'border-gray-100 hover:border-gray-200'
+                                            ? entry.priority === 1
+                                                ? 'border-green-200 bg-green-50/30 hover:border-green-300' // Auto-learned
+                                                : 'border-gray-100 hover:border-gray-200'
                                             : 'border-gray-100 opacity-50'
                                             }`}
                                     >
                                         <div className="flex items-start justify-between gap-3">
                                             <div className="flex-1 min-w-0">
-                                                <h4 className="font-medium text-sm text-gray-900">
+                                                <h4 className="font-medium text-sm text-gray-900 flex items-center gap-2">
                                                     প্রশ্ন: {entry.question}
+                                                    {entry.priority === 1 && (
+                                                        <span className="inline-flex items-center gap-1 text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-normal">
+                                                            ✨ Auto-learn
+                                                        </span>
+                                                    )}
                                                 </h4>
                                                 <p className="text-gray-600 text-xs line-clamp-1 mt-0.5">
                                                     উত্তর: {entry.answer}

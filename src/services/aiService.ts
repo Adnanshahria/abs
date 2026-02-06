@@ -1,6 +1,6 @@
 // Groq + Brave Search Service (Direct, No HuggingFace)
 
-import { getUpdates, getRumors, getAIKnowledge, type AIKnowledgeEntry, type ElectionUpdate, type Rumor } from '../lib/api';
+import { getUpdates, getRumors, getAIKnowledge, addAIKnowledge, type AIKnowledgeEntry, type ElectionUpdate, type Rumor } from '../lib/api';
 
 const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || '';
 const BRAVE_API_KEY = import.meta.env.VITE_BRAVE_API_KEY || '';
@@ -31,24 +31,88 @@ const SYSTEM_PROMPT = `আপনি প্রেরণা, আমার ব্�
 - বাংলাদেশে বর্তমানে কাগজের ব্যালট ব্যবহার হয়, EVM সীমিত পরীক্ষামূলক ব্যবহার হয়েছে`;
 
 // AI Knowledge Base Search - HIGHEST PRIORITY (Admin-trained data)
-// CACHING: Store knowledge in memory to avoid hitting DB on every message
+// PERSISTENT CACHING: Using localStorage for Vercel/Cloudflare deployment
+// Data persists across page reloads and browser sessions
+
+const CACHE_KEY_KNOWLEDGE = 'amar_ballot_ai_knowledge_cache';
+const CACHE_KEY_UPDATES = 'amar_ballot_updates_cache';
+const CACHE_KEY_RUMORS = 'amar_ballot_rumors_cache';
+const CACHE_KEY_TIMESTAMP = 'amar_ballot_cache_timestamp';
+const CACHE_TTL = 1000 * 60 * 60 * 24 * 365; // 365 days (LIFETIME - only refreshes via admin)
+
+// In-memory references (loaded from localStorage)
 let knowledgeCache: AIKnowledgeEntry[] | null = null;
 let updatesCache: ElectionUpdate[] | null = null;
 let rumorsCache: Rumor[] | null = null;
-let lastCacheUpdate = 0;
-const CACHE_TTL = 1000 * 60 * 5; // 5 minutes (refresh cache every 5 mins)
+
+// Load cache from localStorage
+function loadCacheFromStorage() {
+    try {
+        const timestamp = localStorage.getItem(CACHE_KEY_TIMESTAMP);
+        const now = Date.now();
+
+        // Check if cache exists and is still valid
+        if (timestamp && (now - parseInt(timestamp)) < CACHE_TTL) {
+            const kb = localStorage.getItem(CACHE_KEY_KNOWLEDGE);
+            const up = localStorage.getItem(CACHE_KEY_UPDATES);
+            const rm = localStorage.getItem(CACHE_KEY_RUMORS);
+
+            if (kb && up && rm) {
+                knowledgeCache = JSON.parse(kb);
+                updatesCache = JSON.parse(up);
+                rumorsCache = JSON.parse(rm);
+                console.log('[AI Service] ✅ Loaded cache from localStorage (persistent)');
+                return true;
+            }
+        }
+    } catch (e) {
+        console.warn('[AI Service] localStorage load failed:', e);
+    }
+    return false;
+}
+
+// Save cache to localStorage
+function saveCacheToStorage() {
+    try {
+        if (knowledgeCache && updatesCache && rumorsCache) {
+            localStorage.setItem(CACHE_KEY_KNOWLEDGE, JSON.stringify(knowledgeCache));
+            localStorage.setItem(CACHE_KEY_UPDATES, JSON.stringify(updatesCache));
+            localStorage.setItem(CACHE_KEY_RUMORS, JSON.stringify(rumorsCache));
+            localStorage.setItem(CACHE_KEY_TIMESTAMP, Date.now().toString());
+            console.log('[AI Service] 💾 Saved cache to localStorage');
+        }
+    } catch (e) {
+        console.warn('[AI Service] localStorage save failed:', e);
+    }
+}
+
+// Force refresh cache from DB (can be called from admin panel)
+export async function forceRefreshCache() {
+    console.log('[AI Service] 🔄 Force refreshing cache from DB...');
+    knowledgeCache = null;
+    updatesCache = null;
+    rumorsCache = null;
+    localStorage.removeItem(CACHE_KEY_TIMESTAMP);
+    await ensureCaches();
+}
 
 async function ensureCaches() {
-    const now = Date.now();
-    // Fetch if cache is empty OR expired
-    if (!knowledgeCache || !updatesCache || !rumorsCache || (now - lastCacheUpdate > CACHE_TTL)) {
-        try {
-            console.log('[AI Service] 🔄 Refreshing all caches from DB...');
+    // First, try to load from persistent storage
+    if (!knowledgeCache || !updatesCache || !rumorsCache) {
+        if (loadCacheFromStorage()) {
+            return; // Cache loaded successfully from localStorage
+        }
+    }
 
-            // Parallel fetch for potential speedup
+    // If no valid cache, fetch from DB
+    if (!knowledgeCache || !updatesCache || !rumorsCache) {
+        try {
+            console.log('[AI Service] 🌐 Fetching fresh data from Turso DB...');
+
+            // Parallel fetch for speed
             const [kb, up, rm] = await Promise.all([
                 getAIKnowledge(),
-                getUpdates(), // Helper needs to allow fetching all, update api.ts if needed or pass large limit
+                getUpdates(),
                 getRumors()
             ]);
 
@@ -56,8 +120,10 @@ async function ensureCaches() {
             updatesCache = up;
             rumorsCache = rm;
 
-            lastCacheUpdate = now;
-            console.log(`[AI Service] Caches updated: KB=${kb.length}, Updates=${up.length}, Rumors=${rm.length}`);
+            // Save to persistent storage
+            saveCacheToStorage();
+
+            console.log(`[AI Service] ✅ Cache updated: KB=${kb.length}, Updates=${up.length}, Rumors=${rm.length}`);
         } catch (e) {
             console.error('[AI Service] Cache update failed', e);
             // Fallback to empty arrays to prevent crashing
@@ -66,6 +132,64 @@ async function ensureCaches() {
             if (!rumorsCache) rumorsCache = [];
         }
     }
+}
+
+// ====== AUTO-LEARN SYSTEM ======
+// Automatically saves new Q&A pairs to Knowledge Base when not found in existing data
+
+// Track recently added questions to avoid duplicates (in-memory for current session)
+const recentlyAddedQuestions = new Set<string>();
+
+async function autoSaveToKnowledgeBase(question: string, aiResponse: string) {
+    try {
+        // Normalize question for comparison
+        const normalizedQuestion = question.toLowerCase().trim();
+
+        // Skip if already added in this session
+        if (recentlyAddedQuestions.has(normalizedQuestion)) {
+            console.log('[Auto-Learn] ⏭️ Already added this session:', question.slice(0, 50));
+            return;
+        }
+
+        // Skip very short questions
+        if (question.length < 10) {
+            console.log('[Auto-Learn] ⏭️ Question too short, skipping');
+            return;
+        }
+
+        // Add to knowledge base
+        const result = await addAIKnowledge({
+            division: 'সাধারণ প্রশ্ন', // Default category
+            question: question.trim(),
+            answer: aiResponse.slice(0, 1000), // Limit answer size
+            keywords: extractKeywords(question),
+            priority: 1, // Low priority (user-generated)
+            is_active: 1
+        });
+
+        if (result.success) {
+            recentlyAddedQuestions.add(normalizedQuestion);
+            console.log('[Auto-Learn] ✅ Saved to Knowledge Base:', question.slice(0, 50));
+
+            // Invalidate cache so next search can find this
+            knowledgeCache = null;
+        } else {
+            console.warn('[Auto-Learn] ❌ Save failed:', result.error);
+        }
+    } catch (e) {
+        console.warn('[Auto-Learn] Error:', e);
+    }
+}
+
+// Extract keywords from question for better search matching
+function extractKeywords(question: string): string {
+    // Remove common Bengali/English stop words and extract meaningful words
+    const stopWords = ['কি', 'কে', 'কেন', 'কিভাবে', 'কোথায়', 'কখন', 'আমি', 'আমার', 'এই', 'সেই', 'এবং', 'the', 'is', 'a', 'an', 'how', 'what', 'why', 'where', 'when'];
+    const words = question.toLowerCase()
+        .replace(/[?।,.!]/g, '')
+        .split(/\s+/)
+        .filter(w => w.length > 2 && !stopWords.includes(w));
+    return words.slice(0, 5).join(', ');
 }
 
 async function searchAIKnowledgeBase(query: string): Promise<string | null> {
@@ -317,7 +441,15 @@ export async function sendMessageToAI(
         // Direct Groq call (faster, more reliable)
         onStatusChange?.('🤖 Asking Groq AI...');
         console.log('[Groq] Sending request (Primary)...');
-        return await callGroq(messages, userContent, SYSTEM_PROMPT);
+        const response = await callGroq(messages, userContent, SYSTEM_PROMPT);
+
+        // Capture questions not found in knowledge base (for admin review)
+        if (!knowledgeResults && !localResults) {
+            // No match in DB - auto-save to knowledge base
+            autoSaveToKnowledgeBase(lastMessage, response);
+        }
+
+        return response;
 
     } catch (error) {
         console.error('[AI] Fatal Error:', error);

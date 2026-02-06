@@ -1,10 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Globe } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Send, Bot, User, Globe, LogIn, MessageCircle } from 'lucide-react';
 import { sendMessageToAI } from '../services/aiService';
 import type { ChatMessage } from '../services/aiService';
+import { useAuth } from '../context/AuthContext';
 import preronaImg from '../assets/prerona.png';
 
 export default function Chat() {
+    const { isLoggedIn } = useAuth();
     const [messages, setMessages] = useState<ChatMessage[]>([
         {
             role: 'assistant',
@@ -60,6 +63,55 @@ export default function Chat() {
             handleSend();
         }
     };
+
+    // If not logged in, show login prompt
+    if (!isLoggedIn) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[calc(100vh-150px)] bg-gradient-to-br from-green-50 via-white to-green-100 px-4">
+                <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md w-full text-center border border-green-100">
+                    {/* Icon */}
+                    <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                        <MessageCircle className="w-10 h-10 text-white" />
+                    </div>
+
+                    {/* Title */}
+                    <h2 className="text-2xl font-bold text-gray-800 mb-3">
+                        প্রেরণার সাথে কথা বলুন
+                    </h2>
+
+                    {/* Description */}
+                    <p className="text-gray-600 mb-6 leading-relaxed">
+                        আমাদের AI সহকারী <strong>প্রেরণা</strong> আপনাকে বাংলাদেশের নির্বাচন সম্পর্কে
+                        সকল তথ্য দিতে প্রস্তুত। চ্যাটবট ব্যবহার করতে অনুগ্রহ করে লগইন করুন।
+                    </p>
+
+                    {/* Features */}
+                    <div className="text-left bg-green-50 rounded-lg p-4 mb-6">
+                        <p className="text-sm text-green-800 font-medium mb-2">আপনি যা জানতে পারবেন:</p>
+                        <ul className="text-sm text-green-700 space-y-1">
+                            <li>✓ নির্বাচনের তারিখ ও সময়সূচী</li>
+                            <li>✓ প্রার্থীদের তথ্য</li>
+                            <li>✓ ভোট কেন্দ্রের অবস্থান</li>
+                            <li>✓ ভোটার গাইড ও নিয়মাবলী</li>
+                        </ul>
+                    </div>
+
+                    {/* Login Button */}
+                    <Link
+                        to="/sign-up"
+                        className="inline-flex items-center justify-center gap-2 w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg"
+                    >
+                        <LogIn className="w-5 h-5" />
+                        লগইন করুন
+                    </Link>
+
+                    <p className="text-xs text-gray-500 mt-4">
+                        একাউন্ট নেই? <Link to="/sign-up" className="text-green-600 hover:underline">এখনই তৈরি করুন</Link>
+                    </p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col h-[calc(100vh-50px)] bg-gray-50">
