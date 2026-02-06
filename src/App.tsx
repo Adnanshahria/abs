@@ -62,6 +62,7 @@ import { getPageContent } from './lib/api';
 function AppContent() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/adm');
+  const isChatRoute = location.pathname === '/chat';
 
   useEffect(() => {
     checkConnection();
@@ -160,8 +161,8 @@ function AppContent() {
           <Route path="*" element={<Placeholder />} />
         </Routes>
 
-        {/* Universal Footer - Hidden on admin pages */}
-        {!isAdminRoute && <Footer />}
+        {/* Universal Footer - Hidden on admin and chat pages */}
+        {!isAdminRoute && !isChatRoute && <Footer />}
       </div>
     </>
   );

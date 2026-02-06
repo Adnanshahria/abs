@@ -45,6 +45,9 @@ export default function AdminTrainAI() {
     // Duplicate removal state
     const [removingDuplicates, setRemovingDuplicates] = useState(false);
 
+    // Auto-learn filter
+    const [showAutoLearnOnly, setShowAutoLearnOnly] = useState(false);
+
     // Dynamic divisions - extracted from entries + defaults
     const divisions = useMemo(() => {
         const uniqueDivisions = new Set<string>();
@@ -220,7 +223,8 @@ export default function AdminTrainAI() {
             entry.answer.toLowerCase().includes(searchQuery.toLowerCase()) ||
             (entry.keywords || '').toLowerCase().includes(searchQuery.toLowerCase());
         const matchesDivision = !filterDivision || entry.division === filterDivision;
-        return matchesSearch && matchesDivision;
+        const matchesAutoLearn = !showAutoLearnOnly || entry.priority === 1;
+        return matchesSearch && matchesDivision && matchesAutoLearn;
     });
 
     // Group by division
@@ -355,9 +359,18 @@ export default function AdminTrainAI() {
                     <p className="text-gray-400 text-xs">বিভাগ</p>
                     <p className="text-lg font-bold text-purple-600">{Object.keys(groupedEntries).length}</p>
                 </div>
-                <div className="bg-white px-3 py-2 rounded-lg border border-green-100">
+                <div
+                    onClick={() => setShowAutoLearnOnly(!showAutoLearnOnly)}
+                    className={`px-3 py-2 rounded-lg border cursor-pointer transition-all ${showAutoLearnOnly
+                            ? 'bg-green-100 border-green-400 ring-2 ring-green-300'
+                            : 'bg-white border-green-100 hover:bg-green-50'
+                        }`}
+                >
                     <p className="text-gray-400 text-xs">✨ Auto-learn</p>
-                    <p className="text-lg font-bold text-green-600">{entries.filter(e => e.priority === 1).length}</p>
+                    <p className="text-lg font-bold text-green-600 flex items-center gap-1">
+                        {entries.filter(e => e.priority === 1).length}
+                        {showAutoLearnOnly && <span className="text-xs font-normal">(only)</span>}
+                    </p>
                 </div>
             </div>
 
