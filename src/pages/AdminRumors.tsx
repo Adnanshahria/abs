@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getRumors, addRumor, updateRumor, deleteRumor, fixDatabaseSchema } from '../lib/api';
+import { getRumors, addRumor, updateRumor, deleteRumor } from '../lib/api';
 import { Plus, Trash2, ShieldCheck, ShieldAlert, Save, X, ExternalLink, Pencil, Search, ArrowUpDown } from 'lucide-react';
 import type { Rumor } from '../lib/types';
 
@@ -28,11 +28,6 @@ export default function AdminRumors() {
     });
 
     useEffect(() => {
-        // Run schema fix on mount to ensure columns exist
-        fixDatabaseSchema().then(res => {
-            console.log("Schema check:", res);
-        });
-
         const timer = setTimeout(() => {
             fetchRumors();
         }, 300);

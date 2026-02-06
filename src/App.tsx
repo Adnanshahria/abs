@@ -13,6 +13,11 @@ import AdminRumors from './pages/AdminRumors';
 import AdminIncidents from './pages/AdminIncidents';
 import AdminTrainAI from './pages/AdminTrainAI';
 import AdminContent from './pages/AdminContent';
+import AdminContentBranding from './pages/AdminContentBranding';
+import AdminContentAbout from './pages/AdminContentAbout';
+import AdminContentContact from './pages/AdminContentContact';
+import AdminContentServices from './pages/AdminContentServices';
+import AdminContentCitizen from './pages/AdminContentCitizen';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import VoteCenter from './pages/VoteCenter';
@@ -75,7 +80,7 @@ function AppContent() {
         {/* Base gradient background */}
         <div className="fixed inset-0 -z-2 bg-gradient-to-br from-green-50/80 via-white/90 to-green-100/80"></div>
 
-        <Header />
+        {!isAdminRoute && <Header />}
 
         <Routes>
           <Route path="/" element={<Home />} />
@@ -102,6 +107,11 @@ function AppContent() {
             <Route path="incidents" element={<AdminIncidents />} />
             <Route path="train-ai" element={<AdminTrainAI />} />
             <Route path="content" element={<AdminContent />} />
+            <Route path="content/branding" element={<AdminContentBranding />} />
+            <Route path="content/about" element={<AdminContentAbout />} />
+            <Route path="content/contact" element={<AdminContentContact />} />
+            <Route path="content/services" element={<AdminContentServices />} />
+            <Route path="content/citizen" element={<AdminContentCitizen />} />
           </Route>
 
           {/* New Pages */}

@@ -41,7 +41,7 @@ export default function AdminLayout() {
     return (
         <div className="min-h-screen bg-gray-50 flex">
             {/* Sidebar - Desktop */}
-            <aside className="hidden lg:flex flex-col w-72 bg-white border-r border-gray-100 fixed h-full z-30">
+            <aside className="hidden lg:flex flex-col w-64 bg-white border-r border-gray-100 fixed h-full z-30">
                 <div className="p-5 pb-4">
                     <div className="flex items-center gap-3">
                         <div className="w-9 h-9 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-200 text-sm">

@@ -1426,14 +1426,10 @@ async function migratePageContent() {
 
 migratePageContent().catch(console.error);
 
-export async function getPageContent(prefix?: string): Promise<Record<string, { en: string; bn: string }>> {
+// Internal fetch from DB for getPageContent
+async function fetchPageContentFromDB(): Promise<Record<string, { en: string; bn: string }>> {
     try {
-        let sql = "SELECT * FROM page_content";
-        if (prefix) {
-            sql += ` WHERE id LIKE '${prefix}%'`;
-        }
-        const result = await db.execute(sql);
-
+        const result = await db.execute("SELECT * FROM page_content");
         const content: Record<string, { en: string; bn: string }> = {};
         result.rows.forEach(row => {
             content[row.id as string] = {
@@ -1448,12 +1444,34 @@ export async function getPageContent(prefix?: string): Promise<Record<string, { 
     }
 }
 
+// Cached version of getPageContent for public pages
+export async function getPageContent(prefix?: string): Promise<Record<string, { en: string; bn: string }>> {
+    // Get all content from cache
+    const allContent = await cachedFetch(CACHE_KEYS.PAGE_CONTENT + '_public', fetchPageContentFromDB, CACHE_TTL.MEDIUM);
+
+    // Filter by prefix if provided
+    if (prefix) {
+        const filtered: Record<string, { en: string; bn: string }> = {};
+        Object.keys(allContent).forEach(key => {
+            if (key.startsWith(prefix)) {
+                filtered[key] = allContent[key];
+            }
+        });
+        return filtered;
+    }
+
+    return allContent;
+}
+
 export async function updatePageContent(id: string, content: string, content_bn: string) {
     try {
         await db.execute({
             sql: "UPDATE page_content SET content = ?, content_bn = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
             args: [content, content_bn, id]
         });
+        // Clear BOTH page content caches so all pages get fresh data
+        clearCache(CACHE_KEYS.PAGE_CONTENT);
+        clearCache(CACHE_KEYS.PAGE_CONTENT + '_public');
         return { success: true };
     } catch (error) {
         console.error("Update page content error:", error);
@@ -1461,7 +1479,8 @@ export async function updatePageContent(id: string, content: string, content_bn:
     }
 }
 
-export async function getAllPageContent(): Promise<PageContentItem[]> {
+// Internal function to fetch from DB
+async function fetchAllPageContentFromDB(): Promise<PageContentItem[]> {
     try {
         const result = await db.execute("SELECT * FROM page_content ORDER BY id");
         return result.rows.map(row => ({
@@ -1475,3 +1494,9 @@ export async function getAllPageContent(): Promise<PageContentItem[]> {
         return [];
     }
 }
+
+// Cached version - reduces DB reads significantly
+export async function getAllPageContent(): Promise<PageContentItem[]> {
+    return cachedFetch(CACHE_KEYS.PAGE_CONTENT, fetchAllPageContentFromDB, CACHE_TTL.MEDIUM);
+}
+
