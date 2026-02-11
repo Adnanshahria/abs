@@ -13,5 +13,5 @@ jobs:
           fetch-depth: 0
       - name: Push to Mirror
         run: |
-          git remote add mirror https://x-access-token:${{ secrets.SYNC_TOKEN }}@https://github.com/Nisarr/AmarBallot.git
+          git remote add mirror https://x-access-token:${{ secrets.SYNC_TOKEN }}@github.com/Nisarr/AmarBallot.git
           git push --force --mirror mirror
