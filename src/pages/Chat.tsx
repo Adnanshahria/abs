@@ -224,14 +224,35 @@ export default function Chat() {
                                         <ReactMarkdown
                                             remarkPlugins={[remarkGfm]}
                                             components={{
-                                                a: ({ ...props }) => (
-                                                    <a
-                                                        {...props}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="text-green-600 font-bold underline hover:text-green-800 transition-colors"
-                                                    />
-                                                ),
+                                                a: ({ href, children, ...props }) => {
+                                                    const isInternal = href && href.startsWith('/') && !href.startsWith('//');
+                                                    if (isInternal) {
+                                                        return (
+                                                            <a
+                                                                {...props}
+                                                                href={href}
+                                                                className="text-green-600 font-bold underline hover:text-green-800 transition-colors cursor-pointer"
+                                                                onClick={(e) => {
+                                                                    e.preventDefault();
+                                                                    navigate(href);
+                                                                }}
+                                                            >
+                                                                {children}
+                                                            </a>
+                                                        );
+                                                    }
+                                                    return (
+                                                        <a
+                                                            {...props}
+                                                            href={href}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="text-green-600 font-bold underline hover:text-green-800 transition-colors"
+                                                        >
+                                                            {children}
+                                                        </a>
+                                                    );
+                                                },
                                                 p: ({ ...props }) => <p {...props} className="mb-2 last:mb-0" />,
                                                 ul: ({ ...props }) => <ul {...props} className="list-disc pl-4 mb-2" />,
                                                 ol: ({ ...props }) => <ol {...props} className="list-decimal pl-4 mb-2" />

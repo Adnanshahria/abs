@@ -3,7 +3,7 @@ import { Send, X, Globe, MessageCircle, Trash2 } from 'lucide-react';
 import { sendMessageToAI } from '../services/aiService';
 import type { ChatMessage } from '../services/aiService';
 import { useAuth } from '../context/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import avatarImg from '../assets/prerona_avatar.png';
@@ -16,6 +16,7 @@ const INITIAL_MESSAGE: ChatMessage = {
 
 export default function FloatingChatButton() {
     const { isLoggedIn } = useAuth();
+    const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<ChatMessage[]>([INITIAL_MESSAGE]);
     const [inputValue, setInputValue] = useState('');
@@ -155,14 +156,36 @@ export default function FloatingChatButton() {
                                                     <ReactMarkdown
                                                         remarkPlugins={[remarkGfm]}
                                                         components={{
-                                                            a: ({ ...props }) => (
-                                                                <a
-                                                                    {...props}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    className="text-green-600 font-bold underline hover:text-green-800 transition-all"
-                                                                />
-                                                            ),
+                                                            a: ({ href, children, ...props }) => {
+                                                                const isInternal = href && href.startsWith('/') && !href.startsWith('//');
+                                                                if (isInternal) {
+                                                                    return (
+                                                                        <a
+                                                                            {...props}
+                                                                            href={href}
+                                                                            className="text-green-600 font-bold underline hover:text-green-800 transition-all cursor-pointer"
+                                                                            onClick={(e) => {
+                                                                                e.preventDefault();
+                                                                                setIsOpen(false);
+                                                                                navigate(href);
+                                                                            }}
+                                                                        >
+                                                                            {children}
+                                                                        </a>
+                                                                    );
+                                                                }
+                                                                return (
+                                                                    <a
+                                                                        {...props}
+                                                                        href={href}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="text-green-600 font-bold underline hover:text-green-800 transition-all"
+                                                                    >
+                                                                        {children}
+                                                                    </a>
+                                                                );
+                                                            },
                                                             p: ({ ...props }) => <p {...props} className="mb-2 last:mb-0" />,
                                                             ul: ({ ...props }) => <ul {...props} className="list-disc pl-4 mb-2" />,
                                                             ol: ({ ...props }) => <ol {...props} className="list-decimal pl-4 mb-2" />
