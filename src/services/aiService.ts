@@ -436,11 +436,11 @@ export async function sendMessageToAI(
         const lastMessage = messages[messages.length - 1].content;
 
         // Step 1: Search AI Knowledge Base FIRST (In-Memory)
-        onStatusChange?.('🧠 Checking trained knowledge...');
+        onStatusChange?.('🔍 Analyzing our database...');
         const knowledgeResults = await searchAIKnowledgeBase(lastMessage);
 
         // Step 2: Search local database (In-Memory)
-        onStatusChange?.('📂 Checking local data...');
+        onStatusChange?.('📂 Scanning local records...');
         const localResults = await searchLocalDatabase(lastMessage);
 
         // Step 3: Search web (only if enabled AND no database results found)
@@ -496,7 +496,7 @@ export async function sendMessageToAI(
         // }
 
         // Direct Groq call (faster, more reliable)
-        onStatusChange?.('🤖 Asking Groq AI...');
+        onStatusChange?.('⚙️ Processing Through Amar Ballot AI...');
         console.log('[Groq] Sending request (Primary)...');
         const response = await callGroq(messages, userContent, SYSTEM_PROMPT);
 
