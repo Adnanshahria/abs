@@ -1,4 +1,4 @@
-// Groq + Brave Search Service (Direct, No HuggingFace)
+// Groq + Brave Search Service (with HuggingFace as final fallback)
 
 import { getUpdates, getRumors, getAIKnowledge, addAIKnowledge, type AIKnowledgeEntry, type ElectionUpdate, type Rumor } from '../lib/api';
 import { VOTE_CENTERS } from '../data/vote_centers';
@@ -21,6 +21,8 @@ const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || '';
 const BRAVE_API_KEY = import.meta.env.VITE_BRAVE_API_KEY || '';
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const BRAVE_URL = '/api/brave/res/v1/web/search'; // Using Vite proxy to avoid CORS
+const HF_API_KEY = import.meta.env.VITE_HF_API_KEY || '';
+const HF_API_URL = import.meta.env.VITE_HF_API_URL || '';
 
 export interface ChatMessage {
     role: 'user' | 'assistant';
@@ -403,7 +405,46 @@ async function braveSearch(query: string): Promise<string | null> {
 
 
 
-// HF Proxy removed (using Groq directly - HF Space disabled due to reliability issues)
+// HuggingFace Space API (3rd-tier fallback when both Groq models are rate-limited)
+async function callHuggingFace(messages: any[], userContent: string, systemPrompt: string): Promise<string> {
+    console.log('[HF] Sending request to HuggingFace Space...');
+
+    if (!HF_API_URL || !HF_API_KEY) {
+        throw new Error('HuggingFace API not configured');
+    }
+
+    const hfMessages = [
+        { role: 'system', content: systemPrompt },
+        ...messages.slice(0, -1).map(m => ({ role: m.role, content: m.content })),
+        { role: 'user', content: userContent }
+    ];
+
+    try {
+        const response = await fetch(`${HF_API_URL}/api/chat`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${HF_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                messages: hfMessages,
+                max_tokens: 4096,
+                temperature: 0.6
+            })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HF API Error: ${response.status} - ${errorText}`);
+        }
+
+        const data = await response.json();
+        return data.choices?.[0]?.message?.content || data.response || 'Sorry, HuggingFace returned no content.';
+    } catch (error) {
+        console.error('[HF] Error:', error);
+        throw error;
+    }
+}
 
 // Helper: Call Groq API
 async function callGroq(messages: any[], userContent: string, systemPrompt: string, model: string = 'llama-3.3-70b-versatile'): Promise<string> {
@@ -512,31 +553,40 @@ export async function sendMessageToAI(
             }
         }
 
-        // LOGIC: Use Groq directly (HF Space disabled due to reliability issues)
-        // try {
-        //     onStatusChange?.('🤖 Asking Primary AI...');
-        //     return await callHuggingFace(messages, userContent, SYSTEM_PROMPT);
-        // } catch (hfError) {
-        //     console.warn(`[AI] HF Fallback triggered: ${hfError}`);
-        //     onStatusChange?.('⚠️ Fallback to Groq...');
-        //     return await callGroq(messages, userContent, SYSTEM_PROMPT);
-        // }
-
-        // Direct Groq call (with fallback for Rate Limits)
+        // 3-TIER FALLBACK: 8b (fast) → 70b (powerful) → HuggingFace (last resort)
         onStatusChange?.('⚙️ Processing Through Amar Ballot AI...');
 
         let response: string;
         try {
-            console.log('[Groq] Sending request (Primary)...');
-            response = await callGroq(messages, userContent, SYSTEM_PROMPT, 'llama-3.3-70b-versatile');
-        } catch (error: any) {
-            // Check if it's a rate limit (429) or other API issue
-            if (error.status === 429 || error.message?.includes('Rate limit')) {
-                console.warn('[AI] Primary model rate limited. Trying fallback model...');
-                onStatusChange?.('🔄 Rate limit hit, using faster fallback...');
-                response = await callGroq(messages, userContent, SYSTEM_PROMPT, 'llama-3.1-8b-instant');
+            // TIER 1: LLaMA 8b Instant (fastest, primary)
+            console.log('[Groq] Tier 1: Trying 8b-instant...');
+            response = await callGroq(messages, userContent, SYSTEM_PROMPT, 'llama-3.1-8b-instant');
+        } catch (error1: any) {
+            if (error1.status === 429 || error1.message?.includes('Rate limit')) {
+                console.warn('[AI] 8b rate limited. Trying 70b...');
+                onStatusChange?.('🔄 8b busy, switching to 70b...');
+                try {
+                    // TIER 2: LLaMA 70b Versatile (more powerful fallback)
+                    console.log('[Groq] Tier 2: Trying 70b-versatile...');
+                    response = await callGroq(messages, userContent, SYSTEM_PROMPT, 'llama-3.3-70b-versatile');
+                } catch (error2: any) {
+                    if (error2.status === 429 || error2.message?.includes('Rate limit')) {
+                        console.warn('[AI] 70b also rate limited. Trying HuggingFace...');
+                        onStatusChange?.('🔄 Groq busy, using HuggingFace...');
+                        try {
+                            // TIER 3: HuggingFace Space (last resort)
+                            console.log('[HF] Tier 3: Trying HuggingFace...');
+                            response = await callHuggingFace(messages, userContent, SYSTEM_PROMPT);
+                        } catch (error3: any) {
+                            console.error('[AI] All 3 tiers failed:', error3);
+                            throw error3;
+                        }
+                    } else {
+                        throw error2;
+                    }
+                }
             } else {
-                throw error;
+                throw error1;
             }
         }
 
