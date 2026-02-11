@@ -10,7 +10,7 @@ export default function QuickLinks() {
 
     const quickLinks = [
         { label: t.home.quickLinks.updates, path: '/election-updates', external: false, action: null as (() => void) | null },
-        { label: t.home.quickLinks.center, path: '/vote-center', external: false, action: null as (() => void) | null },
+        { label: t.home.quickLinks.center, path: 'https://ecs.gov.bd/polling-station', external: true, action: null as (() => void) | null },
         // { label: t.home.quickLinks.notice, path: 'https://www.ecs.gov.bd/', external: true, action: null as (() => void) | null }, // Removed as per request
         { label: t.home.quickLinks.candidateList, path: 'http://103.183.38.66/', external: true, action: null as (() => void) | null },
         { label: t.home.quickLinks.rumor, path: '/rumor-check', external: false, action: null as (() => void) | null },

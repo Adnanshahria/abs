@@ -14,7 +14,7 @@ export default function NavigationMap() {
     const menuItems = [
         { label: t.nav.home, path: '/', external: false },
         { label: t.home.quickLinks.updates, path: '/election-updates', external: false },
-        { label: t.nav.voteCenter, path: '/vote-center', external: false },
+        { label: t.nav.voteCenter, path: 'https://ecs.gov.bd/polling-station', external: true },
         { label: t.home.quickLinks.notice, path: 'https://www.ecs.gov.bd/', external: true },
         { label: t.home.quickLinks.candidateList, path: 'http://103.183.38.66/', external: true },
         { label: t.home.quickLinks.rumor, path: '/rumor-check', external: false },
