@@ -8,7 +8,7 @@ export default function Footer() {
 
     const quickLinks = [
         { path: '/', label: language === 'bn' ? 'হোম' : 'Home' },
-        { path: '/candidate-list', label: language === 'bn' ? 'প্রার্থী তালিকা' : 'Candidates' },
+        { path: 'http://103.183.38.66/', label: language === 'bn' ? 'প্রার্থী তালিকা' : 'Candidates' },
         { path: '/archive', label: language === 'bn' ? 'ফলাফল' : 'Results' },
     ];
 
@@ -67,13 +67,25 @@ export default function Footer() {
                             </h4>
                             <div className="space-y-1.5 sm:space-y-2">
                                 {quickLinks.map((link) => (
-                                    <Link
-                                        key={link.path}
-                                        to={link.path}
-                                        className={boxyLinkStyle}
-                                    >
-                                        {link.label}
-                                    </Link>
+                                    link.path.startsWith('http') ? (
+                                        <a
+                                            key={link.path}
+                                            href={link.path}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className={boxyLinkStyle}
+                                        >
+                                            {link.label}
+                                        </a>
+                                    ) : (
+                                        <Link
+                                            key={link.path}
+                                            to={link.path}
+                                            className={boxyLinkStyle}
+                                        >
+                                            {link.label}
+                                        </Link>
+                                    )
                                 ))}
                             </div>
                         </div>

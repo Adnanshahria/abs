@@ -25,12 +25,9 @@ export interface VoteCenter {
     name_bn?: string;
     address: string;
     address_bn?: string;
-    division: string;
-    district: string;
-    area: string;
-    latitude?: number;
-    longitude?: number;
-    capacity?: number;
+    areas: string[]; // List of areas serving this center
+    total_voters?: number;
+    type?: 'male' | 'female' | 'combined';
 }
 
 export interface User {

@@ -1,6 +1,15 @@
 // Groq + Brave Search Service (Direct, No HuggingFace)
 
 import { getUpdates, getRumors, getAIKnowledge, addAIKnowledge, type AIKnowledgeEntry, type ElectionUpdate, type Rumor } from '../lib/api';
+import { VOTE_CENTERS } from '../data/vote_centers';
+
+// Format vote centers for AI context
+const getVoteCenterContext = () => {
+    const context = VOTE_CENTERS.map(c =>
+        `Area: ${c.areas.join(', ')} -> Center: ${c.name} (${c.address}) [Voters: ${c.total_voters}, Type: ${c.type}]`
+    ).join('\n');
+    return `[VOTE CENTER DATABASE - Use this to answer "where is my vote center" questions]:\n${context}\n\n`;
+};
 
 const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || '';
 const BRAVE_API_KEY = import.meta.env.VITE_BRAVE_API_KEY || '';
@@ -426,6 +435,14 @@ export async function sendMessageToAI(
             if (webResults) userContent += `[ওয়েব সার্চ ফলাফল - বাংলাদেশ]:\n${webResults}\n\n`;
 
             userContent += `---\nUser Question: ${lastMessage}\n\n⚠️ গুরুত্বপূর্ণ: শুধুমাত্র বাংলাদেশের নির্বাচন প্রসঙ্গে উত্তর দিন। অন্য দেশের তথ্য দেবেন না।`;
+        } else {
+            // If no specific DB/Web results, still inject Vote Center data as base knowledge
+            // This ensures AI always knows about vote centers even if not explicitly searched
+            // (Optimization: Only inject if query asks about centers/location)
+            const lowerMsg = lastMessage.toLowerCase();
+            if (lowerMsg.includes('center') || lowerMsg.includes('location') || lowerMsg.includes('place') || lowerMsg.includes('কোথায়') || lowerMsg.includes('কেন্দ্র')) {
+                userContent = getVoteCenterContext() + userContent;
+            }
         }
 
         // LOGIC: Use Groq directly (HF Space disabled due to reliability issues)

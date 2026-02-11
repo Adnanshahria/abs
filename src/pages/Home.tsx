@@ -1,5 +1,5 @@
 import EligibilityCard from '../components/EligibilityCard';
-import AssistantAvatar from '../components/AssistantAvatar';
+import SmartAvatar from '../components/SmartAvatar';
 import QuickLinks from '../components/QuickLinks';
 import SEO from '../components/SEO';
 import { useLanguage } from '../context/LanguageContext';
@@ -23,7 +23,7 @@ export default function Home() {
 
                 {/* Center Column - Assistant Avatar */}
                 <div className="lg:col-span-1 flex justify-center">
-                    <AssistantAvatar />
+                    <SmartAvatar />
                 </div>
 
                 {/* Right Column - Quick Links */}

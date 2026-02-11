@@ -1,5 +1,6 @@
 import { db } from './db';
 import type { Candidate, VoteCenter, User, ElectionUpdate, Rumor, Review, Incident, Volunteer } from './types';
+import { VOTE_CENTERS, getAllAreas, getCentersByCleanArea } from '../data/vote_centers';
 export type { ElectionUpdate, Rumor };
 import bcrypt from 'bcryptjs';
 import { cachedFetch, CACHE_KEYS, CACHE_TTL, clearCache } from './cache';
@@ -75,25 +76,16 @@ export async function getCandidateById(id: number): Promise<Candidate | null> {
 }
 
 export async function getVoteCenters(): Promise<VoteCenter[]> {
-    try {
-        const result = await db.execute('SELECT * FROM vote_centers');
-        return result.rows.map(row => ({
-            id: row.id as number,
-            name: row.name as string,
-            name_bn: row.name_bn as string,
-            address: row.address as string,
-            address_bn: row.address_bn as string,
-            division: row.division as string,
-            district: row.district as string,
-            area: row.area as string,
-            latitude: row.latitude as number,
-            longitude: row.longitude as number,
-            capacity: row.capacity as number
-        }));
-    } catch (error) {
-        console.error('Error fetching vote centers:', error);
-        return [];
-    }
+    // Return static data from PDF
+    return VOTE_CENTERS;
+}
+
+export async function getVoteCenterAreas(): Promise<string[]> {
+    return getAllAreas();
+}
+
+export async function getVoteCentersByArea(cleanArea: string): Promise<VoteCenter[]> {
+    return getCentersByCleanArea(cleanArea);
 }
 
 // Authentication Functions
