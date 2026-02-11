@@ -4,6 +4,8 @@ import { sendMessageToAI } from '../services/aiService';
 import type { ChatMessage } from '../services/aiService';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import avatarImg from '../assets/prerona_avatar.png';
 import preronaImg from '../assets/prerona.png';
 
@@ -77,6 +79,14 @@ export default function FloatingChatButton() {
 
     return (
         <>
+            {/* Background Blur Overlay */}
+            {isOpen && (
+                <div
+                    className="fixed inset-0 bg-white/20 backdrop-blur-sm z-40 transition-all duration-300 animate-in fade-in"
+                    onClick={() => setIsOpen(false)}
+                />
+            )}
+
             {/* Chat Widget Popup */}
             {isOpen && (
                 <div className="fixed bottom-24 right-6 z-50 w-[380px] max-w-[calc(100vw-2rem)] h-[520px] max-h-[calc(100vh-8rem)] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300">
@@ -137,10 +147,33 @@ export default function FloatingChatButton() {
                                             />
                                         )}
                                         <div className={`max-w-[80%] px-3 py-2 rounded-2xl text-sm leading-relaxed ${message.role === 'user'
-                                                ? 'bg-green-500 text-white rounded-br-md'
-                                                : 'bg-gray-100 text-gray-800 rounded-bl-md'
+                                            ? 'bg-green-500 text-white rounded-br-md shadow-sm'
+                                            : 'bg-gray-100 text-gray-800 rounded-bl-md shadow-sm border border-gray-200/50'
                                             }`}>
-                                            <div className="whitespace-pre-wrap">{message.content}</div>
+                                            <div className={message.role === 'assistant' ? 'prose prose-sm max-w-none' : 'whitespace-pre-wrap'}>
+                                                {message.role === 'assistant' ? (
+                                                    <ReactMarkdown
+                                                        remarkPlugins={[remarkGfm]}
+                                                        components={{
+                                                            a: ({ ...props }) => (
+                                                                <a
+                                                                    {...props}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="text-green-600 font-bold underline hover:text-green-800 transition-all"
+                                                                />
+                                                            ),
+                                                            p: ({ ...props }) => <p {...props} className="mb-2 last:mb-0" />,
+                                                            ul: ({ ...props }) => <ul {...props} className="list-disc pl-4 mb-2" />,
+                                                            ol: ({ ...props }) => <ol {...props} className="list-decimal pl-4 mb-2" />
+                                                        }}
+                                                    >
+                                                        {message.content}
+                                                    </ReactMarkdown>
+                                                ) : (
+                                                    message.content
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
@@ -181,8 +214,8 @@ export default function FloatingChatButton() {
                                         onClick={handleSend}
                                         disabled={!inputValue.trim() || isLoading}
                                         className={`p-1.5 rounded-lg transition-all flex-shrink-0 ${inputValue.trim() && !isLoading
-                                                ? 'bg-green-500 text-white hover:bg-green-600'
-                                                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                            ? 'bg-green-500 text-white hover:bg-green-600'
+                                            : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                                             }`}
                                     >
                                         <Send className="w-3.5 h-3.5" />
@@ -216,8 +249,8 @@ export default function FloatingChatButton() {
 
                 {/* Button Body */}
                 <div className={`relative flex items-center gap-2 text-white pl-1.5 pr-4 py-1.5 rounded-full shadow-2xl transition-all duration-300 hover:scale-105 ${isOpen
-                        ? 'bg-gradient-to-r from-red-500 to-red-400 hover:shadow-red-500/30'
-                        : 'bg-gradient-to-r from-green-600 to-green-500 hover:shadow-green-500/30'
+                    ? 'bg-gradient-to-r from-red-500 to-red-400 hover:shadow-red-500/30'
+                    : 'bg-gradient-to-r from-green-600 to-green-500 hover:shadow-green-500/30'
                     }`}>
                     {isOpen ? (
                         <>

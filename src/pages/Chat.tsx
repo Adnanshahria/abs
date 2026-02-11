@@ -5,6 +5,8 @@ import { sendMessageToAI } from '../services/aiService';
 import type { ChatMessage } from '../services/aiService';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import avatarImg from '../assets/prerona_avatar.png';
 import preronaImg from '../assets/prerona.png';
 
@@ -153,8 +155,8 @@ export default function Chat() {
                 <button
                     onClick={() => setSearchEnabled(!searchEnabled)}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all ${searchEnabled
-                            ? 'bg-green-50 text-green-700 border border-green-200'
-                            : 'bg-gray-50 text-gray-400 border border-gray-200'
+                        ? 'bg-green-50 text-green-700 border border-green-200'
+                        : 'bg-gray-50 text-gray-400 border border-gray-200'
                         }`}
                 >
                     <Globe className="w-3 h-3" />
@@ -214,11 +216,32 @@ export default function Chat() {
 
                             {/* Message Bubble */}
                             <div className={`max-w-[75%] relative group ${message.role === 'user'
-                                    ? 'bg-gradient-to-br from-green-500 to-green-600 text-white rounded-2xl rounded-br-md shadow-md shadow-green-500/10'
-                                    : 'bg-white text-gray-800 rounded-2xl rounded-bl-md shadow-sm border border-gray-100'
+                                ? 'bg-gradient-to-br from-green-500 to-green-600 text-white rounded-2xl rounded-br-md shadow-md shadow-green-500/10'
+                                : 'bg-white text-gray-800 rounded-2xl rounded-bl-md shadow-sm border border-gray-100'
                                 }`}>
-                                <div className="px-4 py-2.5 text-sm leading-7 whitespace-pre-wrap">
-                                    {message.content}
+                                <div className={`px-4 py-2.5 text-sm leading-7 ${message.role === 'assistant' ? 'prose prose-sm max-w-none' : 'whitespace-pre-wrap'}`}>
+                                    {message.role === 'assistant' ? (
+                                        <ReactMarkdown
+                                            remarkPlugins={[remarkGfm]}
+                                            components={{
+                                                a: ({ ...props }) => (
+                                                    <a
+                                                        {...props}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-green-600 font-bold underline hover:text-green-800 transition-colors"
+                                                    />
+                                                ),
+                                                p: ({ ...props }) => <p {...props} className="mb-2 last:mb-0" />,
+                                                ul: ({ ...props }) => <ul {...props} className="list-disc pl-4 mb-2" />,
+                                                ol: ({ ...props }) => <ol {...props} className="list-decimal pl-4 mb-2" />
+                                            }}
+                                        >
+                                            {message.content}
+                                        </ReactMarkdown>
+                                    ) : (
+                                        message.content
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -262,8 +285,8 @@ export default function Chat() {
                             onClick={handleSend}
                             disabled={!inputValue.trim() || isLoading}
                             className={`p-2.5 rounded-xl transition-all duration-200 flex-shrink-0 ${inputValue.trim() && !isLoading
-                                    ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md shadow-green-500/20 hover:shadow-lg hover:shadow-green-500/30 hover:scale-105 active:scale-95'
-                                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md shadow-green-500/20 hover:shadow-lg hover:shadow-green-500/30 hover:scale-105 active:scale-95'
+                                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                                 }`}
                         >
                             <Send className="w-4 h-4" />
