@@ -238,42 +238,30 @@ export default function FloatingChatButton() {
                 </div>
             )}
 
-            {/* Floating Button */}
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="fixed bottom-6 right-6 z-50 group"
-                aria-label="Chat with Prerona"
-            >
-                {/* Pulse Ring - only when closed */}
-                {!isOpen && <span className="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-30"></span>}
+            {/* Floating Button - Only show when closed */}
+            {!isOpen && (
+                <button
+                    onClick={() => setIsOpen(true)}
+                    className="fixed bottom-6 right-6 z-50 group"
+                    aria-label="Chat with Prerona"
+                >
+                    {/* Pulse Ring */}
+                    <span className="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-30"></span>
 
-                {/* Button Body */}
-                <div className={`relative flex items-center gap-2 text-white pl-1.5 pr-4 py-1.5 rounded-full shadow-2xl transition-all duration-300 hover:scale-105 ${isOpen
-                    ? 'bg-gradient-to-r from-red-500 to-red-400 hover:shadow-red-500/30'
-                    : 'bg-gradient-to-r from-green-600 to-green-500 hover:shadow-green-500/30'
-                    }`}>
-                    {isOpen ? (
-                        <>
-                            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                                <X className="w-5 h-5" />
-                            </div>
-                            <span className="font-semibold text-sm whitespace-nowrap">বন্ধ করুন</span>
-                        </>
-                    ) : (
-                        <>
-                            <img
-                                src={avatarImg}
-                                alt="Prerona"
-                                className="w-10 h-10 rounded-full object-cover border-2 border-white/80"
-                            />
-                            <div className="flex items-center gap-1.5">
-                                <MessageCircle className="w-4 h-4" />
-                                <span className="font-semibold text-sm whitespace-nowrap">Chat with Prerona</span>
-                            </div>
-                        </>
-                    )}
-                </div>
-            </button>
+                    {/* Button Body */}
+                    <div className="relative flex items-center gap-2 text-white pl-1.5 pr-4 py-1.5 rounded-full shadow-2xl transition-all duration-300 hover:scale-105 bg-gradient-to-r from-green-600 to-green-500 hover:shadow-green-500/30">
+                        <img
+                            src={avatarImg}
+                            alt="Prerona"
+                            className="w-10 h-10 rounded-full object-cover border-2 border-white/80"
+                        />
+                        <div className="flex items-center gap-1.5">
+                            <MessageCircle className="w-4 h-4" />
+                            <span className="font-semibold text-sm whitespace-nowrap">Chat with Prerona</span>
+                        </div>
+                    </div>
+                </button>
+            )}
         </>
     );
 }
