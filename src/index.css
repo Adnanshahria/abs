@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
-/* Apply Croissant One font globally */
+/* Apply Poppins font globally */
 body {
-    font-family: 'Croissant One', cursive;
+    font-family: 'Poppins', sans-serif;
 }
 
 /* Custom green-themed scrollbar */
@@ -59,19 +59,18 @@ body {
     background: #f9fafb;
 }
 
-/* Custom font class for Croissant One */
+/* Poppins font utility classes */
 .font-croissant {
-    font-family: 'Croissant One', cursive;
+    font-family: 'Poppins', sans-serif;
 }
 
-/* Inter font for specific sections */
 .font-inter {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
-/* Gravitas One font for header */
 .font-gravitas {
-    font-family: 'Gravitas One', cursive;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
 }
 
 /* Background with image and green overlay */
