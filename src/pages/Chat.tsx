@@ -114,7 +114,7 @@ export default function Chat() {
     }
 
     return (
-        <div className="flex flex-col h-[calc(100vh-50px)] bg-gray-50">
+        <div className="flex flex-col h-[calc(100dvh-64px)] bg-gray-50 overflow-hidden">
             {/* Chat Messages Area - Takes most space */}
             <div ref={chatContainerRef} className="flex-1 overflow-y-auto">
                 <div className="max-w-4xl mx-auto px-4 py-2">
