@@ -51,6 +51,7 @@ import Course from './pages/Course';
 import RumorCheck from './pages/RumorCheck';
 import Creator from './lib/Copyright';
 import Chat from './pages/Chat';
+import FloatingChatButton from './components/FloatingChatButton';
 
 import { useEffect } from 'react';
 import { checkConnection } from './lib/db';
@@ -165,6 +166,9 @@ function AppContent() {
 
         {/* Universal Footer - Hidden on admin and chat pages */}
         {!isAdminRoute && !isChatRoute && <Footer />}
+
+        {/* Floating Chat Button - visible on all pages except chat and admin */}
+        {!isAdminRoute && !isChatRoute && <FloatingChatButton />}
       </div>
     </>
   );
