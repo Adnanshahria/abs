@@ -7,8 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import avatarImg from '../assets/prerona_avatar.png';
-import preronaImg from '../assets/prerona.png';
+import PreronaAvatar from '../components/PreronaAvatar';
 
 export default function Chat() {
     const { isLoggedIn } = useAuth();
@@ -141,7 +140,9 @@ export default function Chat() {
                         <ArrowLeft className="w-5 h-5" />
                     </button>
                     <div className="relative">
-                        <img src={avatarImg} alt="Prerona" className="w-10 h-10 rounded-full object-cover border-2 border-green-400 shadow-sm" />
+                        <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-green-400 bg-green-50 shadow-sm">
+                            <PreronaAvatar className="w-full h-full" showStatus={false} bgClass="bg-green-50" />
+                        </div>
                         <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></span>
                     </div>
                     <div>
@@ -172,7 +173,9 @@ export default function Chat() {
                     {messages.length === 1 && (
                         <div className="bg-gradient-to-br from-green-50 via-white to-green-50 rounded-2xl p-5 border border-green-100/80 mb-4">
                             <div className="flex items-center gap-3 mb-3">
-                                <img src={avatarImg} alt="Prerona" className="w-12 h-12 rounded-xl object-cover shadow-md border-2 border-green-200" />
+                                <div className="w-12 h-12 rounded-xl overflow-hidden border-2 border-green-200 bg-green-50 shadow-md">
+                                    <PreronaAvatar className="w-full h-full" showStatus={false} bgClass="bg-green-50" />
+                                </div>
                                 <div>
                                     <h2 className="font-bold text-green-900">প্রেরণা</h2>
                                     <p className="text-xs text-green-600">Powered by AI • Amar Ballot</p>
@@ -204,14 +207,9 @@ export default function Chat() {
                         >
                             {/* Bot Avatar */}
                             {message.role === 'assistant' && (
-                                <img
-                                    src={preronaImg}
-                                    alt="AI"
-                                    className="w-8 h-8 rounded-full flex-shrink-0 mt-1 border border-green-200 shadow-sm"
-                                    onError={(e) => {
-                                        (e.target as HTMLImageElement).style.display = 'none';
-                                    }}
-                                />
+                                <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-1 border border-green-200 bg-green-50 shadow-sm">
+                                    <PreronaAvatar className="w-full h-full" showStatus={false} bgClass="bg-green-50" />
+                                </div>
                             )}
 
                             {/* Message Bubble */}
@@ -271,7 +269,9 @@ export default function Chat() {
                     {/* Loading Indicator */}
                     {isLoading && (
                         <div className="flex gap-2.5 justify-start">
-                            <img src={preronaImg} alt="AI" className="w-8 h-8 rounded-full flex-shrink-0 mt-1 border border-green-200 shadow-sm" />
+                            <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 mt-1 border border-green-200 bg-green-50 shadow-sm">
+                                <PreronaAvatar className="w-full h-full" showStatus={false} bgClass="bg-green-50" />
+                            </div>
                             <div className="bg-white px-4 py-3 rounded-2xl rounded-bl-md shadow-sm border border-gray-100">
                                 <div className="flex items-center gap-3">
                                     <div className="flex gap-1">

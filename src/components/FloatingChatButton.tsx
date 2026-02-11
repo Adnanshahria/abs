@@ -6,8 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import avatarImg from '../assets/prerona_avatar.png';
-import preronaImg from '../assets/prerona.png';
+import PreronaAvatar from './PreronaAvatar';
 
 const INITIAL_MESSAGE: ChatMessage = {
     role: 'assistant',
@@ -95,7 +94,9 @@ export default function FloatingChatButton() {
                     {/* Header */}
                     <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-green-600 to-green-500 text-white flex-shrink-0">
                         <div className="flex items-center gap-3">
-                            <img src={avatarImg} alt="Prerona" className="w-9 h-9 rounded-full border-2 border-white/50 object-cover" />
+                            <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-white/50 bg-green-100">
+                                <PreronaAvatar className="w-full h-full" showStatus={false} bgClass="bg-green-100" />
+                            </div>
                             <div>
                                 <h3 className="font-bold text-sm">প্রেরণা</h3>
                                 <p className="text-[10px] text-green-100">Your AI Voting Assistant</p>
@@ -141,11 +142,9 @@ export default function FloatingChatButton() {
                                 {messages.map((message, index) => (
                                     <div key={index} className={`flex gap-2 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                                         {message.role === 'assistant' && (
-                                            <img src={preronaImg} alt="AI" className="w-7 h-7 rounded-full flex-shrink-0 mt-1 border border-green-200"
-                                                onError={(e) => {
-                                                    (e.target as HTMLImageElement).style.display = 'none';
-                                                }}
-                                            />
+                                            <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0 mt-1 border border-green-200 bg-green-50">
+                                                <PreronaAvatar className="w-full h-full" showStatus={false} bgClass="bg-green-50" />
+                                            </div>
                                         )}
                                         <div className={`max-w-[80%] px-3 py-2 rounded-2xl text-sm leading-relaxed ${message.role === 'user'
                                             ? 'bg-green-500 text-white rounded-br-md shadow-sm'
@@ -204,7 +203,9 @@ export default function FloatingChatButton() {
                                 {/* Loading */}
                                 {isLoading && (
                                     <div className="flex gap-2 justify-start">
-                                        <img src={preronaImg} alt="AI" className="w-7 h-7 rounded-full flex-shrink-0 mt-1 border border-green-200" />
+                                        <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0 mt-1 border border-green-200 bg-green-50">
+                                            <PreronaAvatar className="w-full h-full" showStatus={false} bgClass="bg-green-50" />
+                                        </div>
                                         <div className="bg-gray-100 px-4 py-3 rounded-2xl rounded-bl-md">
                                             <div className="flex items-center gap-2">
                                                 <div className="flex gap-1">
@@ -273,11 +274,9 @@ export default function FloatingChatButton() {
 
                     {/* Button Body */}
                     <div className="relative flex items-center gap-2 text-white pl-1.5 pr-4 py-1.5 rounded-full shadow-2xl transition-all duration-300 hover:scale-105 bg-gradient-to-r from-green-600 to-green-500 hover:shadow-green-500/30">
-                        <img
-                            src={avatarImg}
-                            alt="Prerona"
-                            className="w-10 h-10 rounded-full object-cover border-2 border-white/80"
-                        />
+                        <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white/80 bg-green-100">
+                            <PreronaAvatar className="w-full h-full" showStatus={false} bgClass="bg-green-100" />
+                        </div>
                         <div className="flex items-center gap-1.5">
                             <MessageCircle className="w-4 h-4" />
                             <span className="font-semibold text-sm whitespace-nowrap">Chat with Prerona</span>

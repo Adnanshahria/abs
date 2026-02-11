@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import preronaImg from '../assets/prerona.png';
+import PreronaAvatar from './PreronaAvatar';
 
 export default function AssistantAvatar() {
     const navigate = useNavigate();
@@ -14,12 +14,8 @@ export default function AssistantAvatar() {
                 <span className="italic text-2xl">Hello,</span> I'm Prerona
             </p>
 
-            <div className="bg-gradient-to-b from-green-100 to-green-200 rounded-xl p-3 border-4 border-green-500 shadow-lg">
-                <img
-                    src={preronaImg}
-                    alt="Prerona - Your voting assistant"
-                    className="w-44 h-52 xl:w-64 xl:h-72 object-cover rounded-lg transition-all duration-300"
-                />
+            <div className="bg-gradient-to-b from-green-100 to-green-200 rounded-xl p-1 border-4 border-green-500 shadow-lg">
+                <PreronaAvatar className="w-44 h-52 xl:w-64 xl:h-72 rounded-lg" />
             </div>
 
             <p className="text-center text-gray-600 text-sm mt-3">
