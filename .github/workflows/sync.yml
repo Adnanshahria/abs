@@ -21,7 +21,7 @@ jobs:
           COMMIT_MSG: ${{ github.event.head_commit.message }}
         run: |
           # 1. Configure git identity (Must be your lowercase Vercel email)
-          git config --global user.email "your.vercel.email@example.com"
+          git config --global user.email "nisarfeni2015@gmail.com"
           git config --global user.name "Nisarr"
           
           # 2. Remove the workflows folder strictly from Git's tracking index
