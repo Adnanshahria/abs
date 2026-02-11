@@ -4,9 +4,13 @@ import { getRumors, toggleLike, getLikes, hasUserLiked, addComment, getComments 
 import { ShieldCheck, ShieldAlert, Search, ExternalLink, Heart, MessageSquare, Send, Share2, Calendar, ChevronRight } from 'lucide-react';
 import type { Rumor, Comment } from '../lib/types';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
+import { translations } from '../data/translations';
 
 const RumorCard = ({ rumor, onCardClick }: { rumor: Rumor; onCardClick: (rumor: Rumor) => void }) => {
     const { user } = useAuth();
+    const { language } = useLanguage();
+    const t = translations[language];
 
     // Like/Comment states
     const [likes, setLikes] = useState(0);
@@ -75,7 +79,7 @@ const RumorCard = ({ rumor, onCardClick }: { rumor: Rumor; onCardClick: (rumor: 
     const copyShareLink = () => {
         const url = `${window.location.origin}/rumor-check?id=${rumor.id}`;
         navigator.clipboard.writeText(url);
-        alert('লিংক কপি হয়েছে!');
+        alert(t.rumorPage.actions.copied);
     };
 
     return (
@@ -90,12 +94,12 @@ const RumorCard = ({ rumor, onCardClick }: { rumor: Rumor; onCardClick: (rumor: 
                     {rumor.status === 'verified' ? (
                         <>
                             <ShieldCheck className="w-5 h-5 text-green-600" />
-                            <span className="font-bold text-sm text-green-700 uppercase">Verified</span>
+                            <span className="font-bold text-sm text-green-700 uppercase">{t.rumorPage.status.verified}</span>
                         </>
                     ) : (
                         <>
                             <ShieldAlert className="w-5 h-5 text-red-600" />
-                            <span className="font-bold text-sm text-red-700 uppercase">Fake</span>
+                            <span className="font-bold text-sm text-red-700 uppercase">{t.rumorPage.status.fake}</span>
                         </>
                     )}
                 </div>
@@ -117,7 +121,7 @@ const RumorCard = ({ rumor, onCardClick }: { rumor: Rumor; onCardClick: (rumor: 
                 <button
                     onClick={(e) => { e.stopPropagation(); copyShareLink(); }}
                     className={`${rumor.image_url ? 'absolute top-3 right-3' : 'absolute top-[-44px] right-3'} bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-sm hover:bg-white transition-colors z-10`}
-                    title="শেয়ার করুন"
+                    title={t.rumorPage.actions.share}
                 >
                     <Share2 className="w-4 h-4 text-gray-700" />
                 </button>
@@ -161,7 +165,7 @@ const RumorCard = ({ rumor, onCardClick }: { rumor: Rumor; onCardClick: (rumor: 
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
                                 className="p-1.5 hover:bg-gray-100 rounded transition-colors"
-                                title="সোর্স দেখুন"
+                                title={t.rumorPage.actions.source}
                             >
                                 <ExternalLink className="w-4 h-4 text-gray-500" />
                             </a>
@@ -170,7 +174,7 @@ const RumorCard = ({ rumor, onCardClick }: { rumor: Rumor; onCardClick: (rumor: 
                         <button
                             onClick={(e) => { e.stopPropagation(); copyShareLink(); }}
                             className="p-1.5 hover:bg-gray-100 rounded transition-colors"
-                            title="শেয়ার করুন"
+                            title={t.rumorPage.actions.share}
                         >
                             <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
@@ -190,7 +194,7 @@ const RumorCard = ({ rumor, onCardClick }: { rumor: Rumor; onCardClick: (rumor: 
                                 type="text"
                                 value={newComment}
                                 onChange={e => setNewComment(e.target.value)}
-                                placeholder="মন্তব্য করুন..."
+                                placeholder={t.rumorPage.actions.comment}
                                 className="flex-1 p-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
                             />
                             <button
@@ -213,7 +217,9 @@ const RumorCard = ({ rumor, onCardClick }: { rumor: Rumor; onCardClick: (rumor: 
                             </div>
                         ))}
                         {comments.length > 3 && (
-                            <p className="text-xs text-gray-500 text-center">+{comments.length - 3} আরো মন্তব্য</p>
+                            <p className="text-xs text-gray-500 text-center">
+                                {t.rumorPage.actions.moreComments.replace('{count}', (comments.length - 3).toString())}
+                            </p>
                         )}
                     </div>
                 </div>
@@ -223,6 +229,9 @@ const RumorCard = ({ rumor, onCardClick }: { rumor: Rumor; onCardClick: (rumor: 
 };
 
 export default function RumorCheck() {
+    const { language } = useLanguage();
+    const t = translations[language];
+
     const [rumors, setRumors] = useState<Rumor[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -282,14 +291,14 @@ export default function RumorCheck() {
                         <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
                             <ShieldAlert className="w-5 h-5 text-orange-600" />
                         </div>
-                        <h1 className="text-2xl font-bold text-gray-900">গুজব যাচাই</h1>
+                        <h1 className="text-2xl font-bold text-gray-900">{t.rumorPage.title}</h1>
                     </div>
                     {/* Search and Sort */}
                     <div className="flex items-center gap-3">
                         <div className="relative">
                             <input
                                 type="text"
-                                placeholder="অনুসন্ধান..."
+                                placeholder={t.rumorPage.searchPlaceholder}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="pl-10 pr-4 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:ring-2 focus:ring-orange-500 focus:border-transparent w-48"
@@ -301,8 +310,8 @@ export default function RumorCheck() {
                             onChange={(e) => setSortOrder(e.target.value as 'newest' | 'oldest')}
                             className="px-4 py-2 rounded-lg border border-gray-200 bg-white text-sm font-medium focus:ring-2 focus:ring-orange-500 focus:border-transparent cursor-pointer"
                         >
-                            <option value="newest">সর্বশেষ</option>
-                            <option value="oldest">পুরাতন</option>
+                            <option value="newest">{t.rumorPage.sort.newest}</option>
+                            <option value="oldest">{t.rumorPage.sort.oldest}</option>
                         </select>
                     </div>
                 </div>
@@ -311,11 +320,11 @@ export default function RumorCheck() {
                 {loading ? (
                     <div className="text-center py-12">
                         <div className="animate-spin w-8 h-8 border-4 border-orange-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-                        <p className="text-gray-500">গুজব লোড হচ্ছে...</p>
+                        <p className="text-gray-500">{t.rumorPage.loading}</p>
                     </div>
                 ) : rumors.length === 0 ? (
                     <div className="bg-white rounded-2xl p-12 text-center shadow-sm text-gray-500">
-                        কোনো গুজব পাওয়া যায়নি।
+                        {t.rumorPage.notFound}
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
@@ -342,7 +351,9 @@ export default function RumorCheck() {
                                 ) : (
                                     <ShieldAlert className="w-4 h-4" />
                                 )}
-                                <span className="font-bold text-sm uppercase">{selectedRumor.status === 'verified' ? 'Verified' : 'Fake'}</span>
+                                <span className="font-bold text-sm uppercase">
+                                    {selectedRumor.status === 'verified' ? t.rumorPage.status.verified : t.rumorPage.status.fake}
+                                </span>
                             </div>
                             <button
                                 onClick={handleCloseModal}
@@ -369,7 +380,7 @@ export default function RumorCheck() {
                             <div className="flex items-center gap-4 mb-6 text-sm text-gray-500">
                                 <div className="flex items-center gap-1">
                                     <Calendar className="w-4 h-4" />
-                                    <span>{new Date(selectedRumor.published_at).toLocaleDateString('bn-BD')}</span>
+                                    <span>{new Date(selectedRumor.published_at).toLocaleDateString(language === 'bn' ? 'bn-BD' : 'en-US')}</span>
                                 </div>
                                 <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs font-mono rounded">#{selectedRumor.id}</span>
                             </div>
@@ -386,7 +397,7 @@ export default function RumorCheck() {
                                     className="inline-flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-800 hover:underline bg-blue-50 px-4 py-2 rounded-lg transition-colors"
                                 >
                                     <ExternalLink className="w-4 h-4" />
-                                    সোর্স / ফ্যাক্ট চেক দেখুন
+                                    {t.rumorPage.actions.viewSource}
                                 </a>
                             )}
                         </div>

@@ -1,21 +1,37 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { Brain, Plus, Edit2, Trash2, Search, ToggleLeft, ToggleRight, X, Save, Loader2, Upload, FileJson, CheckCircle2, AlertCircle, Copy, ChevronDown } from 'lucide-react';
 import { getAIKnowledge, addAIKnowledge, updateAIKnowledge, deleteAIKnowledge, bulkImportAIKnowledge, removeDuplicateAIKnowledge, type AIKnowledgeEntry } from '../lib/api';
-
-// Default divisions (used as fallback when no entries exist)
-const DEFAULT_DIVISIONS = [
-    'ভোটার নিবন্ধন',
-    'NID / জাতীয় পরিচয়পত্র',
-    'ভোট কেন্দ্র',
-    'নির্বাচন প্রক্রিয়া',
-    'প্রার্থী তথ্য',
-    'গুজব যাচাই',
-    'আইন ও বিধি',
-    'সাধারণ প্রশ্ন',
-    'অন্যান্য'
-];
+import { useLanguage } from '../context/LanguageContext';
+import { translations } from '../data/translations';
 
 export default function AdminTrainAI() {
+    const { language } = useLanguage();
+    const t = translations[language].admin.trainAI;
+    const common = translations[language].common;
+
+    // Default divisions (used as fallback when no entries exist) - using translations for defaults could be tricky if we want consistent keys in DB, 
+    // but here we just use what's in the DB or these defaults. 
+    // Ideally, divisions should be English keys in DB and translated in UI, but for now we keep as is or user provided.
+    // However, the prompt implies translating the UI. The divisions themselves might be content.
+    // Let's keep the defaults in Bangla as they seem to be content, OR better, make them dynamic/English if possible.
+    // Given the context, I will leave the DEFAULT_DIVISIONS as they are likely used as initial data keys. 
+    // Actually, I can translate the display of "default" divisions if I map them, but for now let's leave the content data (divisions) as is, 
+    // or maybe translate the defaults if they are just suggestions.
+    // The previous code had hardcoded Bangla defaults. I will try to use the keys from translations if they exist, or just keep them as strings.
+    // Since `t.stats` etc are available, I will use `t` for UI labels.
+
+    const DEFAULT_DIVISIONS = [
+        'Voter Registration',
+        'NID Info',
+        'Polling Stations',
+        'Election Process',
+        'Candidate Info',
+        'Rumor Verification',
+        'Laws & Rules',
+        'General Queries',
+        'Other'
+    ];
+
     const [entries, setEntries] = useState<AIKnowledgeEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -90,7 +106,7 @@ export default function AdminTrainAI() {
 
     const handleSave = async () => {
         if (!formData.division || !formData.question || !formData.answer) {
-            alert('বিভাগ, প্রশ্ন এবং উত্তর আবশ্যক');
+            alert(t.alerts.required);
             return;
         }
 
@@ -105,14 +121,14 @@ export default function AdminTrainAI() {
             setShowModal(false);
         } catch (error) {
             console.error('Save error:', error);
-            alert('সংরক্ষণে সমস্যা হয়েছে');
+            alert('Error saving data');
         } finally {
             setSaving(false);
         }
     };
 
     const handleDelete = async (id: number) => {
-        if (!confirm('আপনি কি নিশ্চিত এটি মুছে ফেলতে চান?')) return;
+        if (!confirm(t.alerts.deleteConfirm)) return;
 
         try {
             await deleteAIKnowledge(id);
@@ -143,7 +159,7 @@ export default function AdminTrainAI() {
 
     const handleJsonImport = async () => {
         if (!jsonInput.trim()) {
-            alert('JSON ডেটা প্রদান করুন');
+            alert('Please provide JSON data');
             return;
         }
 
@@ -180,37 +196,30 @@ export default function AdminTrainAI() {
 
     const sampleJson = `[
   {
-    "division": "ভোটার নিবন্ধন",
-    "question": "ভোটার হতে বয়স কত লাগে?",
-    "answer": "১৮ বছর বয়স হলে ভোটার হতে পারবেন।",
-    "keywords": "বয়স, ভোটার, নিবন্ধন",
+    "division": "Voter Registration",
+    "question": "Age requirement for voting?",
+    "answer": "You must be 18 years old.",
+    "keywords": "age, vote, register table",
     "priority": 10
-  },
-  {
-    "division": "NID / জাতীয় পরিচয়পত্র",
-    "question": "NID হারিয়ে গেলে কি করব?",
-    "answer": "নিকটস্থ UDC বা জেলা নির্বাচন অফিসে আবেদন করুন।",
-    "keywords": "NID, হারানো, আবেদন",
-    "priority": 5
   }
 ]`;
 
     // Handle Remove Duplicates
     const handleRemoveDuplicates = async () => {
-        if (!confirm('ডুপ্লিকেট প্রশ্নগুলো মুছে ফেলা হবে। শুধুমাত্র সর্বোচ্চ অগ্রাধিকারের কপি রাখা হবে। আপনি কি নিশ্চিত?')) return;
+        if (!confirm(t.alerts.duplicateConfirm)) return;
 
         setRemovingDuplicates(true);
         try {
             const result = await removeDuplicateAIKnowledge();
             if (result.success) {
-                alert(`✅ ${result.removed}টি ডুপ্লিকেট প্রশ্ন মুছে ফেলা হয়েছে!`);
+                alert(`✅ ${result.removed} duplicates removed!`);
                 await loadEntries();
             } else {
-                alert('সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+                alert('Failed to remove duplicates.');
             }
         } catch (error) {
             console.error('Remove duplicates error:', error);
-            alert('সমস্যা হয়েছে');
+            alert('Error occurred');
         } finally {
             setRemovingDuplicates(false);
         }
@@ -229,7 +238,7 @@ export default function AdminTrainAI() {
 
     // Group by division
     const groupedEntries = filteredEntries.reduce((acc, entry) => {
-        const div = entry.division || 'অন্যান্য';
+        const div = entry.division || 'Other';
         if (!acc[div]) acc[div] = [];
         acc[div].push(entry);
         return acc;
@@ -243,9 +252,9 @@ export default function AdminTrainAI() {
                     <div>
                         <h1 className="text-lg font-bold text-gray-900 font-serif flex items-center gap-1.5">
                             <Brain className="w-4 h-4 text-purple-600" />
-                            Train AI
+                            {t.title}
                         </h1>
-                        <p className="text-gray-500 text-xs">AI কে শেখান আপনার ইচ্ছেমতো উত্তর দিতে</p>
+                        <p className="text-gray-500 text-xs">{t.subtitle}</p>
                     </div>
                     {/* All controls in one row */}
                     <div className="flex items-center gap-1 flex-nowrap">
@@ -255,21 +264,21 @@ export default function AdminTrainAI() {
                             className="flex items-center gap-1 bg-red-50 text-red-600 px-2 py-1 rounded-lg text-xs font-medium hover:bg-red-100 border border-red-200 disabled:opacity-50"
                         >
                             {removingDuplicates ? <Loader2 className="w-3 h-3 animate-spin" /> : <Copy className="w-3 h-3" />}
-                            <span className="hidden sm:inline">ডুপ্লিকেট</span>
+                            <span className="hidden sm:inline">{t.buttons.duplicates}</span>
                         </button>
                         <button
                             onClick={() => setShowImportModal(true)}
                             className="flex items-center gap-1 bg-blue-50 text-blue-600 px-2 py-1 rounded-lg text-xs font-medium hover:bg-blue-100 border border-blue-200"
                         >
                             <Upload className="w-3 h-3" />
-                            <span className="hidden sm:inline">JSON</span>
+                            <span className="hidden sm:inline">{t.buttons.import}</span>
                         </button>
                         <button
                             onClick={openAddModal}
                             className="flex items-center gap-1 bg-purple-600 text-white px-2 py-1 rounded-lg text-xs font-medium hover:bg-purple-700"
                         >
                             <Plus className="w-3 h-3" />
-                            <span className="hidden sm:inline">নতুন</span>
+                            <span className="hidden sm:inline">{t.buttons.add}</span>
                         </button>
                     </div>
                 </div>
@@ -280,7 +289,7 @@ export default function AdminTrainAI() {
                         <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
                             type="text"
-                            placeholder="প্রশ্ন বা উত্তর খুঁজুন..."
+                            placeholder={t.search}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:ring-1 focus:ring-purple-500 focus:border-transparent"
@@ -293,7 +302,7 @@ export default function AdminTrainAI() {
                             onClick={() => setFilterDropdownOpen(!filterDropdownOpen)}
                             className="flex items-center gap-1 px-2.5 py-1.5 text-xs border border-gray-200 rounded-lg bg-white hover:border-purple-300 whitespace-nowrap"
                         >
-                            <span className="truncate max-w-[80px]">{filterDivision || 'সকল'}</span>
+                            <span className="truncate max-w-[80px]">{filterDivision || t.filter.all}</span>
                             <ChevronDown className={`w-3 h-3 text-gray-400 transition-transform ${filterDropdownOpen ? 'rotate-180' : ''}`} />
                         </button>
 
@@ -317,7 +326,7 @@ export default function AdminTrainAI() {
                                             className={`w-full text-left px-3 py-2 text-sm hover:bg-purple-50 transition-colors ${filterDivision === '' ? 'bg-purple-100 text-purple-700 font-medium' : 'text-gray-700'
                                                 }`}
                                         >
-                                            সকল বিভাগ
+                                            {t.filter.all}
                                         </button>
                                         {divisions.map((div: string) => (
                                             <button
@@ -344,32 +353,32 @@ export default function AdminTrainAI() {
             {/* Stats */}
             <div className="grid grid-cols-5 gap-2 mb-4">
                 <div className="bg-white px-3 py-2 rounded-lg border border-gray-100">
-                    <p className="text-gray-400 text-xs">মোট প্রশ্ন</p>
+                    <p className="text-gray-400 text-xs">{t.stats.total}</p>
                     <p className="text-lg font-bold text-gray-900">{entries.length}</p>
                 </div>
                 <div className="bg-white px-3 py-2 rounded-lg border border-gray-100">
-                    <p className="text-gray-400 text-xs">সক্রিয়</p>
+                    <p className="text-gray-400 text-xs">{t.stats.active}</p>
                     <p className="text-lg font-bold text-green-600">{entries.filter(e => e.is_active === 1).length}</p>
                 </div>
                 <div className="bg-white px-3 py-2 rounded-lg border border-gray-100">
-                    <p className="text-gray-400 text-xs">নিষ্ক্রিয়</p>
+                    <p className="text-gray-400 text-xs">{t.stats.inactive}</p>
                     <p className="text-lg font-bold text-gray-400">{entries.filter(e => e.is_active === 0).length}</p>
                 </div>
                 <div className="bg-white px-3 py-2 rounded-lg border border-gray-100">
-                    <p className="text-gray-400 text-xs">বিভাগ</p>
+                    <p className="text-gray-400 text-xs">{t.stats.divisions}</p>
                     <p className="text-lg font-bold text-purple-600">{Object.keys(groupedEntries).length}</p>
                 </div>
                 <div
                     onClick={() => setShowAutoLearnOnly(!showAutoLearnOnly)}
                     className={`px-3 py-2 rounded-lg border cursor-pointer transition-all ${showAutoLearnOnly
-                            ? 'bg-green-100 border-green-400 ring-2 ring-green-300'
-                            : 'bg-white border-green-100 hover:bg-green-50'
+                        ? 'bg-green-100 border-green-400 ring-2 ring-green-300'
+                        : 'bg-white border-green-100 hover:bg-green-50'
                         }`}
                 >
-                    <p className="text-gray-400 text-xs">✨ Auto-learn</p>
+                    <p className="text-gray-400 text-xs">✨ {t.stats.autoLearn}</p>
                     <p className="text-lg font-bold text-green-600 flex items-center gap-1">
                         {entries.filter(e => e.priority === 1).length}
-                        {showAutoLearnOnly && <span className="text-xs font-normal">(only)</span>}
+                        {showAutoLearnOnly && <span className="text-xs font-normal">({t.filter.only})</span>}
                     </p>
                 </div>
             </div>
@@ -382,8 +391,8 @@ export default function AdminTrainAI() {
             ) : filteredEntries.length === 0 ? (
                 <div className="text-center py-12 bg-white rounded-2xl border border-dashed border-gray-200">
                     <Brain className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-                    <h3 className="text-lg font-medium text-gray-600">কোনো প্রশ্ন নেই</h3>
-                    <p className="text-gray-400 mt-1">AI কে শেখাতে নতুন প্রশ্ন যোগ করুন</p>
+                    <h3 className="text-lg font-medium text-gray-600">{t.empty.title}</h3>
+                    <p className="text-gray-400 mt-1">{t.empty.subtitle}</p>
                 </div>
             ) : (
                 <div className="space-y-4">
@@ -407,15 +416,15 @@ export default function AdminTrainAI() {
                                         <div className="flex items-start justify-between gap-3">
                                             <div className="flex-1 min-w-0">
                                                 <h4 className="font-medium text-sm text-gray-900 flex items-center gap-2">
-                                                    প্রশ্ন: {entry.question}
+                                                    {t.table.question}: {entry.question}
                                                     {entry.priority === 1 && (
                                                         <span className="inline-flex items-center gap-1 text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-normal">
-                                                            ✨ Auto-learn
+                                                            ✨ {t.stats.autoLearn}
                                                         </span>
                                                     )}
                                                 </h4>
                                                 <p className="text-gray-600 text-xs line-clamp-1 mt-0.5">
-                                                    উত্তর: {entry.answer}
+                                                    {t.table.answer}: {entry.answer}
                                                 </p>
                                                 {entry.keywords && (
                                                     <div className="flex flex-wrap gap-1 mt-1.5">
@@ -467,7 +476,7 @@ export default function AdminTrainAI() {
                         <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-purple-50">
                             <h3 className="font-bold text-lg text-purple-900 flex items-center gap-2">
                                 <Brain className="w-5 h-5" />
-                                {editingEntry ? 'প্রশ্ন সম্পাদনা' : 'নতুন প্রশ্ন যোগ করুন'}
+                                {editingEntry ? t.form.editTitle : t.form.addTitle}
                             </h3>
                             <button onClick={() => setShowModal(false)} className="p-1 hover:bg-purple-100 rounded-full">
                                 <X className="w-5 h-5 text-purple-600" />
@@ -477,7 +486,7 @@ export default function AdminTrainAI() {
                         {/* Modal Content */}
                         <div className="p-5 space-y-4 max-h-[60vh] overflow-y-auto">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">বিভাগ *</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">{t.form.division} *</label>
                                 <select
                                     value={formData.division}
                                     onChange={(e) => setFormData({ ...formData, division: e.target.value })}
@@ -490,41 +499,41 @@ export default function AdminTrainAI() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">প্রশ্ন *</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">{t.form.question} *</label>
                                 <input
                                     type="text"
                                     value={formData.question}
                                     onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-                                    placeholder="যেমন: NID কিভাবে পাবো?"
+                                    placeholder={t.form.questionPlaceholder}
                                     className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">উত্তর *</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">{t.form.answer} *</label>
                                 <textarea
                                     value={formData.answer}
                                     onChange={(e) => setFormData({ ...formData, answer: e.target.value })}
-                                    placeholder="AI এই উত্তর দেবে..."
+                                    placeholder={t.form.answerPlaceholder}
                                     rows={4}
                                     className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 resize-none"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">কীওয়ার্ড (ঐচ্ছিক)</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">{t.form.keywords}</label>
                                 <input
                                     type="text"
                                     value={formData.keywords}
                                     onChange={(e) => setFormData({ ...formData, keywords: e.target.value })}
-                                    placeholder="কমা দিয়ে আলাদা করুন: NID, জাতীয় পরিচয়পত্র, আবেদন"
+                                    placeholder="NID, vote, register (comma separated)"
                                     className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500"
                                 />
-                                <p className="text-xs text-gray-400 mt-1">এই শব্দগুলো দিয়ে খোঁজা হলে এই উত্তর দেখাবে</p>
+                                <p className="text-xs text-gray-400 mt-1">{t.form.keywordsHelp}</p>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">অগ্রাধিকার</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">{t.form.priority}</label>
                                 <input
                                     type="number"
                                     value={formData.priority}
@@ -533,7 +542,7 @@ export default function AdminTrainAI() {
                                     max={100}
                                     className="w-24 px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500"
                                 />
-                                <p className="text-xs text-gray-400 mt-1">বেশি মান = বেশি অগ্রাধিকার (0-100)</p>
+                                <p className="text-xs text-gray-400 mt-1">{t.form.priorityHelp}</p>
                             </div>
                         </div>
 
@@ -543,7 +552,7 @@ export default function AdminTrainAI() {
                                 onClick={() => setShowModal(false)}
                                 className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors"
                             >
-                                বাতিল
+                                {common.cancel}
                             </button>
                             <button
                                 onClick={handleSave}
@@ -551,7 +560,7 @@ export default function AdminTrainAI() {
                                 className="flex items-center gap-2 px-5 py-2 bg-purple-600 text-white rounded-lg font-semibold hover:bg-purple-700 transition-colors disabled:opacity-50"
                             >
                                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                                {saving ? 'সংরক্ষণ হচ্ছে...' : 'সংরক্ষণ করুন'}
+                                {saving ? t.buttons.saving : t.buttons.save}
                             </button>
                         </div>
                     </div>
@@ -566,7 +575,7 @@ export default function AdminTrainAI() {
                         <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-blue-50">
                             <h3 className="font-bold text-lg text-blue-900 flex items-center gap-2">
                                 <FileJson className="w-5 h-5" />
-                                JSON দিয়ে বাল্ক ইম্পোর্ট
+                                {t.import.title}
                             </h3>
                             <button onClick={() => { setShowImportModal(false); setImportResult(null); setJsonInput(''); }} className="p-1 hover:bg-blue-100 rounded-full">
                                 <X className="w-5 h-5 text-blue-600" />
@@ -577,7 +586,7 @@ export default function AdminTrainAI() {
                         <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
                             {/* File Upload */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">JSON ফাইল আপলোড করুন</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">{t.import.upload}</label>
                                 <input
                                     ref={fileInputRef}
                                     type="file"
@@ -590,17 +599,17 @@ export default function AdminTrainAI() {
                             {/* Or Text Divider */}
                             <div className="flex items-center gap-3">
                                 <div className="flex-1 h-px bg-gray-200"></div>
-                                <span className="text-sm text-gray-400">অথবা</span>
+                                <span className="text-sm text-gray-400">{t.import.or}</span>
                                 <div className="flex-1 h-px bg-gray-200"></div>
                             </div>
 
                             {/* JSON Textarea */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">JSON পেস্ট করুন</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">{t.import.paste}</label>
                                 <textarea
                                     value={jsonInput}
                                     onChange={(e) => setJsonInput(e.target.value)}
-                                    placeholder='[{"division": "বিভাগ", "question": "প্রশ্ন", "answer": "উত্তর"}, ...]'
+                                    placeholder='[{"division": "Division", "question": "Question?", "answer": "Answer"}, ...]'
                                     rows={8}
                                     className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 font-mono text-sm resize-none"
                                 />
@@ -609,7 +618,7 @@ export default function AdminTrainAI() {
                             {/* Sample Format */}
                             <details className="bg-gray-50 rounded-xl p-4 border border-gray-100">
                                 <summary className="cursor-pointer text-sm font-medium text-gray-700 hover:text-blue-600">
-                                    📋 নমুনা JSON ফরম্যাট দেখুন
+                                    📋 {t.import.sample}
                                 </summary>
                                 <pre className="mt-3 bg-white p-3 rounded-lg border border-gray-200 text-xs overflow-x-auto font-mono">
                                     {sampleJson}
@@ -618,7 +627,7 @@ export default function AdminTrainAI() {
                                     onClick={() => setJsonInput(sampleJson)}
                                     className="mt-2 text-sm text-blue-600 hover:underline"
                                 >
-                                    নমুনা ব্যবহার করুন
+                                    {t.import.useSample}
                                 </button>
                             </details>
 
@@ -627,7 +636,7 @@ export default function AdminTrainAI() {
                                 <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
                                     <div className="flex items-center gap-3 mb-2">
                                         <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
-                                        <span className="font-medium text-blue-900">ইম্পোর্ট হচ্ছে...</span>
+                                        <span className="font-medium text-blue-900">{t.import.importing}</span>
                                     </div>
                                     <div className="w-full bg-blue-200 rounded-full h-2">
                                         <div
@@ -649,24 +658,24 @@ export default function AdminTrainAI() {
                                             <AlertCircle className="w-5 h-5 text-red-600" />
                                         )}
                                         <span className={`font-medium ${importResult.success ? 'text-green-900' : 'text-red-900'}`}>
-                                            {importResult.success ? 'সফলভাবে ইম্পোর্ট হয়েছে!' : 'কিছু সমস্যা হয়েছে'}
+                                            {importResult.success ? t.import.success : t.import.error}
                                         </span>
                                     </div>
                                     <div className="text-sm space-y-1">
-                                        <p className="text-green-600">✅ ইম্পোর্ট: {importResult.imported}</p>
+                                        <p className="text-green-600">✅ {t.import.imported}: {importResult.imported}</p>
                                         {importResult.failed > 0 && (
-                                            <p className="text-red-600">❌ ব্যর্থ: {importResult.failed}</p>
+                                            <p className="text-red-600">❌ {t.import.failed}: {importResult.failed}</p>
                                         )}
                                     </div>
                                     {importResult.errors.length > 0 && (
                                         <details className="mt-2">
-                                            <summary className="text-sm text-red-600 cursor-pointer">এরর বিস্তারিত</summary>
+                                            <summary className="text-sm text-red-600 cursor-pointer">{t.import.errorDetails}</summary>
                                             <ul className="mt-1 text-xs text-red-500 space-y-1">
                                                 {importResult.errors.slice(0, 5).map((err, i) => (
                                                     <li key={i}>• {err}</li>
                                                 ))}
                                                 {importResult.errors.length > 5 && (
-                                                    <li>...এবং আরো {importResult.errors.length - 5}টি</li>
+                                                    <li>...and {importResult.errors.length - 5} more</li>
                                                 )}
                                             </ul>
                                         </details>
@@ -681,7 +690,7 @@ export default function AdminTrainAI() {
                                 onClick={() => { setShowImportModal(false); setImportResult(null); setJsonInput(''); }}
                                 className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg font-medium transition-colors"
                             >
-                                বন্ধ করুন
+                                {t.import.close}
                             </button>
                             <button
                                 onClick={handleJsonImport}
@@ -689,7 +698,7 @@ export default function AdminTrainAI() {
                                 className="flex items-center gap-2 px-5 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
                             >
                                 {importing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-                                {importing ? 'ইম্পোর্ট হচ্ছে...' : 'ইম্পোর্ট করুন'}
+                                {importing ? t.import.importing : t.import.importAction}
                             </button>
                         </div>
                     </div>

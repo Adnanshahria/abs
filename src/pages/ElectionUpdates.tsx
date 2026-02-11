@@ -4,8 +4,12 @@ import { getUpdates, incrementViewCount, toggleLike, getLikes, hasUserLiked, add
 import { Calendar, Bell, Eye, Clock, User, ChevronRight, Heart, MessageSquare, Send, Link, ArrowUpDown, Share2 } from 'lucide-react';
 import type { ElectionUpdate, Comment } from '../lib/types';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
+import { translations } from '../data/translations';
 
 export default function ElectionUpdates() {
+    const { language } = useLanguage();
+    const t = translations[language].electionUpdates;
     const [updates, setUpdates] = useState<ElectionUpdate[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedUpdate, setSelectedUpdate] = useState<ElectionUpdate | null>(null);
@@ -135,7 +139,7 @@ export default function ElectionUpdates() {
     const copyShareLink = (updateId: number) => {
         const url = `${window.location.origin}/election-updates?id=${updateId}`;
         navigator.clipboard.writeText(url);
-        alert('লিংক কপি হয়েছে!');
+        alert(t.linkCopied);
     };
 
     const handleCloseModal = () => {
@@ -148,7 +152,7 @@ export default function ElectionUpdates() {
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
-        return date.toLocaleDateString('bn-BD', {
+        return date.toLocaleDateString(language === 'bn' ? 'bn-BD' : 'en-US', {
             day: 'numeric',
             month: 'long',
             year: 'numeric'
@@ -180,18 +184,19 @@ export default function ElectionUpdates() {
                         <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                             <Bell className="w-5 h-5 text-blue-600" />
                         </div>
-                        <h1 className="text-2xl font-bold text-gray-900">নির্বাচনী আপডেট</h1>
+                        <h1 className="text-2xl font-bold text-gray-900">{t.title}</h1>
                     </div>
                     {/* Sort Control */}
                     <div className="flex items-center gap-2">
                         <ArrowUpDown className="w-4 h-4 text-gray-500" />
+                        <span className="text-sm text-gray-600">{t.sort.label}:</span>
                         <select
                             value={sortOrder}
                             onChange={(e) => setSortOrder(e.target.value as 'newest' | 'oldest')}
                             className="px-4 py-2 rounded-lg border border-gray-200 bg-white text-sm font-medium focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
                         >
-                            <option value="newest">সর্বশেষ</option>
-                            <option value="oldest">পুরাতন</option>
+                            <option value="newest">{t.sort.newest}</option>
+                            <option value="oldest">{t.sort.oldest}</option>
                         </select>
                     </div>
                 </div>
@@ -200,11 +205,11 @@ export default function ElectionUpdates() {
                 {loading ? (
                     <div className="text-center py-12">
                         <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-                        <p className="text-gray-500">আপডেট লোড হচ্ছে...</p>
+                        <p className="text-gray-500">{t.loading}</p>
                     </div>
                 ) : sortedUpdates.length === 0 ? (
                     <div className="bg-white rounded-2xl p-12 text-center shadow-sm text-gray-500">
-                        কোনো আপডেট প্রকাশিত হয়নি।
+                        {t.empty}
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
@@ -235,10 +240,10 @@ export default function ElectionUpdates() {
                                                 e.stopPropagation();
                                                 const url = `${window.location.origin}/election-updates?id=${update.id}`;
                                                 navigator.clipboard.writeText(url);
-                                                alert('লিংক কপি হয়েছে!');
+                                                alert(t.linkCopied);
                                             }}
                                             className="bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-sm hover:bg-white transition-colors"
-                                            title="শেয়ার করুন"
+                                            title={t.share}
                                         >
                                             <Share2 className="w-4 h-4 text-gray-700" />
                                         </button>
@@ -308,7 +313,7 @@ export default function ElectionUpdates() {
                                             {/* Read Time */}
                                             <div className="flex items-center gap-1 text-xs text-gray-500">
                                                 <Clock className="w-3.5 h-3.5" />
-                                                <span>{update.read_time || 2} min</span>
+                                                <span>{update.read_time || 2} {t.readMin}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -364,7 +369,7 @@ export default function ElectionUpdates() {
                                 <button
                                     onClick={() => copyShareLink(selectedUpdate.id)}
                                     className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
-                                    title="লিংক কপি করুন"
+                                    title={t.share}
                                 >
                                     <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
@@ -382,11 +387,11 @@ export default function ElectionUpdates() {
                                     <div className="flex items-center gap-3 text-sm text-gray-500">
                                         <span className="flex items-center gap-1">
                                             <Clock className="w-4 h-4" />
-                                            {selectedUpdate.read_time || 2} min পড়ুন
+                                            {selectedUpdate.read_time || 2} {t.readMin}
                                         </span>
                                         <span className="flex items-center gap-1">
                                             <Eye className="w-4 h-4" />
-                                            {(selectedUpdate.view_count || 0)} views
+                                            {(selectedUpdate.view_count || 0)} {t.views}
                                         </span>
                                     </div>
                                 </div>
@@ -420,7 +425,7 @@ export default function ElectionUpdates() {
                                         className="inline-flex items-center gap-2 px-4 py-2.5 bg-green-50 text-green-700 hover:bg-green-100 border border-green-200 rounded-lg text-sm font-medium transition-colors"
                                     >
                                         <Link className="w-4 h-4" />
-                                        সোর্স / ফ্যাক্ট চেক দেখুন
+                                        {t.source}
                                     </a>
                                 </div>
                             )}
@@ -445,7 +450,7 @@ export default function ElectionUpdates() {
                                 <div className="space-y-6">
                                     <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
                                         <MessageSquare className="w-5 h-5" />
-                                        মন্তব্য ({comments.length})
+                                        {t.comments.title} ({comments.length})
                                     </h3>
 
                                     {/* Comment Input - Available for everyone */}
@@ -457,7 +462,7 @@ export default function ElectionUpdates() {
                                             <textarea
                                                 value={newComment}
                                                 onChange={e => setNewComment(e.target.value)}
-                                                placeholder="আপনার মতামত জানান..."
+                                                placeholder={t.comments.placeholder}
                                                 className="w-full p-3 pr-12 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none h-20"
                                             />
                                             <button
@@ -473,7 +478,7 @@ export default function ElectionUpdates() {
                                     {/* Comment List */}
                                     <div className="space-y-4">
                                         {loadingComments ? (
-                                            <p className="text-center text-gray-500 text-sm">মন্তব্য লোড হচ্ছে...</p>
+                                            <p className="text-center text-gray-500 text-sm">{t.comments.loading}</p>
                                         ) : comments.length > 0 ? (
                                             comments.map(comment => (
                                                 <div key={comment.id} className="flex gap-3">
@@ -490,7 +495,7 @@ export default function ElectionUpdates() {
                                                 </div>
                                             ))
                                         ) : (
-                                            <p className="text-gray-500 text-sm italic">এখনো কোনো মন্তব্য নেই।</p>
+                                            <p className="text-gray-500 text-sm italic">{t.comments.empty}</p>
                                         )}
                                     </div>
                                 </div>

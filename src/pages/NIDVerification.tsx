@@ -7,10 +7,12 @@ import Modal from '../components/Modal';
 import DatePicker from '../components/DatePicker';
 import CustomSelect from '../components/CustomSelect';
 import { SEAT_SYSTEM } from '../lib/seats';
+import { translations } from '../data/translations';
 
 export default function NIDVerification() {
     const { user, verify } = useAuth();
     const { language } = useLanguage();
+    const t = translations[language];
     const navigate = useNavigate();
 
     // Redirect if not logged in
@@ -60,8 +62,8 @@ export default function NIDVerification() {
         if (!user) {
             setModal({
                 isOpen: true,
-                title: 'Authentication Required',
-                message: 'You must be logged in to verify.',
+                title: t.nidVerification.messages.authReq.title,
+                message: t.nidVerification.messages.authReq.msg,
                 type: 'error'
             });
             return;
@@ -71,8 +73,8 @@ export default function NIDVerification() {
         if ((!skipNID && !formData.nidNumber) || !formData.dateOfBirth || !selectedArea) {
             setModal({
                 isOpen: true,
-                title: 'Missing Information',
-                message: 'Please fill in all details including your specific seat.',
+                title: t.nidVerification.messages.missing.title,
+                message: t.nidVerification.messages.missing.msg,
                 type: 'error'
             });
             return;
@@ -97,20 +99,20 @@ export default function NIDVerification() {
                 if (result.success) {
                     setModal({
                         isOpen: true,
-                        title: 'Verification Successful!',
-                        message: `Welcome voter of ${selectedArea}! You can now access full features.`,
+                        title: t.nidVerification.messages.success.title,
+                        message: t.nidVerification.messages.success.msg.replace('{area}', selectedArea),
                         type: 'success'
                     });
                     setTimeout(() => navigate('/dashboard'), 1500); // Redirect to dashboard after verification
                 } else {
-                    throw new Error(result.error || 'Verification failed');
+                    throw new Error(result.error || t.nidVerification.messages.fail.msg);
                 }
             } catch (error) {
                 console.error('Verification failed:', error);
                 setModal({
                     isOpen: true,
-                    title: 'Verification Failed',
-                    message: 'Could not verify your details. Please try again.',
+                    title: t.nidVerification.messages.fail.title,
+                    message: t.nidVerification.messages.fail.msg,
                     type: 'error'
                 });
             } finally {
@@ -127,25 +129,23 @@ export default function NIDVerification() {
                         <Shield className="w-8 h-8 text-green-600" />
                     </div>
                     <h1 className="text-3xl font-serif text-green-900 font-bold">
-                        {language === 'bn' ? 'পরিচয় যাচাইকরণ' : 'Verify Identity'}
+                        {t.nidVerification.title}
                     </h1>
                     <p className="text-gray-600 mt-2">
-                        {language === 'bn'
-                            ? 'ভোট দেওয়ার জন্য আপনার এনআইডি ও নিজ আসন নির্বাচন করুন'
-                            : 'Enter NID and select your Native Seat to enable voting'}
+                        {t.nidVerification.subtitle}
                     </p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* NID Input */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">NID Number</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">{t.nidVerification.form.nidLabel}</label>
                         <div className="relative">
                             <input
                                 type="number"
                                 inputMode="numeric"
                                 name="nidNumber"
-                                placeholder="e.g. 1993284732"
+                                placeholder={t.nidVerification.form.nidPlaceholder}
                                 value={formData.nidNumber}
                                 onChange={handleChange}
                                 disabled={skipNID}
@@ -163,14 +163,14 @@ export default function NIDVerification() {
                                 className="w-4 h-4 text-green-600 rounded border-gray-300 focus:ring-green-500"
                             />
                             <label htmlFor="skipNID" className="text-sm text-gray-600 select-none cursor-pointer">
-                                I don't want to share my NID Number
+                                {t.nidVerification.form.skipNid}
                             </label>
                         </div>
                     </div>
 
                     {/* Date of Birth */}
                     <DatePicker
-                        label="Date of Birth"
+                        label={t.nidVerification.form.dobLabel}
                         value={formData.dateOfBirth}
                         onChange={(date) => setFormData({ ...formData, dateOfBirth: date })}
                     />
@@ -178,12 +178,12 @@ export default function NIDVerification() {
                     {/* --- LOCATION HIERARCHY --- */}
                     <div className="space-y-4 bg-green-50 p-4 rounded-xl border border-green-100">
                         <h3 className="text-green-800 font-bold border-b border-green-200 pb-2 mb-2">
-                            Select Your Native Seat (ভোটের এলাকা)
+                            {t.nidVerification.form.seatHeader}
                         </h3>
 
                         {/* Division */}
                         <CustomSelect
-                            label="Division"
+                            label={t.nidVerification.form.division}
                             value={selectedDivision}
                             onChange={(val) => {
                                 setSelectedDivision(val);
@@ -191,21 +191,21 @@ export default function NIDVerification() {
                                 setSelectedArea('');
                             }}
                             options={divisions}
-                            placeholder="Select Division..."
+                            placeholder={t.nidVerification.form.selectDivision}
                         />
 
                         {/* District */}
                         {selectedDivision && (
                             <div className="animate-in fade-in slide-in-from-top-2">
                                 <CustomSelect
-                                    label="District"
+                                    label={t.nidVerification.form.district}
                                     value={selectedDistrict}
                                     onChange={(val) => {
                                         setSelectedDistrict(val);
                                         setSelectedArea('');
                                     }}
                                     options={districts}
-                                    placeholder="Select District..."
+                                    placeholder={t.nidVerification.form.selectDistrict}
                                 />
                             </div>
                         )}
@@ -214,14 +214,14 @@ export default function NIDVerification() {
                         {selectedDistrict && (
                             <div className="animate-in fade-in slide-in-from-top-2">
                                 <CustomSelect
-                                    label="Constituency (Seat)"
+                                    label={t.nidVerification.form.area}
                                     value={selectedArea}
                                     onChange={(val) => setSelectedArea(val)}
                                     options={areas}
-                                    placeholder="Select Seat..."
+                                    placeholder={t.nidVerification.form.selectArea}
                                 />
                                 <p className="text-xs text-red-500 mt-1 ml-1">
-                                    * This will be your PERMANENT voting seat.
+                                    {t.nidVerification.form.permanentWarning}
                                 </p>
                             </div>
                         )}
@@ -233,16 +233,16 @@ export default function NIDVerification() {
                         className="w-full bg-green-700 hover:bg-green-800 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
                     >
                         {isVerifying ? (
-                            <span className="animate-pulse">Verifying...</span>
+                            <span className="animate-pulse">{t.nidVerification.form.verifying}</span>
                         ) : (
                             <>
-                                {language === 'bn' ? 'যাচাই করুন ও জমা দিন' : 'Verify & Set Native Seat'}
+                                {t.nidVerification.form.verifyBtn}
                             </>
                         )}
                     </button>
 
                     <button type="button" onClick={() => navigate('/dashboard')} className="w-full text-center text-sm text-gray-500 hover:text-gray-700">
-                        Back to Dashboard
+                        {t.nidVerification.form.back}
                     </button>
                 </form>
             </div>

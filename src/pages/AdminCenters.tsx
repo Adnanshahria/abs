@@ -3,7 +3,12 @@ import { Plus, Search, Trash2, MapPin, X, Save } from 'lucide-react';
 import { getVoteCenters, addVoteCenter, deleteVoteCenter, updateVoteCenter } from '../lib/api';
 import { SEAT_SYSTEM } from '../lib/seats';
 
+import { useLanguage } from '../context/LanguageContext';
+import { translations } from '../data/translations';
+
 export default function AdminCenters() {
+    const { language } = useLanguage();
+    const t = translations[language];
     const [centers, setCenters] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -34,7 +39,7 @@ export default function AdminCenters() {
     };
 
     const handleDelete = async (id: number) => {
-        if (confirm('Are you sure you want to delete this vote center?')) {
+        if (confirm(t.admin.centers.alerts.deleteConfirm)) {
             await deleteVoteCenter(id);
             fetchCenters();
         }
@@ -105,7 +110,7 @@ export default function AdminCenters() {
             fetchCenters();
             resetForm();
         } else {
-            alert('Failed to save vote center');
+            alert(t.admin.centers.alerts.fail);
         }
     };
 
@@ -128,15 +133,15 @@ export default function AdminCenters() {
         <div>
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Manage Vote Centers</h1>
-                    <p className="text-gray-600">Add, edit, or remove polling stations</p>
+                    <h1 className="text-3xl font-bold text-gray-900">{t.admin.centers.title}</h1>
+                    <p className="text-gray-600">{t.admin.centers.subtitle}</p>
                 </div>
                 <button
                     onClick={() => { resetForm(); setIsAddModalOpen(true); }}
                     className="flex items-center gap-2 bg-purple-600 text-white px-5 py-2.5 rounded-xl hover:bg-purple-700 transition-colors font-medium shadow-sm hover:shadow-md"
                 >
                     <Plus className="w-5 h-5" />
-                    Add Center
+                    {t.admin.centers.add}
                 </button>
             </div>
 
@@ -144,7 +149,7 @@ export default function AdminCenters() {
             <div className="relative mb-6">
                 <input
                     type="text"
-                    placeholder="Search centers by name or area..."
+                    placeholder={t.admin.centers.search}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 outline-none transition-all"
@@ -158,18 +163,18 @@ export default function AdminCenters() {
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="bg-gray-50 border-b border-gray-100">
-                                <th className="p-4 font-semibold text-gray-600 text-sm">Center Name</th>
-                                <th className="p-4 font-semibold text-gray-600 text-sm">Location (Constituency)</th>
-                                <th className="p-4 font-semibold text-gray-600 text-sm">Capacity</th>
-                                <th className="p-4 font-semibold text-gray-600 text-sm">Coordinates</th>
-                                <th className="p-4 font-semibold text-gray-600 text-sm text-right">Actions</th>
+                                <th className="p-4 font-semibold text-gray-600 text-sm">{t.admin.centers.table.name}</th>
+                                <th className="p-4 font-semibold text-gray-600 text-sm">{t.admin.centers.table.location}</th>
+                                <th className="p-4 font-semibold text-gray-600 text-sm">{t.admin.centers.table.capacity}</th>
+                                <th className="p-4 font-semibold text-gray-600 text-sm">{t.admin.centers.table.coordinates}</th>
+                                <th className="p-4 font-semibold text-gray-600 text-sm text-right">{t.admin.centers.table.actions}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {loading ? (
-                                <tr><td colSpan={5} className="p-8 text-center text-gray-500">Loading centers...</td></tr>
+                                <tr><td colSpan={5} className="p-8 text-center text-gray-500">{t.admin.centers.table.loading}</td></tr>
                             ) : filteredCenters.length === 0 ? (
-                                <tr><td colSpan={5} className="p-8 text-center text-gray-500">No vote centers found.</td></tr>
+                                <tr><td colSpan={5} className="p-8 text-center text-gray-500">{t.admin.centers.table.empty}</td></tr>
                             ) : (
                                 filteredCenters.map((center) => (
                                     <tr key={center.id} className="hover:bg-gray-50/50 transition-colors">
@@ -190,9 +195,9 @@ export default function AdminCenters() {
                                             </span>
                                             <p className="text-xs text-gray-400 mt-1">{center.district}, {center.division}</p>
                                         </td>
-                                        <td className="p-4 text-gray-600 font-mono text-sm">{center.capacity.toLocaleString()}</td>
+                                        <td className="p-4 text-gray-600 font-mono text-sm">{(center.capacity ?? 0).toLocaleString()}</td>
                                         <td className="p-4 text-gray-500 text-xs font-mono">
-                                            {center.latitude.toFixed(4)}, {center.longitude.toFixed(4)}
+                                            {(center.latitude ?? 0).toFixed(4)}, {(center.longitude ?? 0).toFixed(4)}
                                         </td>
                                         <td className="p-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
@@ -226,7 +231,7 @@ export default function AdminCenters() {
                     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsAddModalOpen(false)} />
                     <div className="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative z-10 animate-in zoom-in-95 duration-200">
                         <div className="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-20">
-                            <h2 className="text-xl font-bold text-gray-900">{editingId ? 'Edit Vote Center' : 'Add Vote Center'}</h2>
+                            <h2 className="text-xl font-bold text-gray-900">{editingId ? t.admin.centers.form.editTitle : t.admin.centers.form.addTitle}</h2>
                             <button onClick={() => setIsAddModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-full"><X className="w-5 h-5" /></button>
                         </div>
 
@@ -234,27 +239,27 @@ export default function AdminCenters() {
                             {/* Basic Info */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Center Name (English)</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.admin.centers.form.nameEn}</label>
                                     <input required type="text" className="w-full p-3 rounded-lg border border-gray-200"
                                         value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Center Name (Bangla)</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.admin.centers.form.nameBn}</label>
                                     <input required type="text" className="w-full p-3 rounded-lg border border-gray-200"
                                         value={formData.name_bn} onChange={e => setFormData({ ...formData, name_bn: e.target.value })} />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Address (English)</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.admin.centers.form.addressEn}</label>
                                     <input required type="text" className="w-full p-3 rounded-lg border border-gray-200"
                                         value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Address (Bangla)</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.admin.centers.form.addressBn}</label>
                                     <input required type="text" className="w-full p-3 rounded-lg border border-gray-200"
                                         value={formData.address_bn} onChange={e => setFormData({ ...formData, address_bn: e.target.value })} />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Capacity (Voters)</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.admin.centers.form.capacity}</label>
                                     <input required type="number" className="w-full p-3 rounded-lg border border-gray-200"
                                         value={formData.capacity} onChange={e => setFormData({ ...formData, capacity: e.target.value })} />
                                 </div>
@@ -262,12 +267,12 @@ export default function AdminCenters() {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.admin.centers.form.lat}</label>
                                     <input required type="text" className="w-full p-3 rounded-lg border border-gray-200"
                                         value={formData.latitude} onChange={e => setFormData({ ...formData, latitude: e.target.value })} />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.admin.centers.form.lng}</label>
                                     <input required type="text" className="w-full p-3 rounded-lg border border-gray-200"
                                         value={formData.longitude} onChange={e => setFormData({ ...formData, longitude: e.target.value })} />
                                 </div>
@@ -276,21 +281,21 @@ export default function AdminCenters() {
                             {/* Seat Selection */}
                             <div className="p-5 bg-gray-50 rounded-xl border border-gray-200 grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Division</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.admin.centers.form.division}</label>
                                     <select
                                         required
                                         className="w-full p-3 rounded-lg border border-gray-200 bg-white"
                                         value={formData.division}
                                         onChange={(e) => handleDivisionChange(e.target.value)}
                                     >
-                                        <option value="">Select Division</option>
+                                        <option value="">{t.admin.centers.form.selectDivision}</option>
                                         {SEAT_SYSTEM.data.map(d => (
                                             <option key={d.division} value={d.division}>{d.division}</option>
                                         ))}
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">District</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.admin.centers.form.district}</label>
                                     <select
                                         required
                                         disabled={!formData.division}
@@ -298,14 +303,14 @@ export default function AdminCenters() {
                                         value={formData.district}
                                         onChange={(e) => handleDistrictChange(e.target.value)}
                                     >
-                                        <option value="">Select District</option>
+                                        <option value="">{t.admin.centers.form.selectDistrict}</option>
                                         {availableDistricts.map(d => (
                                             <option key={d.district_name} value={d.district_name}>{d.district_name}</option>
                                         ))}
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Constituency (Area)</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.admin.centers.form.area}</label>
                                     <select
                                         required
                                         disabled={!formData.district}
@@ -313,7 +318,7 @@ export default function AdminCenters() {
                                         value={formData.area}
                                         onChange={(e) => setFormData({ ...formData, area: e.target.value })}
                                     >
-                                        <option value="">Select Seat</option>
+                                        <option value="">{t.admin.centers.form.selectSeat}</option>
                                         {availableAreas.map(area => (
                                             <option key={area} value={area}>{area}</option>
                                         ))}
@@ -327,20 +332,21 @@ export default function AdminCenters() {
                                     onClick={() => setIsAddModalOpen(false)}
                                     className="px-6 py-2.5 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition-colors"
                                 >
-                                    Cancel
+                                    {t.admin.centers.form.cancel}
                                 </button>
                                 <button
                                     type="submit"
                                     className="px-6 py-2.5 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 shadow-sm transition-colors flex items-center gap-2"
                                 >
                                     <Save className="w-4 h-4" />
-                                    {editingId ? 'Update Center' : 'Save Center'}
+                                    {editingId ? t.admin.centers.form.update : t.admin.centers.form.save}
                                 </button>
                             </div>
                         </form>
                     </div>
-                </div>
-            )}
-        </div>
+                </div >
+            )
+            }
+        </div >
     );
 }

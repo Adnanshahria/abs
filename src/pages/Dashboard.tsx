@@ -65,7 +65,7 @@ export default function Dashboard() {
                     >
                         <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         <span className="hidden sm:inline">{t.dashboard.logout}</span>
-                        <span className="sm:hidden">Exit</span>
+                        <span className="sm:hidden">{t.dashboard.logout}</span>
                     </button>
                 </div>
 
@@ -107,19 +107,19 @@ export default function Dashboard() {
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-3 text-sm bg-black/10 sm:bg-transparent rounded-lg p-2.5 sm:p-0">
                                         <div className="flex justify-between sm:block border-b sm:border-0 border-white/10 pb-1 sm:pb-0">
-                                            <p className="text-green-200 text-[10px] sm:text-xs sm:mb-0.5">NID Number</p>
+                                            <p className="text-green-200 text-[10px] sm:text-xs sm:mb-0.5">{t.dashboard.profile.nid}</p>
                                             <p className="font-mono text-sm sm:text-base font-medium tracking-wide">{(user as any)?.nid_number || '1993 2847 3290'}</p>
                                         </div>
                                         <div className="flex justify-between sm:block border-b sm:border-0 border-white/10 pb-1 sm:pb-0">
-                                            <p className="text-green-200 text-[10px] sm:text-xs sm:mb-0.5">Date of Birth</p>
+                                            <p className="text-green-200 text-[10px] sm:text-xs sm:mb-0.5">{t.dashboard.profile.dob}</p>
                                             <p className="font-medium text-sm sm:text-base">{(user as any)?.date_of_birth || '12 Oct 1995'}</p>
                                         </div>
                                         <div className="flex justify-between sm:block border-b sm:border-0 border-white/10 pb-1 sm:pb-0">
-                                            <p className="text-green-200 text-[10px] sm:text-xs sm:mb-0.5">District</p>
+                                            <p className="text-green-200 text-[10px] sm:text-xs sm:mb-0.5">{t.dashboard.profile.district}</p>
                                             <p className="font-medium text-sm sm:text-base">{(user as any)?.district || 'Dhaka'}</p>
                                         </div>
                                         <div className="flex justify-between sm:block">
-                                            <p className="text-green-200 text-[10px] sm:text-xs sm:mb-0.5">Voter Area</p>
+                                            <p className="text-green-200 text-[10px] sm:text-xs sm:mb-0.5">{t.dashboard.profile.area}</p>
                                             <p className="font-medium text-sm sm:text-base">{(user as any)?.voter_area || 'Dhanmondi'}</p>
                                         </div>
                                     </div>
@@ -181,15 +181,15 @@ export default function Dashboard() {
                             <div className="text-center md:text-left">
                                 <h2 className="text-xl md:text-2xl font-bold font-serif mb-1 md:mb-2 flex items-center justify-center md:justify-start gap-2 md:gap-3">
                                     <Vote className="w-6 h-6 md:w-7 md:h-7 animate-pulse text-green-200" />
-                                    জরিপে আপনার ভোট দিন
+                                    {t.dashboard.voteNow.title}
                                 </h2>
                                 <p className="text-green-100 text-sm md:text-base max-w-xl">
-                                    ২০২৬ সালের জাতীয় নির্বাচনে আপনার মতামত জানান। আপনার ভোট অত্যন্ত গুরুত্বপূর্ণ।
+                                    {t.dashboard.voteNow.desc}
                                 </p>
                             </div>
                             <div className="flex-shrink-0">
                                 <button className="bg-white text-green-800 font-bold py-2 px-6 sm:py-3 sm:px-8 rounded-xl shadow-lg hover:bg-green-50 transition-colors flex items-center gap-2 text-sm sm:text-base">
-                                    ভোট দিন
+                                    {t.dashboard.voteNow.btn}
                                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                                 </button>
                             </div>
@@ -202,15 +202,15 @@ export default function Dashboard() {
                             <div className="text-center md:text-left">
                                 <h2 className="text-xl md:text-2xl font-bold font-serif mb-1 md:mb-2 flex items-center justify-center md:justify-start gap-2 md:gap-3">
                                     <CheckCircle className="w-6 h-6 md:w-7 md:h-7 text-blue-200" />
-                                    আপনার ভোট গ্রহণ করা হয়েছে
+                                    {t.dashboard.voted.title}
                                 </h2>
                                 <p className="text-blue-100 text-sm md:text-base max-w-xl">
-                                    ধন্যবাদ! আপনি সফলভাবে আপনার ভোট প্রদান করেছেন। ফলাফল দেখতে নিচের বাটনে ক্লিক করুন।
+                                    {t.dashboard.voted.desc}
                                 </p>
                             </div>
                             <div className="flex-shrink-0">
                                 <button className="bg-white text-blue-800 font-bold py-2 px-6 sm:py-3 sm:px-8 rounded-xl shadow-lg hover:bg-blue-50 transition-colors flex items-center gap-2 text-sm sm:text-base">
-                                    ফলাফল দেখুন
+                                    {t.dashboard.voted.btn}
                                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
                                 </button>
                             </div>
@@ -220,7 +220,7 @@ export default function Dashboard() {
 
                 {/* Quick Actions Bento Grid */}
                 <div>
-                    <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-2 sm:mb-3 font-serif">Quick Actions</h3>
+                    <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-2 sm:mb-3 font-serif">{t.dashboard.quickActions.title}</h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
 
 
@@ -228,32 +228,32 @@ export default function Dashboard() {
                             <div className="bg-blue-50 w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center mb-2 sm:mb-2.5 group-hover:scale-110 transition-transform">
                                 <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
                             </div>
-                            <h4 className="font-bold text-xs sm:text-sm text-gray-800">Vote Center</h4>
-                            <p className="text-[10px] text-gray-500 mt-0.5">Locate your center</p>
+                            <h4 className="font-bold text-xs sm:text-sm text-gray-800">{t.dashboard.quickActions.voteCenter.title}</h4>
+                            <p className="text-[10px] text-gray-500 mt-0.5">{t.dashboard.quickActions.voteCenter.desc}</p>
                         </button>
 
                         <button onClick={() => navigate('/candidate-list')} className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-green-50 hover:border-green-300 hover:shadow-md transition-all group text-left flex flex-col items-center sm:items-start text-center sm:text-left">
                             <div className="bg-purple-50 w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center mb-2 sm:mb-2.5 group-hover:scale-110 transition-transform">
                                 <UserCheck className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
                             </div>
-                            <h4 className="font-bold text-xs sm:text-sm text-gray-800">Candidates</h4>
-                            <p className="text-[10px] text-gray-500 mt-0.5">Know who to vote</p>
+                            <h4 className="font-bold text-xs sm:text-sm text-gray-800">{t.dashboard.quickActions.candidates.title}</h4>
+                            <p className="text-[10px] text-gray-500 mt-0.5">{t.dashboard.quickActions.candidates.desc}</p>
                         </button>
 
                         <button onClick={() => navigate('/video-tutorials')} className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-green-50 hover:border-green-300 hover:shadow-md transition-all group text-left flex flex-col items-center sm:items-start text-center sm:text-left">
                             <div className="bg-orange-50 w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center mb-2 sm:mb-2.5 group-hover:scale-110 transition-transform">
                                 <Vote className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
                             </div>
-                            <h4 className="font-bold text-xs sm:text-sm text-gray-800">How to Vote</h4>
-                            <p className="text-[10px] text-gray-500 mt-0.5">Video tutorials</p>
+                            <h4 className="font-bold text-xs sm:text-sm text-gray-800">{t.dashboard.quickActions.howToVote.title}</h4>
+                            <p className="text-[10px] text-gray-500 mt-0.5">{t.dashboard.quickActions.howToVote.desc}</p>
                         </button>
 
                         <button onClick={() => navigate('/election-updates')} className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-green-50 hover:border-green-300 hover:shadow-md transition-all group text-left flex flex-col items-center sm:items-start text-center sm:text-left">
                             <div className="bg-red-50 w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center mb-2 sm:mb-2.5 group-hover:scale-110 transition-transform">
                                 <Newspaper className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
                             </div>
-                            <h4 className="font-bold text-xs sm:text-sm text-gray-800">News</h4>
-                            <p className="text-[10px] text-gray-500 mt-0.5">Latest announcements</p>
+                            <h4 className="font-bold text-xs sm:text-sm text-gray-800">{t.dashboard.quickActions.news.title}</h4>
+                            <p className="text-[10px] text-gray-500 mt-0.5">{t.dashboard.quickActions.news.desc}</p>
                         </button>
 
                     </div>

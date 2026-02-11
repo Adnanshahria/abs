@@ -9,7 +9,19 @@ export const translations = {
             map: "Navigation Map"
         },
         home: {
+            seo: {
+                title: "Home",
+                desc: "Your vote, your right."
+            },
             readyToVote: "Ready to Vote!",
+            smartAvatar: {
+                bubble: "Hello! 👋",
+                hello: "Hello,",
+                name: "I'm Prerona",
+                helper: "I will help you to become",
+                role: "a responsible voter",
+                chat: "Chat With Me"
+            },
             quickLinks: {
                 updates: "Election Updates",
                 center: "Your Vote Center",
@@ -33,7 +45,32 @@ export const translations = {
                 rights: "I know my voting rights",
                 rules: "I am aware of election-day rules"
             },
-            resultBtn: "Result"
+            resultBtn: "Result",
+            modal: {
+                congrats: "🎉 Congratulations",
+                suggestions: "💡 Suggestions",
+                success: "🎖️ You are now a responsible citizen!",
+                noNid: {
+                    title: "No NID Card?",
+                    desc: "Apply for NID at Election Commission website.",
+                    btn: "Apply Now"
+                },
+                noCenter: {
+                    title: "Don't know Vote Center?",
+                    desc: "Find your nearest polling center.",
+                    btn: "Find Center"
+                },
+                noSteps: {
+                    title: "Unsure how to vote?",
+                    desc: "Watch our video tutorials to learn.",
+                    btn: "Watch Videos"
+                },
+                civic: {
+                    title: "Learn Civic Duties",
+                    desc: "Check Civic Badge section for rights & rules.",
+                    btn: "Learn More"
+                }
+            }
         },
         emergency: {
             title: "Emergency Contacts",
@@ -46,24 +83,79 @@ export const translations = {
         },
         contact: {
             title: "Contact Us",
-            subtitle: "Have questions about voting or the app? Reach out to us.",
+            subtitle: "We're here to help you exercise your right to vote.",
             form: {
-                title: "Send us a message",
-                name: "Name",
-                email: "Email",
+                title: "Send us a Message",
+                name: "Your Name",
+                placeholderName: "Enter your full name",
+                email: "Email Address",
+                placeholderEmail: "e.g. adnan@example.com",
                 subject: "Subject",
+                placeholderSubject: "How can we help?",
                 message: "Message",
+                placeholderMessage: "Write your message here...",
                 send: "Send Message",
-                placeholderName: "Your Name",
-                placeholderEmail: "your@email.com",
-                placeholderSubject: "Topic",
-                placeholderMessage: "Write your message here..."
+                sending: "Sending...",
+                success: "Message sent successfully! We will get back to you soon.",
+                error: "Failed to send message. Please try again."
             },
             info: {
                 emailTitle: "Email Us",
                 callTitle: "Call Us",
-                visitTitle: "Visit Office",
-                address: "Nirbachon Bhaban,\nAgargaon, Dhaka-1207."
+                visitTitle: "Visit Us",
+                address: "Nirbachon Bhaban,\nAgargaon, Dhaka-1207",
+                hours: "Mon-Fri from 9am to 5pm."
+            }
+        },
+        electionUpdates: {
+            title: "Election Updates",
+            sort: {
+                label: "Sort By",
+                newest: "Newest",
+                oldest: "Oldest"
+            },
+            loading: "Loading updates...",
+            empty: "No updates published yet.",
+            share: "Share",
+            linkCopied: "Link copied to clipboard!",
+            readMin: "min read",
+            views: "views",
+            source: "View Source / Fact Check",
+            comments: {
+                title: "Comments",
+                placeholder: "Share your opinion...",
+                submit: "Submit",
+                loading: "Loading comments...",
+                empty: "No comments yet.",
+                loginReq: "Please login to comment."
+            }
+        },
+        auth: {
+            loginTitle: "Welcome Back",
+            signupTitle: "Create Account",
+            loginSubtitle: "Login to access your voting dashboard",
+            signupSubtitle: "Sign up to become a responsible voter",
+            tabs: {
+                login: "Login",
+                signup: "Sign Up"
+            },
+            form: {
+                name: "Full Name",
+                email: "Email Address",
+                phone: "Phone Number (Optional)",
+                password: "Password",
+                confirmPassword: "Confirm Password",
+                forgot: "Forgot Password?",
+                loginBtn: "Login",
+                signupBtn: "Create Account"
+            },
+            messages: {
+                missing: { title: "Missing Information", msg: "Please fill in all required fields." },
+                loginFail: { title: "Login Failed", msg: "Please check your credentials." },
+                passwordMismatch: { title: "Password Mismatch", msg: "Passwords do not match!" },
+                nameReq: { title: "Name Required", msg: "Please enter your full name." },
+                regSuccess: { title: "Registration Successful", msg: "Welcome to Amar Ballot! Please login to continue." },
+                regFail: { title: "Registration Failed", msg: "Something went wrong. Please try again." }
             }
         },
         voterGuide: {
@@ -78,6 +170,57 @@ export const translations = {
             readyDesc: "Find your nearest polling station now.",
             findBtn: "Find Vote Center"
         },
+
+        rumorPage: {
+            title: "Rumor Verification",
+            searchPlaceholder: "Search...",
+            sort: {
+                newest: "Newest",
+                oldest: "Oldest"
+            },
+            status: {
+                verified: "Verified",
+                fake: "Fake"
+            },
+            actions: {
+                share: "Share",
+                source: "View Source",
+                comment: "Comment...",
+                moreComments: "+{count} more comments",
+                viewSource: "View Source / Fact Check",
+                copied: "Link copied!"
+            },
+            loading: "Loading rumors...",
+            notFound: "No rumors found."
+        },
+        nidVerification: {
+            title: "Verify Identity",
+            subtitle: "Enter NID and select your Native Seat to enable voting.",
+            form: {
+                nidLabel: "NID Number",
+                nidPlaceholder: "e.g. 1956...",
+                skipNid: "I don't want to share my NID Number",
+                dobLabel: "Date of Birth",
+                seatHeader: "Select Your Native Seat",
+                division: "Division",
+                selectDivision: "Select Division...",
+                district: "District",
+                selectDistrict: "Select District...",
+                area: "Constituency (Seat)",
+                selectArea: "Select Seat...",
+                permanentWarning: "* This will be your PERMANENT voting seat.",
+                verifyBtn: "Verify & Set Native Seat",
+                verifying: "Verifying...",
+                back: "Back to Dashboard"
+            },
+            messages: {
+                authReq: { title: "Authentication Required", msg: "You must be logged in to verify." },
+                missing: { title: "Missing Information", msg: "Please fill in all details including your specific seat." },
+                success: { title: "Verification Successful!", msg: "Welcome voter of {area}! You can now access full features." },
+                fail: { title: "Verification Failed", msg: "Could not verify your details. Please try again." }
+            }
+        },
+
         faq: {
             title: "Frequently Asked Questions",
             questions: [
@@ -202,14 +345,88 @@ export const translations = {
             }
         },
         videoTutorials: {
-            title: "VIDEO",
-            subtitle: "Watch tutorials and messages",
+            title: "VIDEO TUTORIALS",
+            subtitle: "Watch tutorials and messages regarding the election and referendum.",
             videos: [
-                "How to Give Vote",
-                "Key to Country is in Your Hands",
-                "Message from Chief Advisor",
-                "Campaign in Educational Institutions"
+                "The Key to the Country is in Your Hands",
+                "How to Cast Your Vote",
+                "Message from Chief Advisor Prof. Muhammad Yunus",
+                "Election Song for Sylhet Division",
+                "Election Song for Rajshahi Division",
+                "What is a Referendum and Why? (In 3 Minutes)",
+                "Election Song for Chittagong Division",
+                "Building the Bangladesh of Martyrs' Dreams",
+                "July & Journalism"
             ]
+        },
+        reportIncident: {
+            title: "Report an Incident",
+            desc: "Use this form to report code of conduct violations, violence, or voting irregularities. Your identity will remain confidential.",
+            form: {
+                type: {
+                    label: "Incident Type",
+                    placeholder: "Select Type...",
+                    options: [
+                        "Violence / Harassment",
+                        "Vote Buying / Bribery",
+                        "Fake News / Misinformation",
+                        "Polling Station Irregularity"
+                    ]
+                },
+                location: {
+                    label: "Location",
+                    placeholder: "E.g., Dhanmondi Boys School Center"
+                },
+                description: {
+                    label: "Description",
+                    placeholder: "Describe what happened..."
+                },
+                evidence: {
+                    label: "Evidence (Optional)"
+                },
+                submit: "Submit Report",
+                submitting: "Submitting...",
+                success: "Report submitted successfully. Thank you for your vigilance."
+            }
+        },
+        statusPage: {
+            title: "Result",
+            steps: {
+                gettingStarted: { title: "Getting Started", desc: "Just started? Learn the basics" },
+                notRegistered: { title: "Not Registered", desc: "Not registered, apply for NID" },
+                partiallyReady: { title: "Partially Ready", desc: "More to do! Complete steps" },
+                almostReady: { title: "Almost Ready", desc: "Just a little left! Check missing info" },
+                readyToVote: { title: "Ready to Vote", desc: "You're ready, go vote!" }
+            }
+        },
+        coursePage: {
+            title: "Voter Education Course",
+            desc: "Complete this free mini-course to become a certified 'Civic Hero'. Learn about your rights and the voting process.",
+            modules: [
+                {
+                    title: "Module 1: Understanding Democracy",
+                    desc: "Learn the basics of democratic rights and why your vote matters.",
+                    duration: "10 mins",
+                    lessons: ["What is Democracy?", "Rights & Responsibilities", "The Power of One Vote"]
+                },
+                {
+                    title: "Module 2: How to Register",
+                    desc: "Step-by-step guide to becoming a registered voter in Bangladesh.",
+                    duration: "15 mins",
+                    lessons: ["Eligibility Check", "Required Documents", "Online Registration Process"]
+                },
+                {
+                    title: "Module 3: Election Day Process",
+                    desc: "Everything you need to know about casting your ballot correctly.",
+                    duration: "12 mins",
+                    lessons: ["Finding Your Center", "Ballot Marking Rules", "Do's and Don'ts"]
+                }
+            ],
+            cta: {
+                title: "Ready to test your knowledge?",
+                desc: "Take the final quiz after completing all modules to earn your digital Civic Hero Badge!",
+                btn: "Start Final Quiz"
+            }
         },
         aboutUs: {
             title: "About Amar Ballot",
@@ -269,6 +486,12 @@ export const translations = {
             activeVoter: "Active Voter",
             nidCard: "National Identity Card",
             biometricVerified: "Biometric Verified",
+            profile: {
+                nid: "NID Number",
+                dob: "Date of Birth",
+                district: "District",
+                area: "Voter Area"
+            },
             nextElection: "Next Election In",
             timeUnits: {
                 days: "Days",
@@ -344,6 +567,19 @@ export const translations = {
             }
         },
         admin: {
+            nav: {
+                dashboard: "Dashboard",
+                users: "Users",
+                candidates: "Candidates",
+                centers: "Vote Centers",
+                updates: "Updates",
+                content: "Content",
+                reports: "Reports",
+                rumors: "Rumor Check",
+                trainAI: "Train AI",
+                logout: "Sign Out",
+                menu: "Menu"
+            },
             title: "Dashboard Overview",
             welcome: "Welcome back",
             fixSchema: "Fix DB Schema",
@@ -359,6 +595,256 @@ export const translations = {
                 manageNews: "Manage News",
                 factChecks: "Fact Checks",
                 safety: "Safety Reports"
+            },
+            aiCache: {
+                title: "AI Knowledge Cache",
+                subtitle: "Updates, Rumors, and Trained AI Data",
+                forceRefresh: "Force Refresh",
+                setupCache: "Setup Cache",
+                addKnowledge: "Add Knowledge",
+                refreshSuccess: "✅ Cache refreshed! New data loaded from database.",
+                setupSuccess: "✅ Cache setup complete! AI is ready with latest data."
+            },
+            centers: {
+                title: "Manage Vote Centers",
+                subtitle: "Add, edit, or remove polling stations",
+                add: "Add Center",
+                search: "Search centers by name or area...",
+                table: {
+                    name: "Center Name",
+                    location: "Location (Constituency)",
+                    capacity: "Capacity",
+                    coordinates: "Coordinates",
+                    actions: "Actions",
+                    loading: "Loading centers...",
+                    empty: "No vote centers found."
+                },
+                form: {
+                    addTitle: "Add Vote Center",
+                    editTitle: "Edit Vote Center",
+                    nameEn: "Center Name (English)",
+                    nameBn: "Center Name (Bangla)",
+                    addressEn: "Address (English)",
+                    addressBn: "Address (Bangla)",
+                    capacity: "Capacity (Voters)",
+                    lat: "Latitude",
+                    lng: "Longitude",
+                    division: "Division",
+                    district: "District",
+                    area: "Constituency (Area)",
+                    selectDivision: "Select Division",
+                    selectDistrict: "Select District",
+                    selectSeat: "Select Seat",
+                    cancel: "Cancel",
+                    save: "Save Center",
+                    update: "Update Center"
+                },
+                alerts: {
+                    deleteConfirm: "Are you sure you want to delete this vote center?",
+                    fail: "Failed to save vote center"
+                }
+            },
+            users: {
+                title: "Manage Users",
+                subtitle: "View and manage registered voters",
+                total: "Total Users",
+                search: "Search by name, email, or NID...",
+                table: {
+                    status: "Status",
+                    details: "User Details",
+                    nid: "NID Info",
+                    contact: "Contact",
+                    actions: "Actions",
+                    loading: "Loading users...",
+                    empty: "No users found.",
+                    verified: "Verified",
+                    unverified: "Unverified",
+                    notProvided: "Not provided"
+                },
+                alerts: {
+                    deleteConfirm: "Are you sure you want to delete this user? This action cannot be undone."
+                }
+            },
+            candidates: {
+                title: "Manage Candidates",
+                subtitle: "Add, edit, or remove election candidates",
+                add: "Add Candidate",
+                search: "Search candidates by name, party, or area...",
+                table: {
+                    valid: "Valid",
+                    name: "Name / Party",
+                    area: "Constituency",
+                    symbol: "Symbol",
+                    actions: "Actions",
+                    loading: "Loading candidates...",
+                    empty: "No candidates found."
+                },
+                form: {
+                    addTitle: "Add New Candidate",
+                    editTitle: "Edit Candidate",
+                    nameEn: "Full Name (English)",
+                    nameBn: "Full Name (Bangla)",
+                    party: "Party Name",
+                    partyBn: "Party Name (Bangla)",
+                    symbol: "Symbol",
+                    age: "Age",
+                    education: "Education",
+                    image: "Image URL",
+                    alliance: "Alliance",
+                    manifesto: "Manifesto",
+                    division: "Division",
+                    district: "District",
+                    area: "Constituency (Area)",
+                    selectDivision: "Select Division",
+                    selectDistrict: "Select District",
+                    selectSeat: "Select Seat",
+                    cancel: "Cancel",
+                    save: "Save Candidate",
+                    update: "Update Candidate"
+                },
+                alerts: {
+                    deleteConfirm: "Are you sure you want to delete this candidate?",
+                    fail: "Failed to save candidate"
+                }
+            },
+            updates: {
+                title: "Election Updates",
+                subtitle: "Post news and announcements",
+                add: "Post Update",
+                loading: "Loading updates...",
+                empty: "No updates posted yet.",
+                form: {
+                    addTitle: "Post New Update",
+                    editTitle: "Edit Update",
+                    title: "Title",
+                    author: "Author Name",
+                    tags: "Tags (comma separated)",
+                    readTime: "Read Time (mins)",
+                    sourceUrl: "Source URL",
+                    image: "Attach Image",
+                    content: "Details",
+                    save: "Post Update",
+                    update: "Update Post",
+                    cancel: "Cancel"
+                }
+            },
+            rumors: {
+                title: "Rumor Verification",
+                subtitle: "Manage fact-checking database",
+                add: "Add Check",
+                search: "Search rumors...",
+                status: {
+                    fake: "Fake / Rumor",
+                    verified: "Truth / Verified",
+                    pending: "Pending"
+                },
+                form: {
+                    addTitle: "Add Fact Check",
+                    editTitle: "Edit Fact Check",
+                    title: "Rumor/Topic Title",
+                    verdict: "Verdict",
+                    explanation: "Explanation",
+                    source: "Source URL (Optional)",
+                    image: "Evidence Image (Optional)",
+                    save: "Save Record"
+                }
+            },
+            incidents: {
+                title: "Incident Reports",
+                loading: "Loading incidents...",
+                empty: "No incidents reported yet.",
+                resolve: "Mark as Resolved",
+                delete: "Delete Report"
+            },
+            trainAI: {
+                title: "Train AI",
+                subtitle: "Teach AI to answer your way",
+                buttons: {
+                    add: "New",
+                    import: "JSON",
+                    duplicates: "Duplicates",
+                    save: "Save",
+                    saving: "Saving..."
+                },
+                stats: {
+                    total: "Total Questions",
+                    active: "Active",
+                    inactive: "Inactive",
+                    divisions: "Categories",
+                    autoLearn: "Auto-learn"
+                },
+                filter: {
+                    all: "All Categories",
+                    only: "Only"
+                },
+                search: "Search questions or answers...",
+                empty: {
+                    title: "No Knowledge Found",
+                    subtitle: "Add some questions to train the AI."
+                },
+                table: {
+                    question: "Question",
+                    answer: "Answer"
+                },
+                import: {
+                    title: "Import JSON",
+                    upload: "Upload JSON File",
+                    or: "OR",
+                    paste: "Paste JSON Text",
+                    sample: "View Sample Format",
+                    useSample: "Use Sample",
+                    importing: "Importing...",
+                    importAction: "Import Data",
+                    success: "Import Successful",
+                    error: "Import Failed",
+                    imported: "Imported",
+                    failed: "Failed",
+                    errorDetails: "Error Details",
+                    close: "Close"
+                },
+                form: {
+                    addTitle: "Add New Question",
+                    editTitle: "Edit Question",
+                    division: "Category",
+                    question: "Question",
+                    questionPlaceholder: "e.g. How do I vote?",
+                    answer: "Answer",
+                    answerPlaceholder: "e.g. You can vote by...",
+                    keywords: "Keywords (Optional)",
+                    keywordsHelp: "Comma separated keywords for better matching",
+                    priority: "Priority",
+                    priorityHelp: "Higher number means higher priority (0-100)",
+                    save: "Save",
+                    update: "Update",
+                    cancel: "Cancel"
+                },
+                alerts: {
+                    required: "Please fill in all required fields",
+                    deleteConfirm: "Are you sure you want to delete this?",
+                    duplicateConfirm: "Duplicates will be removed. Only highest priority copy will be kept. Are you sure?"
+                }
+            },
+            content: {
+                title: "Page Content",
+                subtitle: "Manage website content across different pages",
+                sections: "Sections",
+                updated: "Updated",
+                items: "items",
+                never: "Never",
+                branding: { title: "Branding", desc: "Logo and Favicon" },
+                about: { title: "About Page", desc: "Mission, Vision, Story" },
+                contact: { title: "Contact Page", desc: "Emails, Phone, Address" },
+                services: { title: "Services Page", desc: "6 Service Items" },
+                citizen: { title: "Good Citizen Message", desc: "Inspiring Message" },
+                tips: {
+                    title: "Quick Tips",
+                    list: [
+                        "Click any section to edit its content",
+                        "All changes are auto-saved as you type",
+                        "Content supports both English and Bengali",
+                        "Changes appear on the live site immediately"
+                    ]
+                }
             }
         },
         common: {
@@ -382,7 +868,19 @@ export const translations = {
             map: "নেভিগেশন ম্যাপ"
         },
         home: {
+            seo: {
+                title: "হোম",
+                desc: "আপনার ভোট, আপনার অধিকার।"
+            },
             readyToVote: "ভোট দিতে প্রস্তুত!",
+            smartAvatar: {
+                bubble: "হ্যালো! 👋",
+                hello: "হ্যালো,",
+                name: "আমি প্রেরণা",
+                helper: "আমি আপনাকে সাহায্য করবো",
+                role: "একজন দায়িত্বশীল ভোটার হতে",
+                chat: "আমার সাথে কথা বলুন"
+            },
             quickLinks: {
                 updates: "নির্বাচন আপডেট",
                 center: "আপনার ভোট কেন্দ্র",
@@ -406,7 +904,32 @@ export const translations = {
                 rights: "আমি আমার ভোটের অধিকার জানি",
                 rules: "আমি নির্বাচনের নিয়মাবলী সম্পর্কে সচেতন"
             },
-            resultBtn: "ফলাফল"
+            resultBtn: "ফলাফল",
+            modal: {
+                congrats: "🎉 অভিনন্দন",
+                suggestions: "💡 পরামর্শ",
+                success: "🎖️ আপনি এখন দায়িত্বশীল নাগরিক!",
+                noNid: {
+                    title: "এনআইডি কার্ড নেই?",
+                    desc: "নতুন এনআইডি আবেদনের জন্য নির্বাচন কমিশনের ওয়েবসাইটে যান।",
+                    btn: "আবেদন করুন"
+                },
+                noCenter: {
+                    title: "ভোট কেন্দ্র জানেন না?",
+                    desc: "আপনার নিকটস্থ ভোট কেন্দ্র খুঁজে বের করুন।",
+                    btn: "কেন্দ্র খুঁজুন"
+                },
+                noSteps: {
+                    title: "ভোট প্রদানের নিয়ম জানেন না?",
+                    desc: "আমাদের ভিডিও টিউটোরিয়াল দেখে জেনে নিন।",
+                    btn: "ভিডিও দেখুন"
+                },
+                civic: {
+                    title: "নাগরিক দায়িত্ব সম্পর্কে জানুন",
+                    desc: "নাগরিক ব্যাজ সেকশনে আপনার অধিকার ও দায়িত্ব জানুন।",
+                    btn: "দায়িত্ব জানুন"
+                }
+            }
         },
         emergency: {
             title: "জরুরী যোগাযোগ",
@@ -419,24 +942,79 @@ export const translations = {
         },
         contact: {
             title: "যোগাযোগ করুন",
-            subtitle: "ভোট বা অ্যাপ সম্পর্কে কোনো প্রশ্ন আছে? আমাদের সাথে যোগাযোগ করুন।",
+            subtitle: "আপনার ভোটাধিকার প্রয়োগে সাহায্য করতে আমরা এখানে আছি।",
             form: {
                 title: "আমাদের বার্তা পাঠান",
-                name: "নাম",
-                email: "ইমেইল",
+                name: "আপনার নাম",
+                placeholderName: "আপনার পুরো নাম লিখুন",
+                email: "ইমেইল ঠিকানা",
+                placeholderEmail: "যেমন: adnan@example.com",
                 subject: "বিষয়",
+                placeholderSubject: "কিভাবে আমরা সাহায্য করতে পারি?",
                 message: "বার্তা",
+                placeholderMessage: "আপনার বার্তা এখানে লিখুন...",
                 send: "বার্তা পাঠান",
-                placeholderName: "আপনার নাম",
-                placeholderEmail: "আপনার ইমেইল",
-                placeholderSubject: "বিষয়",
-                placeholderMessage: "আপনার বার্তা লিখুন..."
+                sending: "পাঠানো হচ্ছে...",
+                success: "বার্তা সফলভাবে পাঠানো হয়েছে! আমরা শীঘ্রই আপনার সাথে যোগাযোগ করব।",
+                error: "বার্তা পাঠাতে ব্যর্থ হয়েছে। আবার চেষ্টা করুন।"
             },
             info: {
                 emailTitle: "ইমেইল করুন",
                 callTitle: "কল করুন",
                 visitTitle: "অফিসে আসুন",
-                address: "নির্বাচন ভবন,\nআগারগাঁও, ঢাকা-১২০৭।"
+                address: "নির্বাচন ভবন,\nআগারগাঁও, ঢাকা-১২০৭",
+                hours: "সোম-শুক্র সকাল ৯টা থেকে বিকাল ৫টা"
+            }
+        },
+        electionUpdates: {
+            title: "নির্বাচনী আপডেট",
+            sort: {
+                label: "সাজান",
+                newest: "সর্বশেষ",
+                oldest: "পুরাতন"
+            },
+            loading: "আপডেট লোড হচ্ছে...",
+            empty: "কোনো আপডেট প্রকাশিত হয়নি।",
+            share: "শেয়ার করুন",
+            linkCopied: "লিংক কপি হয়েছে!",
+            readMin: "মিনিট পড়ুন",
+            views: "বার দেখা হয়েছে",
+            source: "সোর্স / ফ্যাক্ট চেক দেখুন",
+            comments: {
+                title: "মন্তব্য",
+                placeholder: "আপনার মতামত জানান...",
+                submit: "পাঠান",
+                loading: "মন্তব্য লোড হচ্ছে...",
+                empty: "এখনো কোনো মন্তব্য নেই।",
+                loginReq: "মন্তব্য করতে লগ ইন করুন।"
+            }
+        },
+        auth: {
+            loginTitle: "স্বাগতম",
+            signupTitle: "অ্যাকাউন্ট তৈরি করুন",
+            loginSubtitle: "আপনার ভোটিং ড্যাশবোর্ড অ্যাক্সেস করতে লগ ইন করুন",
+            signupSubtitle: "একজন দায়িত্বশীল ভোটার হতে সাইন আপ করুন",
+            tabs: {
+                login: "লগ ইন",
+                signup: "সাইন আপ"
+            },
+            form: {
+                name: "পুরো নাম",
+                email: "ইমেইল ঠিকানা",
+                phone: "ফোন নম্বর (ঐচ্ছিক)",
+                password: "পাসওয়ার্ড",
+                confirmPassword: "পাসওয়ার্ড নিশ্চিত করুন",
+                forgot: "পাসওয়ার্ড ভুলে গেছেন?",
+                loginBtn: "লগ ইন",
+                signupBtn: "অ্যাকাউন্ট তৈরি করুন"
+            },
+            messages: {
+                missing: { title: "তথ্য অনুপস্থিত", msg: "অনুগ্রহ করে সকল প্রয়োজনীয় তথ্য পূরণ করুন।" },
+                loginFail: { title: "লগইন ব্যর্থ হয়েছে", msg: "অনুগ্রহ করে আপনার তথ্য যাচাই করুন।" },
+                passwordMismatch: { title: "পাসওয়ার্ড মিলছে না", msg: "পাসওয়ার্ড দুটি একই হতে হবে!" },
+                nameReq: { title: "নাম প্রয়োজন", msg: "অনুগ্রহ করে আপনার পুরো নাম লিখুন।" },
+                regSuccess: { title: "নিবন্ধন সফল", msg: "অমর ব্যালটে স্বাগতম! অনুগ্রহ করে লগ ইন করুন।" },
+                regFail: { title: "নিবন্ধন ব্যর্থ", msg: "কিছু ভুল হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।" }
             }
         },
         voterGuide: {
@@ -451,6 +1029,57 @@ export const translations = {
             readyDesc: "এখনই আপনার নিকটস্থ ভোটকেন্দ্র খুঁজুন।",
             findBtn: "ভোট কেন্দ্র খুঁজুন"
         },
+
+        rumorPage: {
+            title: "গুজব যাচাই",
+            searchPlaceholder: "অনুসন্ধান...",
+            sort: {
+                newest: "সর্বশেষ",
+                oldest: "পুরাতন"
+            },
+            status: {
+                verified: "সঠিক",
+                fake: "গুজব"
+            },
+            actions: {
+                share: "শেয়ার করুন",
+                source: "সোর্স দেখুন",
+                comment: "মন্তব্য করুন...",
+                moreComments: "+{count} আরো মন্তব্য",
+                viewSource: "সোর্স / ফ্যাক্ট চেক দেখুন",
+                copied: "লিংক কপি হয়েছে!"
+            },
+            loading: "গুজব লোড হচ্ছে...",
+            notFound: "কোনো গুজব পাওয়া যায়নি।"
+        },
+        nidVerification: {
+            title: "পরিচয় যাচাইকরণ",
+            subtitle: "ভোট দেওয়ার জন্য আপনার এনআইডি ও নিজ আসন নির্বাচন করুন।",
+            form: {
+                nidLabel: "জাতীয় পরিচয়পত্র নম্বর",
+                nidPlaceholder: "যেমন: ১৯৫৬...",
+                skipNid: "আমি আমার এনআইডি নম্বর শেয়ার করতে চাই না",
+                dobLabel: "জন্ম তারিখ",
+                seatHeader: "আপনার ভোটের এলাকা নির্বাচন করুন",
+                division: "বিভাগ",
+                selectDivision: "বিভাগ নির্বাচন করুন...",
+                district: "জেলা",
+                selectDistrict: "জেলা নির্বাচন করুন...",
+                area: "আসন (Constituency)",
+                selectArea: "আসন নির্বাচন করুন...",
+                permanentWarning: "* এটি আপনার স্থায়ী ভোটের আসন হিসেবে গণ্য হবে।",
+                verifyBtn: "যাচাই করুন ও জমা দিন",
+                verifying: "যাচাই করা হচ্ছে...",
+                back: "ড্যাশবোর্ডে ফিরে যান"
+            },
+            messages: {
+                authReq: { title: "লগইন প্রয়োজন", msg: "যাচাই করার জন্য আপনাকে অবশ্যই লগ ইন করতে হবে।" },
+                missing: { title: "তথ্য অনুপস্থিত", msg: "অনুগ্রহ করে আপনার নির্দিষ্ট আসন সহ সমস্ত বিবরণ পূরণ করুন।" },
+                success: { title: "যাচাইকরণ সফল!", msg: "{area}-এর ভোটার আপনাকে স্বাগতম! আপনি এখন সম্পূর্ণ ফিচার ব্যবহার করতে পারবেন।" },
+                fail: { title: "যাচাইকরণ ব্যর্থ", msg: "আপনার বিবরণ যাচাই করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।" }
+            }
+        },
+
         faq: {
             title: "সচরাচর জিজ্ঞাসিত প্রশ্ন",
             questions: [
@@ -575,14 +1204,88 @@ export const translations = {
             }
         },
         videoTutorials: {
-            title: "ভিডিও",
-            subtitle: "টিউটোরিয়াল এবং বার্তা দেখুন",
+            title: "ভিডিও টিউটোরিয়াল",
+            subtitle: "নির্বাচন ও গণভোট সম্পর্কিত টিউটোরিয়াল এবং বার্তা দেখুন",
             videos: [
-                "যেভাবে ভোট দিবেন",
                 "দেশের চাবি আপনার হাতে",
-                "মাননীয় প্রধান উপদেষ্টার বার্তা",
-                "শিক্ষা প্রতিষ্ঠানে প্রচারণা"
+                "যেভাবে ভোট দিবেন",
+                "গণভোটে হ্যাঁ সিল দেয়ার আহ্বান জানিয়ে মাননীয় প্রধান উপদেষ্টা প্রফেসর মুহাম্মদ ইউনূসের বার্তা",
+                "আগামী সংসদ নির্বাচন এবং গণভোট উপলক্ষে সিলেট বিভাগের জন্য নির্মিত গান",
+                "আগামী সংসদ নির্বাচন এবং গণভোট উপলক্ষে রাজশাহী বিভাগের জন্য নির্মিত গান",
+                "মাত্র তিন মিনিটে জেনে নিন গণভোট কী এবং কেন",
+                "সংসদ নির্বাচন এবং গণভোট উপলক্ষে চট্টগ্রাম বিভাগের জন্য নির্মিত গান",
+                "শহিদদের স্বপ্নের বাংলাদেশ গড়ে তোলাই আজ আমাদের নৈতিক দায়িত্ব",
+                "July & Journalism"
             ]
+        },
+        reportIncident: {
+            title: "অভিযোগ জানান",
+            desc: "নির্বাচনী আচরণবিধি লঙ্ঘন, সহিংসতা বা অনিয়মের অভিযোগ জানাতে এই ফর্মটি ব্যবহার করুন। আপনার পরিচয় গোপন রাখা হবে।",
+            form: {
+                type: {
+                    label: "ঘটনার ধরন",
+                    placeholder: "ধরন নির্বাচন করুন...",
+                    options: [
+                        "সহিংসতা / হয়রানি",
+                        "ভোট কেনাবেচা / ঘুষ",
+                        "ভুয়া খবর / গুজব",
+                        "ভোটকেন্দ্রে অনিয়ম"
+                    ]
+                },
+                location: {
+                    label: "স্থান",
+                    placeholder: "যেমন: ধানমন্ডি বয়েজ স্কুল কেন্দ্র"
+                },
+                description: {
+                    label: "বিবরণ",
+                    placeholder: "কি ঘটেছে বিস্তারিত লিখুন...",
+                },
+                evidence: {
+                    label: "প্রমাণ (ঐচ্ছিক)"
+                },
+                submit: "অভিযোগ জমা দিন",
+                submitting: "জমা দেওয়া হচ্ছে...",
+                success: "অভিযোগ সফলভাবে জমা দেওয়া হয়েছে। আপনার সতর্কতার জন্য ধন্যবাদ।"
+            }
+        },
+        statusPage: {
+            title: "ফলাফল",
+            steps: {
+                gettingStarted: { title: "শুরু করা হচ্ছে", desc: "মাত্র শুরু করেছেন? বেসিক জানুন" },
+                notRegistered: { title: "নিবন্ধিত নন", desc: "নিবন্ধিত নন, এনআইডি-র জন্য আবেদন করুন" },
+                partiallyReady: { title: "আংশিক প্রস্তুত", desc: "আরও বাকি আছে! ধাপগুলি সম্পন্ন করুন" },
+                almostReady: { title: "প্রায় প্রস্তুত", desc: "সামান্য বাকি! তথ্যের ঘাটতি দেখুন" },
+                readyToVote: { title: "ভোটের জন্য প্রস্তুত", desc: "আপনি প্রস্তুত, ভোট দিন!" }
+            }
+        },
+        coursePage: {
+            title: "ভোটার শিক্ষা কোর্স",
+            desc: "একজন 'সিভিক হিরো' হতে এই ফ্রি মিনি-কোর্সটি সম্পন্ন করুন। আপনার অধিকার এবং ভোট প্রক্রিয়া সম্পর্কে জানুন।",
+            modules: [
+                {
+                    title: "মডিউল ১: গণতন্ত্র বোঝা",
+                    desc: "গণতান্ত্রিক অধিকার এবং আপনার ভোটের গুরুত্ব সম্পর্কে জানুন।",
+                    duration: "১০ মিনিট",
+                    lessons: ["গণতন্ত্র কী?", "অধিকার ও দায়িত্ব", "একটি ভোটের শক্তি"]
+                },
+                {
+                    title: "মডিউল ২: কিভাবে নিবন্ধন করবেন",
+                    desc: "বাংলাদেশে নিবন্ধিত ভোটার হওয়ার ধাপে ধাপে নির্দেশিকা।",
+                    duration: "১৫ মিনিট",
+                    lessons: ["যোগ্যতা যাচাই", "প্রয়োজনীয় কাগজপত্র", "অনলাইন নিবন্ধন প্রক্রিয়া"]
+                },
+                {
+                    title: "মডিউল ৩: নির্বাচনের দিনের প্রক্রিয়া",
+                    desc: "সঠিকভাবে ভোট দেওয়ার জন্য প্রয়োজনীয় সবকিছু জানুন।",
+                    duration: "১২ মিনিট",
+                    lessons: ["আপনার কেন্দ্র খোঁজা", "ব্যালট মার্কিং নিয়ম", "করণীয় এবং বর্জনীয়"]
+                }
+            ],
+            cta: {
+                title: "আপনার জ্ঞান যাচাই করতে প্রস্তুত?",
+                desc: "আপনার ডিজিটাল সিভিক হিরো ব্যাজ পেতে সব মডিউল শেষ করে কুইজ দিন!",
+                btn: "কুইজ শুরু করুন"
+            }
         },
         aboutUs: {
             title: "অমর ব্যালট সম্পর্কে",
@@ -642,6 +1345,12 @@ export const translations = {
             activeVoter: "সক্রিয় ভোটার",
             nidCard: "জাতীয় পরিচয়পত্র",
             biometricVerified: "বায়োমেট্রিক যাচাইকৃত",
+            profile: {
+                nid: "এনআইডি নম্বর",
+                dob: "জন্ম তারিখ",
+                district: "জেলা",
+                area: "ভোটার এলাকা"
+            },
             nextElection: "পরবর্তী নির্বাচন",
             timeUnits: {
                 days: "দিন",
@@ -717,6 +1426,19 @@ export const translations = {
             }
         },
         admin: {
+            nav: {
+                dashboard: "ড্যাশবোর্ড",
+                users: "ব্যবহারকারী",
+                candidates: "প্রার্থী",
+                centers: "ভোট কেন্দ্র",
+                updates: "আপডেট",
+                content: "কনটেন্ট",
+                reports: "রিপোর্ট",
+                rumors: "গুজব যাচাই",
+                trainAI: "এআই প্রশিক্ষণ",
+                logout: "সাইন আউট",
+                menu: "মেনু"
+            },
             title: "ড্যাশবোর্ড ওভারভিউ",
             welcome: "স্বাগতম",
             fixSchema: "স্কিমা ঠিক করুন",
@@ -732,6 +1454,256 @@ export const translations = {
                 manageNews: "খবর পরিচালনা",
                 factChecks: "ফ্যাক্ট চেক",
                 safety: "নিরাপত্তা রিপোর্ট"
+            },
+            aiCache: {
+                title: "এআই নলেজ ক্যাশ",
+                subtitle: "আপডেট, গুজব এবং এআই ডাটা",
+                forceRefresh: "রিফ্রেশ করুন",
+                setupCache: "ক্যাশ সেটআপ",
+                addKnowledge: "তথ্য যোগ করুন",
+                refreshSuccess: "✅ ক্যাশ রিফ্রেশ হয়েছে! ডাটাবেস থেকে নতুন তথ্য লোড করা হয়েছে।",
+                setupSuccess: "✅ ক্যাশ সেটআপ সম্পন্ন! এআই এখন কাজ করতে প্রস্তুত।"
+            },
+            centers: {
+                title: "ভোট কেন্দ্র ব্যবস্থাপনা",
+                subtitle: "ভোট কেন্দ্র যোগ, সম্পাদনা বা অপসারণ করুন",
+                add: "কেন্দ্র যোগ করুন",
+                search: "নাম বা এলাকা দিয়ে খুঁজুন...",
+                table: {
+                    name: "কেন্দ্রের নাম",
+                    location: "অবস্থান (আসন)",
+                    capacity: "ধারণক্ষমতা",
+                    coordinates: "স্থানাঙ্ক",
+                    actions: "পদক্ষেপ",
+                    loading: "লোড হচ্ছে...",
+                    empty: "কোনো ভোট কেন্দ্র পাওয়া যায়নি।"
+                },
+                form: {
+                    addTitle: "ভোট কেন্দ্র যোগ করুন",
+                    editTitle: "ভোট কেন্দ্র সম্পাদনা",
+                    nameEn: "কেন্দ্রের নাম (ইংরেজি)",
+                    nameBn: "কেন্দ্রের নাম (বাংলা)",
+                    addressEn: "ঠিকানা (ইংরেজি)",
+                    addressBn: "ঠিকানা (বাংলা)",
+                    capacity: "ধারণক্ষমতা (ভোটার)",
+                    lat: "অক্ষাংশ",
+                    lng: "দ্রাঘিমাংশ",
+                    division: "বিভাগ",
+                    district: "জেলা",
+                    area: "নির্বাচনী এলাকা (আসন)",
+                    selectDivision: "বিভাগ নির্বাচন করুন",
+                    selectDistrict: "জেলা নির্বাচন করুন",
+                    selectSeat: "আসন নির্বাচন করুন",
+                    cancel: "বাতিল",
+                    save: "সংরক্ষণ করুন",
+                    update: "আপডেট করুন"
+                },
+                alerts: {
+                    deleteConfirm: "আপনি কি নিশ্চিত যে আপনি এই ভোট কেন্দ্রটি মুছে ফেলতে চান?",
+                    fail: "ভোট কেন্দ্র সংরক্ষণ করতে ব্যর্থ হয়েছে"
+                }
+            },
+            users: {
+                title: "ব্যবহারকারী ব্যবস্থাপনা",
+                subtitle: "নিবন্ধিত ভোটারদের তালিকা দেখুন ও পরিচালনা করুন",
+                total: "মোট ব্যবহারকারী",
+                search: "নাম, ইমেইল বা এনআইডি দিয়ে খুঁজুন...",
+                table: {
+                    status: "অবস্থা",
+                    details: "ব্যবহারকারীর বিবরণ",
+                    nid: "এনআইডি তথ্য",
+                    contact: "যোগাযোগ",
+                    actions: "পদক্ষেপ",
+                    loading: "ব্যবহারকারী লোড হচ্ছে...",
+                    empty: "কোনো ব্যবহারকারী পাওয়া যায়নি।",
+                    verified: "যাচাইকৃত",
+                    unverified: "অযাচাইকৃত",
+                    notProvided: "দেওয়া হয়নি"
+                },
+                alerts: {
+                    deleteConfirm: "আপনি কি নিশ্চিত যে আপনি এই ব্যবহারকারীকে মুছে ফেলতে চান? এটি ফিরিয়ে আনা যাবে না।"
+                }
+            },
+            candidates: {
+                title: "প্রার্থী ব্যবস্থাপনা",
+                subtitle: "নির্বাচনী প্রার্থীদের যোগ, সম্পাদনা বা অপসারণ করুন",
+                add: "প্রার্থী যোগ করুন",
+                search: "নাম, দল বা এলাকা দিয়ে খুঁজুন...",
+                table: {
+                    valid: "বৈধ",
+                    name: "নাম / দল",
+                    area: "নির্বাচনী এলাকা",
+                    symbol: "প্রতীক",
+                    actions: "পদক্ষেপ",
+                    loading: "প্রার্থী লোড হচ্ছে...",
+                    empty: "কোনো প্রার্থী পাওয়া যায়নি।"
+                },
+                form: {
+                    addTitle: "নতুন প্রার্থী যোগ করুন",
+                    editTitle: "প্রার্থী সম্পাদনা",
+                    nameEn: "পুরো নাম (ইংরেজি)",
+                    nameBn: "পুরো নাম (বাংলা)",
+                    party: "দলের নাম",
+                    partyBn: "দলের নাম (বাংলা)",
+                    symbol: "প্রতীক",
+                    age: "বয়স",
+                    education: "শিক্ষাগত যোগ্যতা",
+                    image: "ছবির লিংক",
+                    alliance: "জোট",
+                    manifesto: "ইশতেহার",
+                    division: "বিভাগ",
+                    district: "জেলা",
+                    area: "নির্বাচনী এলাকা (আসন)",
+                    selectDivision: "বিভাগ নির্বাচন করুন",
+                    selectDistrict: "জেলা নির্বাচন করুন",
+                    selectSeat: "আসন নির্বাচন করুন",
+                    cancel: "বাতিল",
+                    save: "প্রার্থী সংরক্ষণ",
+                    update: "প্রার্থী আপডেট"
+                },
+                alerts: {
+                    deleteConfirm: "আপনি কি নিশ্চিত যে আপনি এই প্রার্থীকে মুছে ফেলতে চান?",
+                    fail: "প্রার্থী সংরক্ষণ করতে ব্যর্থ হয়েছে"
+                }
+            },
+            updates: {
+                title: "নির্বাচনী আপডেট",
+                subtitle: "খবর এবং ঘোষণা পোস্ট করুন",
+                add: "আপডেট পোস্ট করুন",
+                loading: "আপডেট লোড হচ্ছে...",
+                empty: "কোনো আপডেট পোস্ট করা হয়নি।",
+                form: {
+                    addTitle: "নতুন আপডেট পোস্ট করুন",
+                    editTitle: "আপডেট সম্পাদনা",
+                    title: "শিরোনাম",
+                    author: "লেখকের নাম",
+                    tags: "ট্যাগ (কমা দিয়ে আলাদা করুন)",
+                    readTime: "পড়ার সময় (মিনিট)",
+                    sourceUrl: "সোর্স লিংক",
+                    image: "ছবি সংযুক্ত করুন",
+                    content: "বিস্তারিত",
+                    save: "পোস্ট করুন",
+                    update: "আপডেট করুন",
+                    cancel: "বাতিল"
+                }
+            },
+            rumors: {
+                title: "গুজব যাচাইকরণ",
+                subtitle: "ফ্যাক্ট-চেকিং ডাটাবেস পরিচালনা করুন",
+                add: "যাচাই যোগ করুন",
+                search: "গুজব খুঁজুন...",
+                status: {
+                    fake: "মিথ্যা / গুজব",
+                    verified: "সত্য / যাচাইকৃত",
+                    pending: "অমীমাংসিত"
+                },
+                form: {
+                    addTitle: "ফ্যাক্ট চেক যোগ করুন",
+                    editTitle: "ফ্যাক্ট চেক সম্পাদনা",
+                    title: "গুজব/বিষয় শিরোনাম",
+                    verdict: "রায়",
+                    explanation: "ব্যাখ্যা",
+                    source: "সোর্স লিংক (ঐচ্ছিক)",
+                    image: "প্রমাণ ছবি (ঐচ্ছিক)",
+                    save: "রেকর্ড সংরক্ষণ"
+                }
+            },
+            incidents: {
+                title: "ঘটনা রিপোর্ট",
+                loading: "রিপোর্ট লোড হচ্ছে...",
+                empty: "কোনো ঘটনা রিপোর্ট করা হয়নি।",
+                resolve: "সমাধান হিসেবে চিহ্নিত করুন",
+                delete: "রিপোর্ট মুছুন"
+            },
+            trainAI: {
+                title: "এআই প্রশিক্ষণ",
+                subtitle: "এআই-কে আপনার মতো উত্তর দিতে শেখান",
+                buttons: {
+                    add: "নতুন",
+                    import: "JSON",
+                    duplicates: "ডুপ্লিকেট",
+                    save: "সংরক্ষণ",
+                    saving: "সংরক্ষণ হচ্ছে..."
+                },
+                stats: {
+                    total: "মোট প্রশ্ন",
+                    active: "সক্রিম",
+                    inactive: "নিষ্ক্রিয়",
+                    divisions: "বিভাগ",
+                    autoLearn: "অটো-লার্ন"
+                },
+                filter: {
+                    all: "সকল বিভাগ",
+                    only: "মাত্র"
+                },
+                search: "প্রশ্ন বা উত্তর খুঁজুন...",
+                empty: {
+                    title: "কোনো তথ্য পাওয়া যায়নি",
+                    subtitle: "এআই প্রশিক্ষণের জন্য কিছু প্রশ্ন যোগ করুন।"
+                },
+                table: {
+                    question: "প্রশ্ন",
+                    answer: "উত্তর"
+                },
+                import: {
+                    title: "JSON ইম্পোর্ট",
+                    upload: "JSON ফাইল আপলোড করুন",
+                    or: "অথবা",
+                    paste: "JSON টেক্সট পেস্ট করুন",
+                    sample: "নমুনা ফরম্যাট দেখুন",
+                    useSample: "নমুনা ব্যবহার করুন",
+                    importing: "ইম্পোর্ট হচ্ছে...",
+                    importAction: "ডাটা ইম্পোর্ট করুন",
+                    success: "ইম্পোর্ট সফল",
+                    error: "ইম্পোর্ট ব্যর্থ",
+                    imported: "ইম্পোর্ট করা হয়েছে",
+                    failed: "ব্যর্থ হয়েছে",
+                    errorDetails: "ত্রুটির বিবরণ",
+                    close: "বন্ধ করুন"
+                },
+                form: {
+                    addTitle: "নতুন প্রশ্ন যোগ করুন",
+                    editTitle: "প্রশ্ন সম্পাদনা",
+                    division: "বিভাগ",
+                    question: "প্রশ্ন",
+                    questionPlaceholder: "যেমন: আমি কিভাবে ভোট দিব?",
+                    answer: "উত্তর",
+                    answerPlaceholder: "যেমন: আপনি ভোট দিতে পারেন...",
+                    keywords: "কীওয়ার্ড (ঐচ্ছিক)",
+                    keywordsHelp: "ভালো ম্যাচিংয়ের জন্য কমা দিয়ে আলাদা করা কীওয়ার্ড",
+                    priority: "অগ্রাধিকার",
+                    priorityHelp: "বেশি নম্বর মানে বেশি অগ্রাধিকার (০-১০০)",
+                    save: "সংরক্ষণ",
+                    update: "আপডেট",
+                    cancel: "বাতিল"
+                },
+                alerts: {
+                    required: "অনুগ্রহ করে সব প্রয়োজনীয় ক্ষেত্র পূরণ করুন",
+                    deleteConfirm: "আপনি কি নিশ্চিত মুছে ফেলতে চান?",
+                    duplicateConfirm: "ডুপ্লিকেট মুছে ফেলা হবে। শুধুমাত্র সর্বোচ্চ অগ্রাধিকারের কপি রাখা হবে। আপনি কি নিশ্চিত?"
+                }
+            },
+            content: {
+                title: "পেইজ কনটেন্ট",
+                subtitle: "বিভিন্ন পাতার কনটেন্ট পরিচালনা করুন",
+                sections: "সেকশন",
+                updated: "আপডেট করা হয়েছে",
+                items: "টি আইটেম",
+                never: "কখনও না",
+                branding: { title: "ব্র্যান্ডিং", desc: "লোগো এবং ফ্যাভিকন" },
+                about: { title: "আমাদের সম্পর্কে", desc: "লক্ষ্য, ভিশন, গল্প" },
+                contact: { title: "যোগাযোগ", desc: "ইমেইল, ফোন, ঠিকানা" },
+                services: { title: "সেবাসমূহ", desc: "৬টি সেবা আইটেম" },
+                citizen: { title: "সুনাগরিক বার্তা", desc: "অনুপ্রেরণামূলক বার্তা" },
+                tips: {
+                    title: "দ্রুত পরামর্শ",
+                    list: [
+                        "কনটেন্ট সম্পাদনা করতে যে কোনো সেকশনে ক্লিক করুন",
+                        "লেখার সাথে সাথে পরিবর্তন স্বয়ংক্রিয়ভাবে সংরক্ষিত হয়",
+                        "কনটেন্ট ইংরেজি এবং বাংলা উভয় সমর্থন করে",
+                        "পরিবর্তনগুলি অবিলম্বে লাইভ সাইটে দেখা যায়"
+                    ]
+                }
             }
         },
         common: {

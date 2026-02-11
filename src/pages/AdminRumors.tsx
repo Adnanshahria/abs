@@ -1,9 +1,15 @@
 import { useState, useEffect } from 'react';
 import { getRumors, addRumor, updateRumor, deleteRumor } from '../lib/api';
-import { Plus, Trash2, ShieldCheck, ShieldAlert, Save, X, ExternalLink, Pencil, Search, ArrowUpDown } from 'lucide-react';
+import { Plus, Trash2, ShieldCheck, ShieldAlert, Save, X, ExternalLink, Pencil, Search, ArrowUpDown, Image, Upload } from 'lucide-react';
 import type { Rumor } from '../lib/types';
+import { useLanguage } from '../context/LanguageContext';
+import { translations } from '../data/translations';
 
 export default function AdminRumors() {
+    const { language } = useLanguage();
+    const t = translations[language].admin.rumors;
+    const common = translations[language].common;
+
     const [rumors, setRumors] = useState<Rumor[]>([]);
     const [loading, setLoading] = useState(true);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -64,7 +70,7 @@ export default function AdminRumors() {
     }, [sortOrder]);
 
     const handleDelete = async (id: number) => {
-        if (confirm('Delete this rumor check?')) {
+        if (confirm(t.alerts.deleteConfirm)) {
             await deleteRumor(id);
             fetchRumors();
         }
@@ -104,7 +110,7 @@ export default function AdminRumors() {
             setEditingId(null);
             fetchRumors();
         } else {
-            alert('Failed to save rumor');
+            alert(t.alerts.fail);
         }
     };
 
@@ -114,8 +120,8 @@ export default function AdminRumors() {
                 {/* Header Row */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Rumor Verification</h1>
-                        <p className="text-gray-600 text-sm">Manage fact-checking database</p>
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{t.title}</h1>
+                        <p className="text-gray-600 text-sm">{t.subtitle}</p>
                     </div>
                     {/* Button + Filters - all in one row */}
                     <div className="flex items-center gap-1.5 flex-nowrap">
@@ -132,8 +138,8 @@ export default function AdminRumors() {
                                 onChange={(e) => setSortOrder(e.target.value as 'newest' | 'oldest')}
                                 className="pl-6 pr-2 py-1.5 rounded-lg border border-gray-200 bg-white text-xs appearance-none cursor-pointer"
                             >
-                                <option value="newest">New</option>
-                                <option value="oldest">Old</option>
+                                <option value="newest">{t.filter.newest}</option>
+                                <option value="oldest">{t.filter.oldest}</option>
                             </select>
                         </div>
                         <button
@@ -141,7 +147,7 @@ export default function AdminRumors() {
                             className="flex items-center gap-1 bg-purple-600 text-white px-2.5 py-1.5 rounded-lg hover:bg-purple-700 transition-colors font-medium shadow-sm text-xs whitespace-nowrap"
                         >
                             <Plus className="w-3.5 h-3.5" />
-                            Add
+                            {t.add}
                         </button>
                     </div>
                 </div>
@@ -151,7 +157,7 @@ export default function AdminRumors() {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                     <input
                         type="text"
-                        placeholder="Search rumors by title or content..."
+                        placeholder={t.search}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all"
@@ -161,9 +167,9 @@ export default function AdminRumors() {
 
             <div className="grid grid-cols-1 gap-4">
                 {loading ? (
-                    <div className="text-center py-8 text-gray-500">Loading rumors...</div>
+                    <div className="text-center py-8 text-gray-500">{t.loading}</div>
                 ) : rumors.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500">No rumors recorded.</div>
+                    <div className="text-center py-8 text-gray-500">{t.empty}</div>
                 ) : (
                     rumors.map((rumor) => (
                         <div key={rumor.id} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex gap-4 hover:shadow-md transition-shadow">
@@ -183,7 +189,7 @@ export default function AdminRumors() {
                                     <div className="min-w-0">
                                         <span className={`text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded ${rumor.status === 'verified' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                                             }`}>
-                                            {rumor.status === 'verified' ? 'Truth / Verified' : 'Fake / Rumor'}
+                                            {rumor.status === 'verified' ? t.table.verified : t.table.fake}
                                         </span>
                                         <h3 className="text-lg font-bold text-gray-900 mt-2 break-words">{rumor.title}</h3>
                                         <p className="text-gray-600 mt-1 whitespace-pre-wrap break-all">
@@ -196,7 +202,7 @@ export default function AdminRumors() {
                                                 onClick={() => toggleExpand(rumor.id)}
                                                 className="text-purple-600 text-sm font-medium mt-1 hover:underline focus:outline-none"
                                             >
-                                                {expandedRumors.has(rumor.id) ? "Show Less" : "Read More"}
+                                                {expandedRumors.has(rumor.id) ? t.toggle.less : t.toggle.more}
                                             </button>
                                         )}
 
@@ -208,15 +214,15 @@ export default function AdminRumors() {
 
                                         {rumor.source && (
                                             <a href={rumor.source.startsWith('http') ? rumor.source : `https://${rumor.source}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-sm text-blue-600 mt-2 hover:underline">
-                                                <ExternalLink className="w-3 h-3" /> Source / Reference
+                                                <ExternalLink className="w-3 h-3" /> {t.table.source}
                                             </a>
                                         )}
                                     </div>
                                     <div className="flex items-center gap-2 shrink-0">
-                                        <button onClick={() => handleEdit(rumor)} className="text-gray-400 hover:text-blue-600 transition-colors p-2 hover:bg-blue-50 rounded-full" title="Edit">
+                                        <button onClick={() => handleEdit(rumor)} className="text-gray-400 hover:text-blue-600 transition-colors p-2 hover:bg-blue-50 rounded-full" title={common.edit}>
                                             <Pencil className="w-5 h-5" />
                                         </button>
-                                        <button onClick={() => handleDelete(rumor.id)} className="text-gray-400 hover:text-red-500 transition-colors p-2 hover:bg-red-50 rounded-full" title="Delete">
+                                        <button onClick={() => handleDelete(rumor.id)} className="text-gray-400 hover:text-red-500 transition-colors p-2 hover:bg-red-50 rounded-full" title={common.delete}>
                                             <Trash2 className="w-5 h-5" />
                                         </button>
                                     </div>
@@ -235,7 +241,7 @@ export default function AdminRumors() {
 
                         {/* Modal Header */}
                         <div className="flex justify-between items-center p-6 border-b border-gray-100 shrink-0">
-                            <h2 className="text-xl font-bold text-gray-900">{editingId ? 'Edit Fact Check' : 'Add Fact Check'}</h2>
+                            <h2 className="text-xl font-bold text-gray-900">{editingId ? t.form.editTitle : t.form.addTitle}</h2>
                             <button onClick={() => setIsAddModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors"><X className="w-5 h-5 text-gray-500" /></button>
                         </div>
 
@@ -243,33 +249,33 @@ export default function AdminRumors() {
                         <div className="p-6 overflow-y-auto custom-scrollbar">
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Rumor/Topic Title</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.form.title}</label>
                                     <input required className="w-full p-3 rounded-lg border border-gray-200"
                                         value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Verdict</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.form.verdict}</label>
                                     <select className="w-full p-3 rounded-lg border border-gray-200 bg-white"
                                         value={formData.status}
                                         onChange={(e) => setFormData({ ...formData, status: e.target.value as 'debunked' | 'verified' | 'pending' })}
                                     >
-                                        <option value="debunked">Fake / Rumor</option>
-                                        <option value="verified">Verified / True</option>
-                                        <option value="pending">Pending Investigation</option>
+                                        <option value="debunked">{t.table.fake}</option>
+                                        <option value="verified">{t.table.verified}</option>
+                                        <option value="pending">{t.table.pending}</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Explanation</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.form.explanation}</label>
                                     <textarea required rows={4} className="w-full p-3 rounded-lg border border-gray-200"
                                         value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Source URL (Optional)</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.form.sourceUrl}</label>
                                     <input className="w-full p-3 rounded-lg border border-gray-200"
                                         value={formData.source} onChange={e => setFormData({ ...formData, source: e.target.value })} />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Upload Evidence Image (Optional)</label>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">{t.form.image}</label>
                                     <div className="space-y-3">
                                         {/* Paste Zone */}
                                         <div
@@ -297,8 +303,8 @@ export default function AdminRumors() {
                                             }}
                                             tabIndex={0}
                                         >
-                                            <p className="text-sm text-gray-500">📋 Ctrl+V to paste image</p>
-                                            <p className="text-xs text-gray-400 mt-1">Or select file below</p>
+                                            <p className="text-sm text-gray-500">📋 {t.form.paste}</p>
+                                            <p className="text-xs text-gray-400 mt-1">{t.form.upload}</p>
                                         </div>
                                         <input
                                             type="file"
@@ -335,7 +341,7 @@ export default function AdminRumors() {
                                 </div>
                                 <div className="flex justify-end pt-4 sticky bottom-0 bg-white border-t border-gray-50 mt-4">
                                     <button type="submit" className="bg-purple-600 text-white px-6 py-2.5 rounded-lg hover:bg-purple-700 font-medium flex items-center gap-2">
-                                        <Save className="w-4 h-4" /> Save Record
+                                        <Save className="w-4 h-4" /> {editId ? t.form.save : t.form.saveResponse}
                                     </button>
                                 </div>
                             </form>

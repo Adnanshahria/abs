@@ -111,13 +111,13 @@ export default function ContactUs() {
 
                             {status === 'success' && (
                                 <div className="p-3 bg-green-100 text-green-700 rounded-lg text-sm font-medium">
-                                    {language === 'bn' ? 'বার্তা সফলভাবে পাঠানো হয়েছে!' : 'Message sent successfully! We will get back to you soon.'}
+                                    {t.contact.form.success}
                                 </div>
                             )}
 
                             {status === 'error' && (
                                 <div className="p-3 bg-red-100 text-red-700 rounded-lg text-sm font-medium">
-                                    {language === 'bn' ? 'বার্তা পাঠাতে ব্যর্থ হয়েছে। আবার চেষ্টা করুন।' : 'Failed to send message. Please try again.'}
+                                    {t.contact.form.error}
                                 </div>
                             )}
 
@@ -126,7 +126,7 @@ export default function ContactUs() {
                                 disabled={status === 'loading'}
                                 className="w-full bg-green-700 hover:bg-green-800 text-white font-bold py-3 rounded-xl shadow-md flex items-center justify-center gap-2 transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                {status === 'loading' ? (language === 'bn' ? 'পাঠানো হচ্ছে...' : 'Sending...') : (
+                                {status === 'loading' ? (t.contact.form.sending) : (
                                     <>
                                         <Send className="w-5 h-5" />
                                         {t.contact.form.send}
@@ -157,7 +157,7 @@ export default function ContactUs() {
                                 <h3 className="text-xl font-bold text-gray-800 mb-1">{t.contact.info.callTitle}</h3>
                                 <p className="text-gray-600">{getContent('contact_phone') || '+880 1711 000000'}</p>
                                 <p className="text-gray-600 leading-relaxed text-sm mt-1 text-gray-500">
-                                    {language === 'bn' ? 'সোম-শুক্র সকাল ৯টা থেকে বিকাল ৫টা' : 'Mon-Fri from 9am to 5pm.'}
+                                    {t.contact.info.hours}
                                 </p>
                             </div>
                         </div>

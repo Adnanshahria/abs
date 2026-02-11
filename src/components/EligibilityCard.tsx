@@ -57,9 +57,9 @@ export default function EligibilityCard() {
                     case 'nid':
                         return {
                             id: 'nid',
-                            title: language === 'bn' ? 'এনআইডি কার্ড নেই?' : 'No NID Card?',
-                            desc: language === 'bn' ? 'নতুন এনআইডি আবেদনের জন্য নির্বাচন কমিশনের ওয়েবসাইটে যান।' : 'Apply for NID at Election Commission website.',
-                            action: language === 'bn' ? 'আবেদন করুন' : 'Apply Now',
+                            title: t.eligibility.modal.noNid.title,
+                            desc: t.eligibility.modal.noNid.desc,
+                            action: t.eligibility.modal.noNid.btn,
                             path: 'https://services.nidw.gov.bd/',
                             external: true,
                             icon: FileText,
@@ -69,9 +69,9 @@ export default function EligibilityCard() {
                     case 'polling':
                         return {
                             id: 'polling',
-                            title: language === 'bn' ? 'ভোট কেন্দ্র জানেন না?' : 'Don\'t know Vote Center?',
-                            desc: language === 'bn' ? 'আপনার নিকটস্থ ভোট কেন্দ্র খুঁজে বের করুন।' : 'Find your nearest polling center.',
-                            action: language === 'bn' ? 'কেন্দ্র খুঁজুন' : 'Find Center',
+                            title: t.eligibility.modal.noCenter.title,
+                            desc: t.eligibility.modal.noCenter.desc,
+                            action: t.eligibility.modal.noCenter.btn,
                             path: '/vote-center',
                             icon: MapPin,
                             color: 'text-blue-600',
@@ -80,9 +80,9 @@ export default function EligibilityCard() {
                     case 'steps':
                         return {
                             id: 'steps',
-                            title: language === 'bn' ? 'ভোট প্রদানের নিয়ম জানেন না?' : 'Unsure how to vote?',
-                            desc: language === 'bn' ? 'আমাদের ভিডিও টিউটোরিয়াল দেখে জেনে নিন।' : 'Watch our video tutorials to learn.',
-                            action: language === 'bn' ? 'ভিডিও দেখুন' : 'Watch Videos',
+                            title: t.eligibility.modal.noSteps.title,
+                            desc: t.eligibility.modal.noSteps.desc,
+                            action: t.eligibility.modal.noSteps.btn,
                             path: '/video-tutorials',
                             icon: Video,
                             color: 'text-purple-600',
@@ -92,9 +92,9 @@ export default function EligibilityCard() {
                     case 'rules':
                         return {
                             id: 'civic',
-                            title: language === 'bn' ? 'নাগরিক দায়িত্ব সম্পর্কে জানুন' : 'Learn Civic Duties',
-                            desc: language === 'bn' ? 'নাগরিক ব্যাজ সেকশনে আপনার অধিকার ও দায়িত্ব জানুন।' : 'Check Civic Badge section for rights & rules.',
-                            action: language === 'bn' ? 'দায়িত্ব জানুন' : 'Learn More',
+                            title: t.eligibility.modal.civic.title,
+                            desc: t.eligibility.modal.civic.desc,
+                            action: t.eligibility.modal.civic.btn,
                             path: '/civic-badge?tab=responsibilities',
                             icon: Shield,
                             color: 'text-indigo-600',
@@ -164,9 +164,9 @@ export default function EligibilityCard() {
                         <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
                             <h3 className="font-bold text-lg text-gray-800 flex items-center gap-2">
                                 {suggestions[0]?.status === 'success' ? (
-                                    <>🎉 {language === 'bn' ? 'অভিনন্দন' : 'Congratulations'}</>
+                                    <>{t.eligibility.modal.congrats}</>
                                 ) : (
-                                    <>💡 {language === 'bn' ? 'পরামর্শ' : 'Suggestions'}</>
+                                    <>{t.eligibility.modal.suggestions}</>
                                 )}
                             </h3>
                             <button onClick={() => setShowModal(false)} className="p-1 hover:bg-gray-200 rounded-full transition-colors">
@@ -220,7 +220,7 @@ export default function EligibilityCard() {
                                 <div className="flex items-center justify-center gap-2 mb-2">
                                     <Sparkles className="w-5 h-5 text-yellow-500 animate-pulse" />
                                     <p className="text-green-800 font-bold text-base">
-                                        {language === 'bn' ? '🎖️ আপনি এখন দায়িত্বশীল নাগরিক!' : '🎖️ You are now a responsible citizen!'}
+                                        {t.eligibility.modal.success}
                                     </p>
                                     <Sparkles className="w-5 h-5 text-yellow-500 animate-pulse" />
                                 </div>

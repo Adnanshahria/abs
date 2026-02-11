@@ -1,8 +1,14 @@
 import { useState, useEffect } from 'react';
 import { getUsers, deleteUser } from '../lib/api';
 import { Trash2, Search, CheckCircle, XCircle, Mail, Phone } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { translations } from '../data/translations';
 
 export default function AdminUsers() {
+    const { language } = useLanguage();
+    const t = translations[language].admin.users;
+    const common = translations[language].common;
+
     const [users, setUsers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -19,7 +25,7 @@ export default function AdminUsers() {
     };
 
     const handleDelete = async (id: number) => {
-        if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+        if (confirm(t.alerts.deleteConfirm)) {
             await deleteUser(id);
             fetchUsers();
         }
@@ -35,11 +41,11 @@ export default function AdminUsers() {
         <div className="p-8 max-w-7xl mx-auto">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Manage Users</h1>
-                    <p className="text-gray-600">View and manage registered voters</p>
+                    <h1 className="text-3xl font-bold text-gray-900">{t.title}</h1>
+                    <p className="text-gray-600">{t.subtitle}</p>
                 </div>
                 <div className="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg font-medium text-sm">
-                    Total Users: {users.length}
+                    {t.total}: {users.length}
                 </div>
             </div>
 
@@ -47,7 +53,7 @@ export default function AdminUsers() {
             <div className="relative mb-6">
                 <input
                     type="text"
-                    placeholder="Search by name, email, or NID..."
+                    placeholder={t.search}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
@@ -61,29 +67,29 @@ export default function AdminUsers() {
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="bg-gray-50 border-b border-gray-100">
-                                <th className="p-4 font-semibold text-gray-600 text-sm">Status</th>
-                                <th className="p-4 font-semibold text-gray-600 text-sm">User Details</th>
-                                <th className="p-4 font-semibold text-gray-600 text-sm">NID Info</th>
-                                <th className="p-4 font-semibold text-gray-600 text-sm">Contact</th>
-                                <th className="p-4 font-semibold text-gray-600 text-sm text-right">Actions</th>
+                                <th className="p-4 font-semibold text-gray-600 text-sm">{t.table.status}</th>
+                                <th className="p-4 font-semibold text-gray-600 text-sm">{t.table.details}</th>
+                                <th className="p-4 font-semibold text-gray-600 text-sm">{t.table.nid}</th>
+                                <th className="p-4 font-semibold text-gray-600 text-sm">{t.table.contact}</th>
+                                <th className="p-4 font-semibold text-gray-600 text-sm text-right">{t.table.actions}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
                             {loading ? (
-                                <tr><td colSpan={5} className="p-8 text-center text-gray-500">Loading users...</td></tr>
+                                <tr><td colSpan={5} className="p-8 text-center text-gray-500">{t.table.loading}</td></tr>
                             ) : filteredUsers.length === 0 ? (
-                                <tr><td colSpan={5} className="p-8 text-center text-gray-500">No users found.</td></tr>
+                                <tr><td colSpan={5} className="p-8 text-center text-gray-500">{t.table.empty}</td></tr>
                             ) : (
                                 filteredUsers.map((user) => (
                                     <tr key={user.id} className="hover:bg-gray-50/50 transition-colors">
                                         <td className="p-4">
                                             {user.verification_status === 'verified' ? (
                                                 <div className="flex items-center gap-1.5 text-green-600 bg-green-50 w-fit px-2 py-1 rounded-full text-xs font-medium">
-                                                    <CheckCircle className="w-3.5 h-3.5" /> Verified
+                                                    <CheckCircle className="w-3.5 h-3.5" /> {t.table.verified}
                                                 </div>
                                             ) : (
                                                 <div className="flex items-center gap-1.5 text-orange-600 bg-orange-50 w-fit px-2 py-1 rounded-full text-xs font-medium">
-                                                    <XCircle className="w-3.5 h-3.5" /> Unverified
+                                                    <XCircle className="w-3.5 h-3.5" /> {t.table.unverified}
                                                 </div>
                                             )}
                                         </td>
@@ -100,7 +106,7 @@ export default function AdminUsers() {
                                                     <p className="text-xs text-gray-500">{user.voter_area || 'N/A'}</p>
                                                 </div>
                                             ) : (
-                                                <span className="text-gray-400 text-sm italic">Not provided</span>
+                                                <span className="text-gray-400 text-sm italic">{t.table.notProvided}</span>
                                             )}
                                         </td>
                                         <td className="p-4">
@@ -120,7 +126,7 @@ export default function AdminUsers() {
                                                 <button
                                                     onClick={() => handleDelete(user.id)}
                                                     className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                    title="Delete User"
+                                                    title={common.delete}
                                                 >
                                                     <Trash2 className="w-4 h-4" />
                                                 </button>

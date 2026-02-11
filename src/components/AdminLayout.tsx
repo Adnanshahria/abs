@@ -12,12 +12,17 @@ import {
     Menu,
     X,
     FileText,
-    AlertCircle
+    AlertCircle,
+    Globe
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
+import { translations } from '../data/translations';
 
 export default function AdminLayout() {
     const { logout } = useAuth();
+    const { language, toggleLanguage } = useLanguage();
+    const t = translations[language].admin.nav;
     const navigate = useNavigate();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -27,15 +32,15 @@ export default function AdminLayout() {
     };
 
     const navigation = [
-        { name: 'Dashboard', href: '/adm', icon: LayoutDashboard },
-        { name: 'Users', href: '/adm/users', icon: Users },
-        { name: 'Candidates', href: '/adm/candidates', icon: Vote },
-        { name: 'Vote Centers', href: '/adm/centers', icon: MapPin },
-        { name: 'Updates', href: '/adm/updates', icon: Calendar },
-        { name: 'Content', href: '/adm/content', icon: FileText },
-        { name: 'Reports', href: '/adm/incidents', icon: AlertCircle },
-        { name: 'Rumor Check', href: '/adm/rumors', icon: ShieldAlert },
-        { name: 'Train AI', href: '/adm/train-ai', icon: Brain },
+        { name: t.dashboard, href: '/adm', icon: LayoutDashboard },
+        { name: t.users, href: '/adm/users', icon: Users },
+        { name: t.candidates, href: '/adm/candidates', icon: Vote },
+        { name: t.centers, href: '/adm/centers', icon: MapPin },
+        { name: t.updates, href: '/adm/updates', icon: Calendar },
+        { name: t.content, href: '/adm/content', icon: FileText },
+        { name: t.reports, href: '/adm/incidents', icon: AlertCircle },
+        { name: t.rumors, href: '/adm/rumors', icon: ShieldAlert },
+        { name: t.trainAI, href: '/adm/train-ai', icon: Brain },
     ];
 
     return (
@@ -55,7 +60,7 @@ export default function AdminLayout() {
                 </div>
 
                 <nav className="flex-1 px-3 pb-3 space-y-0.5 overflow-y-auto">
-                    <p className="px-3 text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-2">Menu</p>
+                    <p className="px-3 text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-2">{t.menu}</p>
                     {navigation.map((item) => (
                         <NavLink
                             key={item.name}
@@ -80,13 +85,20 @@ export default function AdminLayout() {
                     ))}
                 </nav>
 
-                <div className="p-3 mt-auto">
+                <div className="p-3 mt-auto space-y-2">
+                    <button
+                        onClick={toggleLanguage}
+                        className="flex items-center gap-3 px-3 py-2 w-full text-left text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all text-sm group"
+                    >
+                        <Globe className="w-4 h-4" />
+                        <span className="uppercase">{language === 'en' ? 'English' : 'বাংলা'}</span>
+                    </button>
                     <button
                         onClick={handleLogout}
                         className="flex items-center gap-2 px-3 py-2 w-full text-left text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all text-sm group"
                     >
                         <LogOut className="w-4 h-4" />
-                        <span>Sign Out</span>
+                        <span>{t.logout}</span>
                     </button>
                 </div>
             </aside>
@@ -97,9 +109,18 @@ export default function AdminLayout() {
                     <div className="w-8 h-8 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-lg flex items-center justify-center font-bold text-white shadow-md shadow-indigo-200">AB</div>
                     <span className="font-bold text-lg font-serif">Admin Panel</span>
                 </div>
-                <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors">
-                    {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-                </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={toggleLanguage}
+                        className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-1"
+                    >
+                        <Globe className="w-5 h-5" />
+                        <span className="text-xs font-bold uppercase">{language}</span>
+                    </button>
+                    <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors">
+                        {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                    </button>
+                </div>
             </div>
 
             {/* Mobile Menu */}
@@ -118,7 +139,7 @@ export default function AdminLayout() {
                                         : 'text-gray-600 hover:bg-gray-50 font-medium'}
                                 `}
                             >
-                                <item.icon className={`w-5 h-5 ${item.href === location.pathname ? 'text-indigo-600' : 'text-gray-400'}`} />
+                                <item.icon className={`w-5 h-5 ${item.href === (globalThis as any).window?.location?.pathname ? 'text-indigo-600' : 'text-gray-400'}`} />
                                 <span className="text-base">{item.name}</span>
                             </NavLink>
                         ))}
@@ -127,7 +148,7 @@ export default function AdminLayout() {
                             className="flex items-center gap-3 px-4 py-3.5 w-full text-left text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors mt-6 font-medium border-t border-gray-100 pt-6"
                         >
                             <LogOut className="w-5 h-5" />
-                            <span>Sign Out</span>
+                            <span>{t.logout}</span>
                         </button>
                     </nav>
                 </div>

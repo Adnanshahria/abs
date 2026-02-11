@@ -1,9 +1,15 @@
 import { useState, useEffect } from 'react';
 import { getUpdates, addUpdate, deleteUpdate, updateUpdate } from '../lib/api';
-import { Plus, Trash2, Calendar, Save, X, Eye, Clock, Tag, User, Pencil, Link } from 'lucide-react';
+import { Plus, Trash2, Calendar, Save, X, Eye, Clock, Tag, User, Pencil, Link, Upload, Image } from 'lucide-react';
 import type { ElectionUpdate } from '../lib/types';
+import { useLanguage } from '../context/LanguageContext';
+import { translations } from '../data/translations';
 
 export default function AdminUpdates() {
+    const { language } = useLanguage();
+    const t = translations[language].admin.updates;
+    const common = translations[language].common;
+
     const [updates, setUpdates] = useState<ElectionUpdate[]>([]);
     const [loading, setLoading] = useState(true);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -82,7 +88,7 @@ export default function AdminUpdates() {
 
     const formatDate = (dateString: string) => {
         try {
-            return new Date(dateString).toLocaleDateString('bn-BD', {
+            return new Date(dateString).toLocaleDateString(language === 'bn' ? 'bn-BD' : 'en-US', {
                 day: 'numeric',
                 month: 'short',
                 year: 'numeric'
@@ -96,16 +102,16 @@ export default function AdminUpdates() {
         <div className="p-4 sm:p-8 max-w-7xl mx-auto">
             <div className="flex items-center justify-between gap-4 mb-6">
                 <div>
-                    <h1 className="text-xl sm:text-2xl font-bold text-gray-900">নির্বাচনী আপডেট</h1>
-                    <p className="text-gray-600 text-xs sm:text-sm">সংবাদ ও ঘোষণা পোস্ট করুন</p>
+                    <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{t.title}</h1>
+                    <p className="text-gray-600 text-xs sm:text-sm">{t.subtitle}</p>
                 </div>
                 <button
                     onClick={() => setIsAddModalOpen(true)}
                     className="flex items-center gap-1 bg-purple-600 text-white px-3 py-1.5 rounded-lg hover:bg-purple-700 transition-colors font-medium shadow-sm text-xs sm:text-sm whitespace-nowrap"
                 >
                     <Plus className="w-4 h-4" />
-                    <span className="hidden sm:inline">আপডেট পোস্ট</span>
-                    <span className="sm:hidden">পোস্ট</span>
+                    <span className="hidden sm:inline">{t.add}</span>
+                    <span className="sm:hidden">{t.add}</span>
                 </button>
             </div>
 
@@ -113,11 +119,11 @@ export default function AdminUpdates() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {loading ? (
                     <div className="col-span-full p-8 text-center text-gray-500">
-                        আপডেট লোড হচ্ছে...
+                        {t.loading}
                     </div>
                 ) : updates.length === 0 ? (
                     <div className="col-span-full p-8 text-center text-gray-500 bg-white rounded-2xl border border-gray-100">
-                        কোনো আপডেট পোস্ট করা হয়নি।
+                        {t.empty}
                     </div>
                 ) : (
                     updates.map((update) => (
@@ -178,14 +184,14 @@ export default function AdminUpdates() {
                                         className="flex items-center gap-1.5 px-3 py-1.5 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors text-sm"
                                     >
                                         <Pencil className="w-4 h-4" />
-                                        Edit
+                                        {common.edit}
                                     </button>
                                     <button
                                         onClick={() => handleDelete(update.id)}
                                         className="flex items-center gap-1.5 px-3 py-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors text-sm"
                                     >
                                         <Trash2 className="w-4 h-4" />
-                                        Delete
+                                        {common.delete}
                                     </button>
                                 </div>
                             </div>
@@ -201,17 +207,17 @@ export default function AdminUpdates() {
                     <div className="bg-white rounded-2xl shadow-xl w-full max-w-xl relative z-10 animate-in zoom-in-95 duration-200 p-6 max-h-[90vh] overflow-y-auto">
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="text-xl font-bold text-gray-900">
-                                {editId ? 'আপডেট পরিবর্তন করুন' : 'নতুন আপডেট পোস্ট করুন'}
+                                {editId ? t.form.editTitle : t.form.addTitle}
                             </h2>
                             <button onClick={closeModal}><X className="w-5 h-5 text-gray-500" /></button>
                         </div>
                         <form onSubmit={handleSubmit} className="space-y-5">
                             {/* Title */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1.5">শিরোনাম *</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1.5">{t.form.title} *</label>
                                 <input
                                     required
-                                    placeholder="আপডেটের শিরোনাম লিখুন"
+                                    placeholder={t.form.title}
                                     className="w-full p-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                                     value={formData.title}
                                     onChange={e => setFormData({ ...formData, title: e.target.value })}
@@ -222,10 +228,10 @@ export default function AdminUpdates() {
                             <div>
                                 <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
                                     <User className="w-4 h-4" />
-                                    লেখকের নাম
+                                    {t.form.author}
                                 </label>
                                 <input
-                                    placeholder="যেমন: জনাব আহমেদ সাহেব"
+                                    placeholder="Admin"
                                     className="w-full p-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                                     value={formData.author_name}
                                     onChange={e => setFormData({ ...formData, author_name: e.target.value })}
@@ -236,10 +242,10 @@ export default function AdminUpdates() {
                             <div>
                                 <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
                                     <Tag className="w-4 h-4" />
-                                    ট্যাগ (কমা দিয়ে আলাদা করুন)
+                                    {t.form.tags}
                                 </label>
                                 <input
-                                    placeholder="যেমন: নির্বাচন, পোস্টালভোট, ঘোষণা"
+                                    placeholder="election, update, news"
                                     className="w-full p-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                                     value={formData.tags}
                                     onChange={e => setFormData({ ...formData, tags: e.target.value })}
@@ -259,7 +265,7 @@ export default function AdminUpdates() {
                             <div>
                                 <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
                                     <Clock className="w-4 h-4" />
-                                    পড়ার সময় (মিনিট)
+                                    {t.form.readTime}
                                 </label>
                                 <input
                                     type="number"
@@ -276,7 +282,7 @@ export default function AdminUpdates() {
                             <div>
                                 <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
                                     <Link className="w-4 h-4" />
-                                    সোর্স লিংক (Source URL)
+                                    {t.form.sourceUrl}
                                 </label>
                                 <input
                                     type="url"
@@ -289,7 +295,7 @@ export default function AdminUpdates() {
 
                             {/* Image Upload */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1.5">ছবি সংযুক্ত করুন</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1.5">{t.form.image}</label>
                                 <div className="space-y-3">
                                     {/* Paste Zone */}
                                     <div
@@ -302,7 +308,7 @@ export default function AdminUpdates() {
                                                         const file = item.getAsFile();
                                                         if (file) {
                                                             if (file.size > 5000000) {
-                                                                alert("ফাইল সাইজ বড়। সর্বোচ্চ ৫MB।");
+                                                                alert("File too large. Max 5MB.");
                                                                 return;
                                                             }
                                                             const reader = new FileReader();
@@ -317,8 +323,8 @@ export default function AdminUpdates() {
                                         }}
                                         tabIndex={0}
                                     >
-                                        <p className="text-sm text-gray-500">📋 Ctrl+V দিয়ে ছবি পেস্ট করুন</p>
-                                        <p className="text-xs text-gray-400 mt-1">অথবা নিচে ফাইল সিলেক্ট করুন</p>
+                                        <p className="text-sm text-gray-500">📋 Paste image (Ctrl+V)</p>
+                                        <p className="text-xs text-gray-400 mt-1">or upload below</p>
                                     </div>
                                     <input
                                         type="file"
@@ -327,7 +333,7 @@ export default function AdminUpdates() {
                                             const file = e.target.files?.[0];
                                             if (file) {
                                                 if (file.size > 5000000) {
-                                                    alert("ফাইল সাইজ বড়। সর্বোচ্চ ৫MB।");
+                                                    alert("File too large. Max 5MB.");
                                                     return;
                                                 }
                                                 const reader = new FileReader();
@@ -356,11 +362,11 @@ export default function AdminUpdates() {
 
                             {/* Content */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1.5">বিস্তারিত *</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1.5">{t.form.content} *</label>
                                 <textarea
                                     required
                                     rows={5}
-                                    placeholder="আপডেটের বিস্তারিত লিখুন..."
+                                    placeholder={t.form.content}
                                     className="w-full p-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all resize-none"
                                     value={formData.content}
                                     onChange={e => setFormData({ ...formData, content: e.target.value })}
@@ -374,7 +380,7 @@ export default function AdminUpdates() {
                                     className="bg-purple-600 text-white px-6 py-2.5 rounded-xl hover:bg-purple-700 font-medium flex items-center gap-2 transition-colors"
                                 >
                                     <Save className="w-4 h-4" />
-                                    {editId ? 'পরিবর্তনগুলো সেভ করুন' : 'পোস্ট করুন'}
+                                    {editId ? t.form.update : t.form.save}
                                 </button>
                             </div>
                         </form>

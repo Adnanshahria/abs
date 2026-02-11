@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Loader2, Palette, FileText, Phone, Wrench, Award, ChevronRight } from 'lucide-react';
+import { Loader2, Palette, FileText, Phone, Wrench, Award, ChevronRight, Lightbulb } from 'lucide-react';
 import { getAllPageContent, type PageContentItem } from '../lib/api';
+import { useLanguage } from '../context/LanguageContext';
+import { translations } from '../data/translations';
 
 interface ContentSection {
     id: string;
-    title: string;
-    description: string;
+    titleKey: 'branding' | 'about' | 'contact' | 'services' | 'citizen';
     icon: React.ElementType;
     color: string;
     bgColor: string;
@@ -17,8 +18,7 @@ interface ContentSection {
 const CONTENT_SECTIONS: ContentSection[] = [
     {
         id: 'branding',
-        title: 'Branding',
-        description: 'Logo and Favicon',
+        titleKey: 'branding',
         icon: Palette,
         color: 'text-indigo-600',
         bgColor: 'bg-indigo-100',
@@ -27,8 +27,7 @@ const CONTENT_SECTIONS: ContentSection[] = [
     },
     {
         id: 'about',
-        title: 'About Page',
-        description: 'Mission, Vision, Story',
+        titleKey: 'about',
         icon: FileText,
         color: 'text-blue-600',
         bgColor: 'bg-blue-100',
@@ -37,8 +36,7 @@ const CONTENT_SECTIONS: ContentSection[] = [
     },
     {
         id: 'contact',
-        title: 'Contact Page',
-        description: 'Emails, Phone, Address',
+        titleKey: 'contact',
         icon: Phone,
         color: 'text-emerald-600',
         bgColor: 'bg-emerald-100',
@@ -47,8 +45,7 @@ const CONTENT_SECTIONS: ContentSection[] = [
     },
     {
         id: 'services',
-        title: 'Services Page',
-        description: '6 Service Items',
+        titleKey: 'services',
         icon: Wrench,
         color: 'text-orange-600',
         bgColor: 'bg-orange-100',
@@ -57,8 +54,7 @@ const CONTENT_SECTIONS: ContentSection[] = [
     },
     {
         id: 'citizen',
-        title: 'Good Citizen Message',
-        description: 'Inspiring Message',
+        titleKey: 'citizen',
         icon: Award,
         color: 'text-green-600',
         bgColor: 'bg-green-100',
@@ -68,7 +64,11 @@ const CONTENT_SECTIONS: ContentSection[] = [
 ];
 
 export default function AdminContent() {
+    const { language } = useLanguage();
+    const t = translations[language].admin.content;
+
     const [content, setContent] = useState<PageContentItem[]>([]);
+
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -95,9 +95,9 @@ export default function AdminContent() {
     };
 
     const formatDate = (dateStr: string | null) => {
-        if (!dateStr) return 'Never';
+        if (!dateStr) return t.never;
         const date = new Date(dateStr);
-        return date.toLocaleDateString('en-US', {
+        return date.toLocaleDateString(language === 'bn' ? 'bn-BD' : 'en-US', {
             month: 'short',
             day: 'numeric',
             hour: '2-digit',
@@ -120,50 +120,52 @@ export default function AdminContent() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="p-4 sm:p-8 max-w-7xl mx-auto space-y-6">
             {/* Header */}
             <div>
-                <h1 className="text-2xl font-bold text-gray-900">Page Content</h1>
+                <h1 className="text-2xl font-bold text-gray-900">{t.title}</h1>
                 <p className="text-gray-500 text-sm mt-1">
-                    Manage website content across different pages
+                    {t.subtitle}
                 </p>
             </div>
 
             {/* Content Sections Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {CONTENT_SECTIONS.map((section) => {
                     const IconComponent = section.icon;
                     const lastUpdated = getLastUpdated(section.prefixes);
                     const itemCount = getItemCount(section.prefixes);
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const sectionTrans = (t as any)[section.titleKey];
 
                     return (
                         <Link
                             key={section.id}
                             to={section.path}
-                            className="group bg-white rounded-xl border border-gray-200 p-5 hover:shadow-lg hover:border-gray-300 transition-all duration-200"
+                            className="group bg-white rounded-xl border border-gray-200 p-5 hover:shadow-lg hover:border-purple-300 transition-all duration-200"
                         >
                             <div className="flex items-start justify-between">
                                 <div className={`w-12 h-12 ${section.bgColor} rounded-xl flex items-center justify-center`}>
                                     <IconComponent className={`w-6 h-6 ${section.color}`} />
                                 </div>
-                                <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-gray-500 group-hover:translate-x-1 transition-all" />
+                                <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-purple-500 group-hover:translate-x-1 transition-all" />
                             </div>
 
                             <div className="mt-4">
-                                <h3 className="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
-                                    {section.title}
+                                <h3 className="font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
+                                    {sectionTrans.title}
                                 </h3>
                                 <p className="text-sm text-gray-500 mt-1">
-                                    {section.description}
+                                    {sectionTrans.description}
                                 </p>
                             </div>
 
                             <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between text-xs">
                                 <span className="text-gray-400">
-                                    {itemCount} item{itemCount !== 1 ? 's' : ''}
+                                    {itemCount} {t.items}
                                 </span>
                                 <span className="text-gray-400">
-                                    Updated: {formatDate(lastUpdated)}
+                                    {t.updated}: {formatDate(lastUpdated)}
                                 </span>
                             </div>
                         </Link>
@@ -173,12 +175,14 @@ export default function AdminContent() {
 
             {/* Quick Tips */}
             <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100 p-5">
-                <h4 className="font-semibold text-indigo-800 mb-2">💡 Quick Tips</h4>
+                <h4 className="font-semibold text-indigo-800 mb-2 flex items-center gap-2">
+                    <Lightbulb className="w-4 h-4" />
+                    {t.tips.title}
+                </h4>
                 <ul className="text-sm text-indigo-700 space-y-1">
-                    <li>• Click any section to edit its content</li>
-                    <li>• All changes are auto-saved as you type</li>
-                    <li>• Content supports both English and Bengali</li>
-                    <li>• Changes appear on the live site immediately</li>
+                    {t.tips.list.map((tip: string, idx: number) => (
+                        <li key={idx}>• {tip}</li>
+                    ))}
                 </ul>
             </div>
         </div>

@@ -1,7 +1,11 @@
-
 import { Check, ArrowRight } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { translations } from '../data/translations';
 
 export default function Status() {
+    const { language } = useLanguage();
+    const t = translations[language].statusPage;
+
     return (
         <main className="flex-1 w-full px-4 sm:px-8 lg:px-16 py-8 relative flex flex-col items-center min-h-[80vh]">
 
@@ -9,34 +13,34 @@ export default function Status() {
 
                 {/* Title */}
                 <h1 className="text-4xl text-green-900 font-serif font-medium text-center">
-                    Result
+                    {t.title}
                 </h1>
 
                 {/* Mobile View: Vertical List */}
                 <div className="flex md:hidden flex-col gap-4 w-full max-w-sm">
                     <div className="bg-green-50/80 border border-green-200 p-6 rounded-lg shadow-sm text-center backdrop-blur-sm">
-                        <h3 className="text-green-800 font-bold text-lg mb-1">Getting Started</h3>
-                        <p className="text-green-700/70 text-sm italic">Just started? Learn the basics</p>
+                        <h3 className="text-green-800 font-bold text-lg mb-1">{t.steps.gettingStarted.title}</h3>
+                        <p className="text-green-700/70 text-sm italic">{t.steps.gettingStarted.desc}</p>
                     </div>
                     <div className="flex justify-center"><ArrowRight className="text-green-300 rotate-90" /></div>
                     <div className="bg-green-100 border-2 border-green-500 p-6 rounded-lg shadow-md text-center backdrop-blur-sm">
-                        <h3 className="text-green-900 font-bold text-xl mb-1">Not Registered</h3>
-                        <p className="text-green-800 text-sm italic">Not registered, apply for NID</p>
+                        <h3 className="text-green-900 font-bold text-xl mb-1">{t.steps.notRegistered.title}</h3>
+                        <p className="text-green-800 text-sm italic">{t.steps.notRegistered.desc}</p>
                     </div>
                     <div className="flex justify-center"><ArrowRight className="text-green-300 rotate-90" /></div>
                     <div className="bg-green-50/80 border border-green-200 p-6 rounded-lg shadow-sm text-center backdrop-blur-sm">
-                        <h3 className="text-green-800 font-bold text-lg mb-1">Partially Ready</h3>
-                        <p className="text-green-700/70 text-sm italic">More to do! Complete steps</p>
+                        <h3 className="text-green-800 font-bold text-lg mb-1">{t.steps.partiallyReady.title}</h3>
+                        <p className="text-green-700/70 text-sm italic">{t.steps.partiallyReady.desc}</p>
                     </div>
                     <div className="flex justify-center"><ArrowRight className="text-green-300 rotate-90" /></div>
                     <div className="bg-green-50/80 border border-green-200 p-6 rounded-lg shadow-sm text-center backdrop-blur-sm">
-                        <h3 className="text-green-800 font-bold text-lg mb-1">Almost Ready</h3>
-                        <p className="text-green-700/70 text-sm italic">Just a little left! Check missing info</p>
+                        <h3 className="text-green-800 font-bold text-lg mb-1">{t.steps.almostReady.title}</h3>
+                        <p className="text-green-700/70 text-sm italic">{t.steps.almostReady.desc}</p>
                     </div>
                     <div className="flex justify-center"><ArrowRight className="text-green-300 rotate-90" /></div>
                     <div className="bg-green-50/80 border border-green-200 p-6 rounded-lg shadow-sm text-center backdrop-blur-sm">
-                        <h3 className="text-green-800 font-bold text-lg mb-1">Ready to Vote</h3>
-                        <p className="text-green-700/70 text-sm italic">You're ready, go vote!</p>
+                        <h3 className="text-green-800 font-bold text-lg mb-1">{t.steps.readyToVote.title}</h3>
+                        <p className="text-green-700/70 text-sm italic">{t.steps.readyToVote.desc}</p>
                     </div>
                 </div>
 
@@ -53,8 +57,8 @@ export default function Status() {
                     {/* 1. Getting Started */}
                     <div className="absolute top-1/4 left-0 transform -translate-y-1/2 translate-x-12">
                         <div className="bg-green-50/80 border border-green-200 p-6 rounded-lg shadow-sm text-center w-64 backdrop-blur-sm">
-                            <h3 className="text-green-800 font-bold text-lg mb-1">Getting Started</h3>
-                            <p className="text-green-700/70 text-sm italic">Just started? Learn the basics</p>
+                            <h3 className="text-green-800 font-bold text-lg mb-1">{t.steps.gettingStarted.title}</h3>
+                            <p className="text-green-700/70 text-sm italic">{t.steps.gettingStarted.desc}</p>
                         </div>
                     </div>
 
@@ -64,32 +68,32 @@ export default function Status() {
                             {/* Indicator Line */}
                             <div className="absolute top-0 left-0 right-0 h-1 bg-green-500"></div>
 
-                            <h3 className="text-green-900 font-bold text-xl mb-1">Not Registered</h3>
-                            <p className="text-green-800 text-sm italic">Not registered, apply for NID</p>
+                            <h3 className="text-green-900 font-bold text-xl mb-1">{t.steps.notRegistered.title}</h3>
+                            <p className="text-green-800 text-sm italic">{t.steps.notRegistered.desc}</p>
                         </div>
                     </div>
 
                     {/* 3. Partially Ready */}
                     <div className="absolute top-1/4 right-0 transform -translate-y-1/2 -translate-x-12">
                         <div className="bg-green-50/80 border border-green-200 p-6 rounded-lg shadow-sm text-center w-64 backdrop-blur-sm">
-                            <h3 className="text-green-800 font-bold text-lg mb-1">Partially Ready</h3>
-                            <p className="text-green-700/70 text-sm italic">More to do! Complete steps</p>
+                            <h3 className="text-green-800 font-bold text-lg mb-1">{t.steps.partiallyReady.title}</h3>
+                            <p className="text-green-700/70 text-sm italic">{t.steps.partiallyReady.desc}</p>
                         </div>
                     </div>
 
                     {/* 4. Almost Ready */}
                     <div className="absolute bottom-1/4 left-1/4 transform -translate-x-12 translate-y-1/2">
                         <div className="bg-green-50/80 border border-green-200 p-6 rounded-lg shadow-sm text-center w-64 backdrop-blur-sm">
-                            <h3 className="text-green-800 font-bold text-lg mb-1">Almost Ready</h3>
-                            <p className="text-green-700/70 text-sm italic">Just a little left! Check missing info</p>
+                            <h3 className="text-green-800 font-bold text-lg mb-1">{t.steps.almostReady.title}</h3>
+                            <p className="text-green-700/70 text-sm italic">{t.steps.almostReady.desc}</p>
                         </div>
                     </div>
 
                     {/* 5. Ready to Vote */}
                     <div className="absolute bottom-1/4 right-1/4 transform translate-x-12 translate-y-1/2">
                         <div className="bg-green-50/80 border border-green-200 p-6 rounded-lg shadow-sm text-center w-64 backdrop-blur-sm">
-                            <h3 className="text-green-800 font-bold text-lg mb-1">Ready to Vote</h3>
-                            <p className="text-green-700/70 text-sm italic">You're ready, go vote!</p>
+                            <h3 className="text-green-800 font-bold text-lg mb-1">{t.steps.readyToVote.title}</h3>
+                            <p className="text-green-700/70 text-sm italic">{t.steps.readyToVote.desc}</p>
                         </div>
                     </div>
 

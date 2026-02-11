@@ -31,7 +31,7 @@ export default function AdminDashboard() {
                         <h1 className="text-3xl font-bold text-gray-900">{t.admin.title}</h1>
                         <p className="text-gray-600 mt-1">{t.admin.welcome}, {user?.name}</p>
                     </div>
-                    <button
+                    {/* <button
                         onClick={async () => {
                             const { fixDatabaseSchema } = await import('../lib/api');
                             const result = await fixDatabaseSchema();
@@ -41,7 +41,7 @@ export default function AdminDashboard() {
                         className="text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded"
                     >
                         {t.admin.fixSchema}
-                    </button>
+                    </button> */}
                 </div>
 
                 {/* AI Cache Management */}
@@ -52,8 +52,8 @@ export default function AdminDashboard() {
                                 <Database className="w-5 h-5 text-blue-600" />
                             </div>
                             <div>
-                                <h3 className="font-semibold text-gray-800">AI Knowledge Cache</h3>
-                                <p className="text-xs text-gray-500">Updates, Rumors, and Trained AI Data</p>
+                                <h3 className="font-semibold text-gray-800">{t.admin.aiCache.title}</h3>
+                                <p className="text-xs text-gray-500">{t.admin.aiCache.subtitle}</p>
                             </div>
                         </div>
                         <div className="flex gap-2">
@@ -61,30 +61,30 @@ export default function AdminDashboard() {
                                 onClick={async () => {
                                     const { forceRefreshCache } = await import('../services/aiService');
                                     await forceRefreshCache();
-                                    alert('✅ Cache refreshed! New data loaded from database.');
+                                    alert(t.admin.aiCache.refreshSuccess);
                                 }}
                                 className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded-lg transition-colors"
                             >
                                 <RefreshCw className="w-4 h-4" />
-                                Force Refresh
+                                {t.admin.aiCache.forceRefresh}
                             </button>
                             <button
                                 onClick={async () => {
                                     const { forceRefreshCache } = await import('../services/aiService');
                                     await forceRefreshCache();
-                                    alert('✅ Cache setup complete! AI is ready with latest data.');
+                                    alert(t.admin.aiCache.setupSuccess);
                                 }}
                                 className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded-lg transition-colors"
                             >
                                 <Database className="w-4 h-4" />
-                                Setup Cache
+                                {t.admin.aiCache.setupCache}
                             </button>
                             <button
                                 onClick={() => navigate('/adm/train-ai')}
                                 className="flex items-center gap-1.5 bg-purple-600 hover:bg-purple-700 text-white text-sm px-4 py-2 rounded-lg transition-colors"
                             >
                                 <Brain className="w-4 h-4" />
-                                Add Knowledge
+                                {t.admin.aiCache.addKnowledge}
                             </button>
                         </div>
                     </div>

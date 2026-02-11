@@ -2,12 +2,17 @@ import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
+import { translations } from '../data/translations';
 import Modal from '../components/Modal';
 
 export default function SignUp() {
     const navigate = useNavigate();
     const { login, register } = useAuth();
     const [isLogin, setIsLogin] = useState(false); // Toggle between Login and Signup
+
+    const { language } = useLanguage();
+    const t = translations[language];
 
     // Form State
     const [formData, setFormData] = useState({
@@ -36,8 +41,8 @@ export default function SignUp() {
         if (!formData.email || !formData.password) {
             setModal({
                 isOpen: true,
-                title: 'Missing Information',
-                message: 'Please fill in all required fields.',
+                title: t.auth.messages.missing.title,
+                message: t.auth.messages.missing.msg,
                 type: 'error'
             });
             return;
@@ -50,8 +55,8 @@ export default function SignUp() {
             } else {
                 setModal({
                     isOpen: true,
-                    title: 'Login Failed',
-                    message: result.message || "Please check your credentials.",
+                    title: t.auth.messages.loginFail.title,
+                    message: result.message || t.auth.messages.loginFail.msg,
                     type: 'error'
                 });
             }
@@ -59,8 +64,8 @@ export default function SignUp() {
             if (formData.password !== formData.confirmPassword) {
                 setModal({
                     isOpen: true,
-                    title: 'Password Mismatch',
-                    message: 'Passwords do not match!',
+                    title: t.auth.messages.passwordMismatch.title,
+                    message: t.auth.messages.passwordMismatch.msg,
                     type: 'error'
                 });
                 return;
@@ -68,8 +73,8 @@ export default function SignUp() {
             if (!formData.name) {
                 setModal({
                     isOpen: true,
-                    title: 'Name Required',
-                    message: 'Please enter your full name.',
+                    title: t.auth.messages.nameReq.title,
+                    message: t.auth.messages.nameReq.msg,
                     type: 'error'
                 });
                 return;
@@ -85,8 +90,8 @@ export default function SignUp() {
             if (result.success) {
                 setModal({
                     isOpen: true,
-                    title: 'Registration Successful',
-                    message: 'Welcome properly! Please login to continue.',
+                    title: t.auth.messages.regSuccess.title,
+                    message: t.auth.messages.regSuccess.msg,
                     type: 'success'
                 });
                 setIsLogin(true); // Switch to login mode
@@ -94,8 +99,8 @@ export default function SignUp() {
             } else {
                 setModal({
                     isOpen: true,
-                    title: 'Registration Failed',
-                    message: 'Something went wrong. Please try again.',
+                    title: t.auth.messages.regFail.title,
+                    message: t.auth.messages.regFail.msg,
                     type: 'error'
                 });
             }
@@ -109,10 +114,10 @@ export default function SignUp() {
 
                 {/* Title */}
                 <h1 className="text-4xl text-green-900 font-serif font-medium text-center mb-2">
-                    {isLogin ? 'Welcome Back' : 'Create Account'}
+                    {isLogin ? t.auth.loginTitle : t.auth.signupTitle}
                 </h1>
                 <p className="text-green-700 text-center mb-4">
-                    {isLogin ? 'Login to access your voting dashboard' : 'Sign up to become a responsible voter'}
+                    {isLogin ? t.auth.loginSubtitle : t.auth.signupSubtitle}
                 </p>
 
                 {/* Toggle Switch - Pill Design */}
@@ -124,13 +129,13 @@ export default function SignUp() {
                         onClick={() => setIsLogin(true)}
                         className={`flex-1 text-center py-2 relative z-10 font-bold text-lg transition-colors font-serif ${isLogin ? 'text-white' : 'text-green-800'}`}
                     >
-                        Login
+                        {t.auth.tabs.login}
                     </button>
                     <button
                         onClick={() => setIsLogin(false)}
                         className={`flex-1 text-center py-2 relative z-10 font-bold text-lg transition-colors font-serif ${!isLogin ? 'text-white' : 'text-green-800'}`}
                     >
-                        Sign Up
+                        {t.auth.tabs.signup}
                     </button>
                 </div>
 
@@ -140,7 +145,7 @@ export default function SignUp() {
                         <input
                             type="text"
                             name="name"
-                            placeholder="Full Name"
+                            placeholder={t.auth.form.name}
                             value={formData.name}
                             onChange={handleChange}
                             className="w-full bg-green-50/80 border-b-2 border-green-400 px-4 py-3 text-center text-green-800 placeholder-green-700/50 focus:outline-none focus:border-green-600 focus:bg-white transition-colors text-lg rounded-t-md"
@@ -150,7 +155,7 @@ export default function SignUp() {
                     <input
                         type="email"
                         name="email"
-                        placeholder="Email Address"
+                        placeholder={t.auth.form.email}
                         value={formData.email}
                         onChange={handleChange}
                         className={`w-full bg-green-50/80 border-b-2 border-green-400 px-4 py-3 text-center text-green-800 placeholder-green-700/50 focus:outline-none focus:border-green-600 focus:bg-white transition-colors text-lg ${isLogin ? 'rounded-t-md' : ''}`}
@@ -160,7 +165,7 @@ export default function SignUp() {
                         <input
                             type="text"
                             name="phone"
-                            placeholder="Phone Number (Optional)"
+                            placeholder={t.auth.form.phone}
                             value={formData.phone}
                             onChange={handleChange}
                             className="w-full bg-green-50/80 border-b-2 border-green-400 px-4 py-3 text-center text-green-800 placeholder-green-700/50 focus:outline-none focus:border-green-600 focus:bg-white transition-colors text-lg"
@@ -171,7 +176,7 @@ export default function SignUp() {
                         <input
                             type={showPassword ? "text" : "password"}
                             name="password"
-                            placeholder="Password"
+                            placeholder={t.auth.form.password}
                             value={formData.password}
                             onChange={handleChange}
                             className={`w-full bg-green-50/80 border-b-2 border-green-400 px-12 py-3 text-center text-green-800 placeholder-green-700/50 focus:outline-none focus:border-green-600 focus:bg-white transition-colors text-lg ${isLogin ? 'rounded-b-md' : ''}`}
@@ -189,7 +194,7 @@ export default function SignUp() {
                         <input
                             type="password"
                             name="confirmPassword"
-                            placeholder="Confirm Password"
+                            placeholder={t.auth.form.confirmPassword}
                             value={formData.confirmPassword}
                             onChange={handleChange}
                             className="w-full bg-green-50/80 border-b-2 border-green-400 px-4 py-3 text-center text-green-800 placeholder-green-700/50 focus:outline-none focus:border-green-600 focus:bg-white transition-colors text-lg rounded-b-md"
@@ -201,7 +206,7 @@ export default function SignUp() {
                 {isLogin && (
                     <div className="w-full text-right">
                         <button className="text-sm text-green-700 hover:text-green-900 font-medium hover:underline">
-                            Forgot Password?
+                            {t.auth.form.forgot}
                         </button>
                     </div>
                 )}
@@ -211,7 +216,7 @@ export default function SignUp() {
                     onClick={handleSubmit}
                     className="w-full bg-green-800 hover:bg-green-900 text-white font-serif text-xl py-3 rounded-full shadow-lg transition-transform active:scale-95 mt-4 border border-green-700 flex items-center justify-center gap-2"
                 >
-                    {isLogin ? 'Login' : 'Create Account'}
+                    {isLogin ? t.auth.form.loginBtn : t.auth.form.signupBtn}
                 </button>
             </div>
 
