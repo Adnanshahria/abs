@@ -16,7 +16,7 @@ interface Incident {
 export default function AdminIncidents() {
     const { language } = useLanguage();
     const t = translations[language].admin.incidents;
-    const common = translations[language].common;
+
 
     const [incidents, setIncidents] = useState<Incident[]>([]);
     const [loading, setLoading] = useState(true);
@@ -32,7 +32,7 @@ export default function AdminIncidents() {
             try {
                 // Ensure db is ready before querying (basic check logic if needed, but here just try-catch)
                 const result = await db.execute('SELECT * FROM incidents ORDER BY created_at DESC');
-                setIncidents(result.map((row: any) => ({
+                setIncidents(result.rows.map((row: any) => ({
                     id: row.id,
                     type: row.type,
                     location: row.location,
@@ -117,11 +117,11 @@ export default function AdminIncidents() {
                             <div className="flex gap-4 border-t border-gray-100 pt-3">
                                 <button className="text-xs font-medium text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors">
                                     <CheckCircle className="w-3.5 h-3.5" />
-                                    {t.actions.resolve}
+                                    {t.resolve}
                                 </button>
                                 <button className="text-xs font-medium text-red-600 hover:text-red-800 flex items-center gap-1 transition-colors">
                                     <Trash2 className="w-3.5 h-3.5" />
-                                    {t.actions.delete}
+                                    {t.delete}
                                 </button>
                             </div>
                         </div>

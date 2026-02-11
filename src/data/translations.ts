@@ -733,10 +733,30 @@ export const translations = {
                 subtitle: "Manage fact-checking database",
                 add: "Add Check",
                 search: "Search rumors...",
+                loading: "Loading rumors...",
+                empty: "No rumors found.",
                 status: {
                     fake: "Fake / Rumor",
                     verified: "Truth / Verified",
                     pending: "Pending"
+                },
+                filter: {
+                    newest: "Newest",
+                    oldest: "Oldest"
+                },
+                table: {
+                    verified: "Verified",
+                    fake: "Fake / Rumor",
+                    pending: "Pending",
+                    source: "View Source"
+                },
+                toggle: {
+                    more: "Read More",
+                    less: "Show Less"
+                },
+                alerts: {
+                    deleteConfirm: "Are you sure you want to delete this rumor?",
+                    fail: "Failed to save rumor"
                 },
                 form: {
                     addTitle: "Add Fact Check",
@@ -745,8 +765,12 @@ export const translations = {
                     verdict: "Verdict",
                     explanation: "Explanation",
                     source: "Source URL (Optional)",
+                    sourceUrl: "Source URL",
                     image: "Evidence Image (Optional)",
-                    save: "Save Record"
+                    save: "Save Record",
+                    saveResponse: "Save Record",
+                    paste: "Paste image (Ctrl+V)",
+                    upload: "or upload below"
                 }
             },
             incidents: {
@@ -1592,10 +1616,30 @@ export const translations = {
                 subtitle: "ফ্যাক্ট-চেকিং ডাটাবেস পরিচালনা করুন",
                 add: "যাচাই যোগ করুন",
                 search: "গুজব খুঁজুন...",
+                loading: "গুজব লোড হচ্ছে...",
+                empty: "কোনো গুজব পাওয়া যায়নি।",
                 status: {
                     fake: "মিথ্যা / গুজব",
                     verified: "সত্য / যাচাইকৃত",
                     pending: "অমীমাংসিত"
+                },
+                filter: {
+                    newest: "নতুন",
+                    oldest: "পুরাতন"
+                },
+                table: {
+                    verified: "যাচাইকৃত",
+                    fake: "মিথ্যা / গুজব",
+                    pending: "অমীমাংসিত",
+                    source: "সোর্স দেখুন"
+                },
+                toggle: {
+                    more: "আরও পড়ুন",
+                    less: "সংক্ষেপে দেখুন"
+                },
+                alerts: {
+                    deleteConfirm: "আপনি কি এই গুজবটি মুছতে চান?",
+                    fail: "গুজব সংরক্ষণ ব্যর্থ হয়েছে"
                 },
                 form: {
                     addTitle: "ফ্যাক্ট চেক যোগ করুন",
@@ -1604,8 +1648,12 @@ export const translations = {
                     verdict: "রায়",
                     explanation: "ব্যাখ্যা",
                     source: "সোর্স লিংক (ঐচ্ছিক)",
+                    sourceUrl: "সোর্স লিংক",
                     image: "প্রমাণ ছবি (ঐচ্ছিক)",
-                    save: "রেকর্ড সংরক্ষণ"
+                    save: "রেকর্ড সংরক্ষণ",
+                    saveResponse: "রেকর্ড সংরক্ষণ",
+                    paste: "ছবি পেস্ট করুন (Ctrl+V)",
+                    upload: "অথবা নিচে আপলোড করুন"
                 }
             },
             incidents: {

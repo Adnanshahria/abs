@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getCandidates, addCandidate, deleteCandidate, updateCandidate } from '../lib/api';
 import { SEAT_SYSTEM } from '../lib/seats';
-import { Trash2, Edit, CheckCircle, XCircle, Search, Plus, Save, X, AlertCircle } from 'lucide-react';
+import { Trash2, CheckCircle, Search, Plus, Save, X, AlertCircle } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../data/translations';
 

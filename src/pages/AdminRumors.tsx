@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getRumors, addRumor, updateRumor, deleteRumor } from '../lib/api';
-import { Plus, Trash2, ShieldCheck, ShieldAlert, Save, X, ExternalLink, Pencil, Search, ArrowUpDown, Image, Upload } from 'lucide-react';
+import { Plus, Trash2, ShieldCheck, ShieldAlert, Save, X, ExternalLink, Pencil, Search, ArrowUpDown } from 'lucide-react';
 import type { Rumor } from '../lib/types';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../data/translations';
@@ -341,7 +341,7 @@ export default function AdminRumors() {
                                 </div>
                                 <div className="flex justify-end pt-4 sticky bottom-0 bg-white border-t border-gray-50 mt-4">
                                     <button type="submit" className="bg-purple-600 text-white px-6 py-2.5 rounded-lg hover:bg-purple-700 font-medium flex items-center gap-2">
-                                        <Save className="w-4 h-4" /> {editId ? t.form.save : t.form.saveResponse}
+                                        <Save className="w-4 h-4" /> {editingId ? t.form.save : t.form.saveResponse}
                                     </button>
                                 </div>
                             </form>

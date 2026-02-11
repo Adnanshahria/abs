@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getUpdates, addUpdate, deleteUpdate, updateUpdate } from '../lib/api';
-import { Plus, Trash2, Calendar, Save, X, Eye, Clock, Tag, User, Pencil, Link, Upload, Image } from 'lucide-react';
+import { Plus, Trash2, Calendar, Save, X, Eye, Clock, Tag, User, Pencil, Link } from 'lucide-react';
 import type { ElectionUpdate } from '../lib/types';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../data/translations';
