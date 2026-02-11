@@ -5,6 +5,18 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  build: {
+    chunkSizeWarningLimit: 1000, // Increase warning limit to 1000kb
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          ui: ['lucide-react', 'framer-motion'],
+          markdown: ['react-markdown', 'remark-gfm']
+        }
+      }
+    }
+  },
   server: {
     host: true,
     proxy: {
