@@ -122,11 +122,29 @@ function loadCacheFromStorage() {
 function saveCacheToStorage() {
     try {
         if (knowledgeCache && updatesCache && rumorsCache) {
-            localStorage.setItem(CACHE_KEY_KNOWLEDGE, JSON.stringify(knowledgeCache));
-            localStorage.setItem(CACHE_KEY_UPDATES, JSON.stringify(updatesCache));
-            localStorage.setItem(CACHE_KEY_RUMORS, JSON.stringify(rumorsCache));
+            // Try saving in chunks to handle partial quota hits
             localStorage.setItem(CACHE_KEY_TIMESTAMP, Date.now().toString());
-            console.log('[AI Service] 💾 Saved cache to localStorage');
+
+            try {
+                localStorage.setItem(CACHE_KEY_KNOWLEDGE, JSON.stringify(knowledgeCache));
+            } catch (e) {
+                console.warn('[AI Service] KB cache too large for localStorage', e);
+                // If Knowledge Base is too big, it stays in memory but won't persist
+            }
+
+            try {
+                localStorage.setItem(CACHE_KEY_UPDATES, JSON.stringify(updatesCache));
+            } catch (e) {
+                console.warn('[AI Service] Updates cache save failed', e);
+            }
+
+            try {
+                localStorage.setItem(CACHE_KEY_RUMORS, JSON.stringify(rumorsCache));
+            } catch (e) {
+                console.warn('[AI Service] Rumors cache save failed', e);
+            }
+
+            console.log('[AI Service] 💾 Partial cache saved to localStorage (limited by quota)');
         }
     } catch (e) {
         console.warn('[AI Service] localStorage save failed:', e);
@@ -383,8 +401,8 @@ async function braveSearch(query: string): Promise<string | null> {
 // HF Proxy removed (using Groq directly - HF Space disabled due to reliability issues)
 
 // Helper: Call Groq API
-async function callGroq(messages: any[], userContent: string, systemPrompt: string): Promise<string> {
-    console.log('[Groq] Sending request...');
+async function callGroq(messages: any[], userContent: string, systemPrompt: string, model: string = 'llama-3.3-70b-versatile'): Promise<string> {
+    console.log(`[Groq] Sending request to ${model}...`);
 
     // Build messages
     const groqMessages = [
@@ -401,7 +419,7 @@ async function callGroq(messages: any[], userContent: string, systemPrompt: stri
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                model: 'llama-3.3-70b-versatile',
+                model: model,
                 messages: groqMessages,
                 max_tokens: 4096,
                 temperature: 0.6
@@ -410,7 +428,10 @@ async function callGroq(messages: any[], userContent: string, systemPrompt: stri
 
         if (!response.ok) {
             const errorText = await response.text();
-            throw new Error(`Groq API Error: ${response.status} - ${errorText}`);
+            const errorData = JSON.parse(errorText || '{}');
+            const error = new Error(`Groq API Error: ${response.status} - ${errorData.error?.message || errorText}`);
+            (error as any).status = response.status;
+            throw error;
         }
 
         const data = await response.json();
@@ -496,10 +517,23 @@ export async function sendMessageToAI(
         //     return await callGroq(messages, userContent, SYSTEM_PROMPT);
         // }
 
-        // Direct Groq call (faster, more reliable)
+        // Direct Groq call (with fallback for Rate Limits)
         onStatusChange?.('⚙️ Processing Through Amar Ballot AI...');
-        console.log('[Groq] Sending request (Primary)...');
-        const response = await callGroq(messages, userContent, SYSTEM_PROMPT);
+
+        let response: string;
+        try {
+            console.log('[Groq] Sending request (Primary)...');
+            response = await callGroq(messages, userContent, SYSTEM_PROMPT, 'llama-3.3-70b-versatile');
+        } catch (error: any) {
+            // Check if it's a rate limit (429) or other API issue
+            if (error.status === 429 || error.message?.includes('Rate limit')) {
+                console.warn('[AI] Primary model rate limited. Trying fallback model...');
+                onStatusChange?.('🔄 Rate limit hit, using faster fallback...');
+                response = await callGroq(messages, userContent, SYSTEM_PROMPT, 'llama-3.1-8b-instant');
+            } else {
+                throw error;
+            }
+        }
 
         // Capture questions not found in knowledge base (for admin review)
         if (!knowledgeResults && !localResults) {
