@@ -2,6 +2,7 @@
 
 import { getUpdates, getRumors, getAIKnowledge, addAIKnowledge, type AIKnowledgeEntry, type ElectionUpdate, type Rumor } from '../lib/api';
 import { VOTE_CENTERS } from '../data/vote_centers';
+import { DOCS_KNOWLEDGE } from '../data/docs_knowledge';
 
 // Format vote centers for AI context
 const getVoteCenterContext = () => {
@@ -9,6 +10,11 @@ const getVoteCenterContext = () => {
         `Area: ${c.areas.join(', ')} -> Center: ${c.name} (${c.address}) [Voters: ${c.total_voters}, Type: ${c.type}]`
     ).join('\n');
     return `[VOTE CENTER DATABASE - Use this to answer "where is my vote center" questions]:\n${context}\n\n`;
+};
+
+// Format Docs knowledge for AI context
+const getDocsContext = () => {
+    return `${DOCS_KNOWLEDGE}\n\n`;
 };
 
 const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || '';
@@ -37,6 +43,20 @@ const SYSTEM_PROMPT = `আপনি প্রেরণা, আমার ব্�
 - প্রতিটি উত্তর যথেষ্ট বিস্তারিত দিন — সংক্ষিপ্ত একলাইনের উত্তর দেবেন না
 - [TRUSTED SOURCE] হিসেবে চিহ্নিত তথ্য সবচেয়ে বেশি প্রাধান্য দিন
 - ভোট কেন্দ্র সম্পর্কে জিজ্ঞেস করলে, সুনির্দিষ্ট কেন্দ্রের নাম, ঠিকানা এবং ভোটার সংখ্যা উল্লেখ করুন
+- **গুরুত্বপূর্ণ: প্রতিটি উত্তরে প্রাসঙ্গিক লিংক অবশ্যই দিন। লিংক মার্কডাউন ফরম্যাটে দিন: [লিংক টেক্সট](URL)**
+
+**🔗 গুরুত্বপূর্ণ লিংক ডাটাবেস (সবসময় প্রাসঙ্গিক লিংক দিন):**
+- নির্বাচন কমিশন ওয়েবসাইট: [বাংলাদেশ নির্বাচন কমিশন](https://ecs.gov.bd)
+- ভোটার তালিকা যাচাই: [ভোটার তালিকায় নাম খুঁজুন](https://services.nidw.gov.bd/voter_search)
+- NID আবেদন: [NID অনলাইন আবেদন](https://services.nidw.gov.bd)
+- ভোট কেন্দ্র খুঁজুন: [NID দিয়ে পোলিং স্টেশন খুঁজুন](https://ecs.gov.bd/polling-station)
+- প্রার্থী তালিকা: [প্রার্থীদের তালিকা দেখুন](https://ecs.gov.bd)
+- নির্বাচনী ফলাফল: [নির্বাচনী ফলাফল](https://result.ecs.gov.bd)
+- আমার ব্যালট ওয়েবসাইট: [আমার ব্যালট](https://amarballot.com)
+- আমার ব্যালটে ভোট কেন্দ্র: [ভোট কেন্দ্র পেজ](/vote-center)
+- আমার ব্যালটে প্রার্থী তালিকা: [প্রার্থী তালিকা পেজ](/candidate-list)
+- আমার ব্যালটে নির্বাচনের আপডেট: [নির্বাচন আপডেট](/election-updates)
+- আমার ব্যালটে রিউমার চেক: [গুজব যাচাই](/rumor-check)
 
 **🚫 সীমাবদ্ধতা:**
 - শুধুমাত্র বাংলাদেশের নির্বাচন, ভোট, NID, নির্বাচন কমিশন সম্পর্কে উত্তর দেবেন
@@ -452,12 +472,15 @@ export async function sendMessageToAI(
 
             userContent += `---\nUser Question: ${lastMessage}\n\n⚠️ গুরুত্বপূর্ণ: শুধুমাত্র বাংলাদেশের নির্বাচন প্রসঙ্গে উত্তর দিন। অন্য দেশের তথ্য দেবেন না।`;
         } else {
-            // If no specific DB/Web results, still inject Vote Center data as base knowledge
-            // This ensures AI always knows about vote centers even if not explicitly searched
-            // (Optimization: Only inject if query asks about centers/location)
+            // If no specific DB/Web results, still inject base knowledge
             const lowerMsg = lastMessage.toLowerCase();
+            // Inject vote center data for location queries
             if (lowerMsg.includes('center') || lowerMsg.includes('location') || lowerMsg.includes('place') || lowerMsg.includes('কোথায়') || lowerMsg.includes('কেন্দ্র')) {
                 userContent = getVoteCenterContext() + userContent;
+            }
+            // Inject docs knowledge for project/feature/admin queries
+            if (lowerMsg.includes('feature') || lowerMsg.includes('admin') || lowerMsg.includes('amar ballot') || lowerMsg.includes('আমার ব্যালট') || lowerMsg.includes('prerona') || lowerMsg.includes('প্রেরণা') || lowerMsg.includes('how') || lowerMsg.includes('কিভাবে') || lowerMsg.includes('what') || lowerMsg.includes('website') || lowerMsg.includes('ওয়েবসাইট') || lowerMsg.includes('app') || lowerMsg.includes('অ্যাপ')) {
+                userContent = getDocsContext() + userContent;
             }
         }
 
