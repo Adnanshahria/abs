@@ -2,16 +2,27 @@ name: Sync to Mirror
 on:
   push:
     branches:
-      - main  # or whichever branch you want to sync
+      - main
 
 jobs:
   git-mirror:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      # Use v4 (latest) and disable credential persistence to avoid auth conflicts
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false
+
       - name: Push to Mirror
+        env:
+          # Use an environment variable for the token to keep the 'run' command cleaner
+          SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
         run: |
-          git remote add mirror https://x-access-token:${{ secrets.SYNC_TOKEN }}@github.com/Nisarr/AmarBallot.git
+          # Configure git identity (required for some mirror operations)
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          
+          # Add the remote and push
+          git remote add mirror https://x-access-token:${SYNC_TOKEN}@github.com/Nisarr/AmarBallot.git
           git push --force --mirror mirror
