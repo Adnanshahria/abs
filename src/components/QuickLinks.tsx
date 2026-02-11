@@ -60,9 +60,9 @@ export default function QuickLinks() {
                                 key={index}
                                 onClick={link.action}
                                 disabled={isLocating}
-                                className="block w-full py-3 px-6 rounded-full bg-white shadow-sm hover:shadow-md hover:scale-105 transition-all text-center group disabled:opacity-70"
+                                className="block w-full py-3 xl:py-5 px-6 rounded-full bg-white shadow-sm hover:shadow-md hover:scale-105 transition-all text-center group disabled:opacity-70"
                             >
-                                <span className="font-bold text-gray-600 text-lg group-hover:text-green-700 font-serif">
+                                <span className="font-bold text-gray-600 text-lg xl:text-xl group-hover:text-green-700 font-serif">
                                     {isLocating && link.label === t.home.quickLinks.center ? (language === 'bn' ? 'লোকেশন খোঁজা হচ্ছে...' : 'Locating...') : link.label}
                                 </span>
                             </button>
@@ -76,9 +76,9 @@ export default function QuickLinks() {
                                 href={link.path}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="block w-full py-3 px-6 rounded-full bg-white shadow-sm hover:shadow-md hover:scale-105 transition-all text-center group"
+                                className="block w-full py-3 xl:py-5 px-6 rounded-full bg-white shadow-sm hover:shadow-md hover:scale-105 transition-all text-center group"
                             >
-                                <span className="font-bold text-gray-600 text-lg group-hover:text-green-700 font-serif">
+                                <span className="font-bold text-gray-600 text-lg xl:text-xl group-hover:text-green-700 font-serif">
                                     {link.label}
                                 </span>
                             </a>
@@ -89,9 +89,9 @@ export default function QuickLinks() {
                         <Link
                             key={index}
                             to={link.path}
-                            className="block w-full py-3 px-6 rounded-full bg-white shadow-sm hover:shadow-md hover:scale-105 transition-all text-center group"
+                            className="block w-full py-3 xl:py-5 px-6 rounded-full bg-white shadow-sm hover:shadow-md hover:scale-105 transition-all text-center group"
                         >
-                            <span className="font-bold text-gray-600 text-lg group-hover:text-green-700 font-serif">
+                            <span className="font-bold text-gray-600 text-lg xl:text-xl group-hover:text-green-700 font-serif">
                                 {link.label}
                             </span>
                         </Link>
