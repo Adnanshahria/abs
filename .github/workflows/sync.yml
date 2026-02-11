@@ -3,27 +3,31 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # <--- This adds the manual "Run workflow" button
+  workflow_dispatch:
 
 jobs:
-  git-mirror:
+  git-sync:
     runs-on: ubuntu-latest
     steps:
-      # Use v4 (latest) and disable credential persistence to avoid auth conflicts
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Push to Mirror
+      - name: Push to AmarBallot (Excluding Workflows)
         env:
-          # Use an environment variable for the token to keep the 'run' command cleaner
           SYNC_TOKEN: ${{ secrets.SYNC_TOKEN }}
         run: |
-          # Configure git identity (required for some mirror operations)
+          # 1. Configure git identity
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
           
-          # Add the remote and push
+          # 2. Remove the workflows folder strictly from Git's tracking index
+          git rm -rf --cached .github/workflows || true
+          
+          # 3. Commit the removal (this prevents the workflow files from being pushed)
+          git commit -m "Auto-sync: Mirroring code (excluding workflow files)" || true
+          
+          # 4. Add the remote and force-push the current HEAD to the target's main branch
           git remote add mirror https://x-access-token:${SYNC_TOKEN}@github.com/Nisarr/AmarBallot.git
-          git push --force --mirror mirror
+          git push --force mirror HEAD:main
