@@ -5,11 +5,11 @@ const PreronaAvatar: React.FC = () => {
     return (
         <div className="relative w-full h-full flex items-center justify-center overflow-hidden rounded-lg bg-green-50">
             {/* Animated Avatar Container */}
-            <div className="avatar-container w-full h-full flex items-center justify-center">
+            <div className="avatar-container w-full h-full flex items-center justify-center bg-green-50/30">
                 <Lottie
                     animationData={wavingAnimation}
                     loop={true}
-                    className="w-[120%] h-[120%] object-cover mt-2"
+                    className="w-full h-full object-contain"
                 />
             </div>
 
