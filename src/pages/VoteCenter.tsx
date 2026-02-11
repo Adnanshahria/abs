@@ -1,4 +1,3 @@
-import AssistantAvatar from '../components/AssistantAvatar';
 import SEO from '../components/SEO';
 import { useLanguage } from '../context/LanguageContext';
 import { getVoteCenterAreas, getVoteCentersByArea } from '../lib/api';
@@ -207,12 +206,6 @@ export default function VoteCenter() {
                         </div>
                     )}
 
-                    {/* Bottom Section - Assistant Only */}
-                    <div className="w-full flex justify-center mt-4">
-                        <div className="transform scale-75">
-                            <AssistantAvatar />
-                        </div>
-                    </div>
 
                 </div>
             </div>
