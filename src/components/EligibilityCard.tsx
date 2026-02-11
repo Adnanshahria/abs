@@ -115,33 +115,33 @@ export default function EligibilityCard() {
     return (
         <div>
             {/* Title Section */}
-            <div className="mb-4">
-                <h1 className="text-4xl font-croissant text-[#1a2e4a]">{t.eligibility.headerMain}</h1>
+            <div className="mb-4 xl:mb-8">
+                <h1 className="text-4xl xl:text-5xl font-croissant text-[#1a2e4a]">{t.eligibility.headerMain}</h1>
                 <div className="water-fill-container">
-                    <p className="water-fill-text text-green-700 font-bold text-xl italic">{t.eligibility.headerSub}</p>
+                    <p className="water-fill-text text-green-700 font-bold text-xl xl:text-2xl italic">{t.eligibility.headerSub}</p>
                 </div>
             </div>
 
-            <h2 className="text-2xl font-bold text-gray-800 mb-3">
+            <h2 className="text-2xl xl:text-3xl font-bold text-gray-800 mb-3 xl:mb-6">
                 {t.eligibility.question} <span className="text-green-600">{t.eligibility.voter}</span>?
             </h2>
 
             {/* Eligibility Checklist */}
-            <div className="border-2 border-green-500 rounded-lg p-3 mb-3 bg-white">
-                <h3 className="font-bold text-gray-800 mb-2 text-sm">{t.eligibility.title}</h3>
+            <div className="border-2 border-green-500 rounded-lg p-3 mb-3 xl:p-8 xl:mb-8 bg-white transition-all">
+                <h3 className="font-bold text-gray-800 mb-2 xl:mb-4 text-sm xl:text-lg">{t.eligibility.title}</h3>
                 <div className="space-y-0.5">
                     {eligibilityItems.map((item) => (
                         <label
                             key={item.id}
-                            className="flex items-center gap-2 cursor-pointer py-0.5"
+                            className="flex items-center gap-2 xl:gap-4 cursor-pointer py-0.5 xl:py-2"
                         >
                             <input
                                 type="checkbox"
                                 checked={checked[item.id] || false}
                                 onChange={() => toggleItem(item.id)}
-                                className="w-3.5 h-3.5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                                className="w-3.5 h-3.5 xl:w-6 xl:h-6 text-green-600 border-gray-300 rounded focus:ring-green-500"
                             />
-                            <span className="text-xs text-gray-700">
+                            <span className="text-xs xl:text-xl text-gray-700 font-medium">
                                 {item.label}
                             </span>
                         </label>
@@ -151,7 +151,7 @@ export default function EligibilityCard() {
 
             <button
                 onClick={handleCheck}
-                className="w-full py-2 rounded-lg font-semibold bg-green-400 text-green-900 hover:bg-green-500 transition-all font-serif"
+                className="w-full py-2 xl:py-4 xl:text-2xl rounded-lg font-semibold bg-green-400 text-green-900 hover:bg-green-500 transition-all font-serif"
             >
                 {t.eligibility.resultBtn}
             </button>

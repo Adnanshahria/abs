@@ -18,7 +18,7 @@ export default function AssistantAvatar() {
                 <img
                     src={preronaImg}
                     alt="Prerona - Your voting assistant"
-                    className="w-44 h-52 object-cover rounded-lg"
+                    className="w-44 h-52 xl:w-64 xl:h-72 object-cover rounded-lg transition-all duration-300"
                 />
             </div>
 

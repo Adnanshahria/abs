@@ -1,5 +1,6 @@
 import { db } from './db';
 import type { Candidate, VoteCenter, User, ElectionUpdate, Rumor, Review, Incident, Volunteer } from './types';
+import { VOTE_CENTERS, getAllAreas, getCentersByCleanArea } from '../data/vote_centers';
 export type { ElectionUpdate, Rumor };
 import bcrypt from 'bcryptjs';
 import { cachedFetch, CACHE_KEYS, CACHE_TTL, clearCache } from './cache';
@@ -75,25 +76,16 @@ export async function getCandidateById(id: number): Promise<Candidate | null> {
 }
 
 export async function getVoteCenters(): Promise<VoteCenter[]> {
-    try {
-        const result = await db.execute('SELECT * FROM vote_centers');
-        return result.rows.map(row => ({
-            id: row.id as number,
-            name: row.name as string,
-            name_bn: row.name_bn as string,
-            address: row.address as string,
-            address_bn: row.address_bn as string,
-            division: row.division as string,
-            district: row.district as string,
-            area: row.area as string,
-            latitude: row.latitude as number,
-            longitude: row.longitude as number,
-            capacity: row.capacity as number
-        }));
-    } catch (error) {
-        console.error('Error fetching vote centers:', error);
-        return [];
-    }
+    // Return static data from PDF
+    return VOTE_CENTERS;
+}
+
+export async function getVoteCenterAreas(): Promise<string[]> {
+    return getAllAreas();
+}
+
+export async function getVoteCentersByArea(cleanArea: string): Promise<VoteCenter[]> {
+    return getCentersByCleanArea(cleanArea);
 }
 
 // Authentication Functions
@@ -392,7 +384,8 @@ async function migrateElectionUpdatesSchema() {
 // Run migration on module load
 migrateElectionUpdatesSchema().catch(console.error);
 
-export async function getUpdates(limit?: number): Promise<ElectionUpdate[]> {
+// Internal function to fetch updates from DB
+async function fetchUpdatesFromDB(limit?: number): Promise<ElectionUpdate[]> {
     try {
         let sql = 'SELECT * FROM election_updates ORDER BY published_at DESC';
         if (limit) {
@@ -415,6 +408,16 @@ export async function getUpdates(limit?: number): Promise<ElectionUpdate[]> {
         console.error("Error fetching updates:", error);
         return [];
     }
+}
+
+// Cached version of getUpdates - reduces DB load significantly
+export async function getUpdates(limit?: number): Promise<ElectionUpdate[]> {
+    // For limited queries, fetch directly (usually for homepage previews)
+    if (limit) {
+        return fetchUpdatesFromDB(limit);
+    }
+    // For full list, use cache
+    return cachedFetch(CACHE_KEYS.UPDATES, () => fetchUpdatesFromDB(), CACHE_TTL.SHORT);
 }
 
 export async function getUnreadNotificationCount(days: number = 7): Promise<number> {
@@ -453,6 +456,8 @@ export async function addUpdate(updateData: Omit<ElectionUpdate, 'id' | 'publish
             sql: `INSERT INTO election_updates (title, content, image_url, author_name, tags, read_time, view_count, source_url) VALUES (?, ?, ?, ?, ?, ?, 0, ?)`,
             args: [title, content, image_url || null, author_name || 'Admin', tagsString || null, read_time || 2, source_url || null] as any[]
         });
+        // Clear cache so next fetch gets fresh data
+        clearCache(CACHE_KEYS.UPDATES);
         return { success: true };
     } catch (error) {
         console.error("Add update error:", error);
@@ -481,6 +486,8 @@ export async function updateUpdate(id: number, updateData: Partial<ElectionUpdat
             sql: `UPDATE election_updates SET title = ?, content = ?, image_url = ?, author_name = ?, tags = ?, read_time = ?, source_url = ? WHERE id = ?`,
             args: [title, content, image_url || null, author_name || 'Admin', tagsString || null, read_time || 2, source_url || null, id] as any[]
         });
+        // Clear cache so next fetch gets fresh data
+        clearCache(CACHE_KEYS.UPDATES);
         return { success: true };
     } catch (error) {
         console.error("Update update error:", error);
@@ -494,6 +501,8 @@ export async function deleteUpdate(id: number) {
             sql: 'DELETE FROM election_updates WHERE id = ?',
             args: [id]
         });
+        // Clear cache so next fetch gets fresh data
+        clearCache(CACHE_KEYS.UPDATES);
         return { success: true };
     } catch (error) {
         console.error("Delete update error:", error);
@@ -503,24 +512,10 @@ export async function deleteUpdate(id: number) {
 
 // --- RUMORS MANAGEMENT ---
 
-export async function getRumors(searchQuery?: string, limit?: number): Promise<Rumor[]> {
+// Internal function to fetch rumors from DB
+async function fetchRumorsFromDB(): Promise<Rumor[]> {
     try {
-        let sql = 'SELECT * FROM rumors';
-        let args: any[] = [];
-
-        if (searchQuery) {
-            sql += ' WHERE title LIKE ? OR description LIKE ?';
-            const term = `%${searchQuery}%`;
-            args.push(term, term);
-        }
-
-        sql += ' ORDER BY published_at DESC';
-
-        if (limit) {
-            sql += ` LIMIT ${limit}`;
-        }
-
-        const result = await db.execute({ sql, args });
+        const result = await db.execute('SELECT * FROM rumors ORDER BY published_at DESC');
         return result.rows.map(row => ({
             id: row.id as number,
             title: row.title as string,
@@ -536,6 +531,30 @@ export async function getRumors(searchQuery?: string, limit?: number): Promise<R
     }
 }
 
+// Cached version of getRumors
+export async function getRumors(searchQuery?: string, limit?: number): Promise<Rumor[]> {
+    // For search queries, we need fresh data and filter client-side
+    const allRumors = await cachedFetch(CACHE_KEYS.RUMORS, fetchRumorsFromDB, CACHE_TTL.SHORT);
+
+    let filtered = allRumors;
+
+    // Apply search filter client-side
+    if (searchQuery) {
+        const term = searchQuery.toLowerCase();
+        filtered = filtered.filter(r =>
+            r.title.toLowerCase().includes(term) ||
+            r.description.toLowerCase().includes(term)
+        );
+    }
+
+    // Apply limit
+    if (limit) {
+        filtered = filtered.slice(0, limit);
+    }
+
+    return filtered;
+}
+
 export async function addRumor(rumorData: Omit<Rumor, 'id' | 'published_at'>) {
     const { title, description, status, source, image_url } = rumorData;
     try {
@@ -543,6 +562,8 @@ export async function addRumor(rumorData: Omit<Rumor, 'id' | 'published_at'>) {
             sql: `INSERT INTO rumors (title, description, status, source, image_url) VALUES (?, ?, ?, ?, ?)`,
             args: [title, description, status, source || null, image_url || null]
         });
+        // Clear cache so next fetch gets fresh data
+        clearCache(CACHE_KEYS.RUMORS);
         return { success: true };
     } catch (error) {
         console.error("Add rumor error:", error);
@@ -557,6 +578,8 @@ export async function updateRumor(id: number, rumorData: Partial<Rumor>) {
             sql: `UPDATE rumors SET title = ?, description = ?, status = ?, source = ?, image_url = ? WHERE id = ?`,
             args: [title, description, status, source || null, image_url || null, id] as any[]
         });
+        // Clear cache so next fetch gets fresh data
+        clearCache(CACHE_KEYS.RUMORS);
         return { success: true };
     } catch (error) {
         console.error("Update rumor error:", error);
@@ -570,6 +593,8 @@ export async function deleteRumor(id: number) {
             sql: 'DELETE FROM rumors WHERE id = ?',
             args: [id]
         });
+        // Clear cache so next fetch gets fresh data
+        clearCache(CACHE_KEYS.RUMORS);
         return { success: true };
     } catch (error) {
         console.error("Delete rumor error:", error);
@@ -1426,14 +1451,10 @@ async function migratePageContent() {
 
 migratePageContent().catch(console.error);
 
-export async function getPageContent(prefix?: string): Promise<Record<string, { en: string; bn: string }>> {
+// Internal fetch from DB for getPageContent
+async function fetchPageContentFromDB(): Promise<Record<string, { en: string; bn: string }>> {
     try {
-        let sql = "SELECT * FROM page_content";
-        if (prefix) {
-            sql += ` WHERE id LIKE '${prefix}%'`;
-        }
-        const result = await db.execute(sql);
-
+        const result = await db.execute("SELECT * FROM page_content");
         const content: Record<string, { en: string; bn: string }> = {};
         result.rows.forEach(row => {
             content[row.id as string] = {
@@ -1448,12 +1469,37 @@ export async function getPageContent(prefix?: string): Promise<Record<string, { 
     }
 }
 
+// Cached version of getPageContent for public pages
+export async function getPageContent(prefix?: string): Promise<Record<string, { en: string; bn: string }>> {
+    // Get all content from cache
+    const allContent = await cachedFetch(CACHE_KEYS.PAGE_CONTENT + '_public', fetchPageContentFromDB, CACHE_TTL.MEDIUM);
+
+    // Filter by prefix if provided
+    if (prefix) {
+        const filtered: Record<string, { en: string; bn: string }> = {};
+        Object.keys(allContent).forEach(key => {
+            if (key.startsWith(prefix)) {
+                filtered[key] = allContent[key];
+            }
+        });
+        return filtered;
+    }
+
+    return allContent;
+}
+
 export async function updatePageContent(id: string, content: string, content_bn: string) {
     try {
+        // Use INSERT OR REPLACE to handle both new and existing entries
         await db.execute({
-            sql: "UPDATE page_content SET content = ?, content_bn = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-            args: [content, content_bn, id]
+            sql: `INSERT OR REPLACE INTO page_content (id, content, content_bn, updated_at) 
+                  VALUES (?, ?, ?, CURRENT_TIMESTAMP)`,
+            args: [id, content, content_bn]
         });
+        // Clear BOTH page content caches so all pages get fresh data
+        clearCache(CACHE_KEYS.PAGE_CONTENT);
+        clearCache(CACHE_KEYS.PAGE_CONTENT + '_public');
+        console.log(`✅ Page content "${id}" saved successfully`);
         return { success: true };
     } catch (error) {
         console.error("Update page content error:", error);
@@ -1461,7 +1507,8 @@ export async function updatePageContent(id: string, content: string, content_bn:
     }
 }
 
-export async function getAllPageContent(): Promise<PageContentItem[]> {
+// Internal function to fetch from DB
+async function fetchAllPageContentFromDB(): Promise<PageContentItem[]> {
     try {
         const result = await db.execute("SELECT * FROM page_content ORDER BY id");
         return result.rows.map(row => ({
@@ -1475,3 +1522,9 @@ export async function getAllPageContent(): Promise<PageContentItem[]> {
         return [];
     }
 }
+
+// Cached version - reduces DB reads significantly
+export async function getAllPageContent(): Promise<PageContentItem[]> {
+    return cachedFetch(CACHE_KEYS.PAGE_CONTENT, fetchAllPageContentFromDB, CACHE_TTL.MEDIUM);
+}
+

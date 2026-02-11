@@ -1,11 +1,41 @@
-
-import { Info, Users, ShieldCheck } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Info, Users, ShieldCheck, Loader2 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../data/translations';
+import { getPageContent } from '../lib/api';
 
 export default function AboutUs() {
     const { language } = useLanguage();
     const t = translations[language].aboutUs;
+    const [content, setContent] = useState<Record<string, { en: string; bn: string }>>({});
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function loadContent() {
+            const data = await getPageContent();
+            setContent(data);
+            setLoading(false);
+        }
+        loadContent();
+    }, []);
+
+    // Helper to get content with fallback to static translations
+    const getText = (key: string, fallback: string) => {
+        if (content[key]) {
+            return language === 'bn' ? content[key].bn : content[key].en;
+        }
+        return fallback;
+    };
+
+    if (loading) {
+        return (
+            <main className="flex-1 w-full px-4 sm:px-8 lg:px-16 py-12 relative flex flex-col items-center min-h-[80vh]">
+                <div className="flex items-center justify-center h-64">
+                    <Loader2 className="w-8 h-8 animate-spin text-green-600" />
+                </div>
+            </main>
+        );
+    }
 
     return (
         <main className="flex-1 w-full px-4 sm:px-8 lg:px-16 py-12 relative flex flex-col items-center min-h-[80vh]">
@@ -13,9 +43,11 @@ export default function AboutUs() {
 
                 {/* Header Section */}
                 <div className="text-center space-y-4">
-                    <h1 className="text-5xl text-green-900 font-serif font-bold">{t.title}</h1>
+                    <h1 className="text-5xl text-green-900 font-serif font-bold">
+                        {getText('about_title', t.title)}
+                    </h1>
                     <p className="text-xl text-green-800/80 max-w-2xl mx-auto">
-                        {t.desc}
+                        {getText('about_desc', t.desc)}
                     </p>
                 </div>
 
@@ -26,9 +58,11 @@ export default function AboutUs() {
                         <div className="bg-green-100 p-4 rounded-full mb-4">
                             <Info className="w-8 h-8 text-green-700" />
                         </div>
-                        <h3 className="text-2xl font-serif text-green-900 mb-2">{t.features.mission.title}</h3>
+                        <h3 className="text-2xl font-serif text-green-900 mb-2">
+                            {getText('mission_title', t.features.mission.title)}
+                        </h3>
                         <p className="text-gray-600">
-                            {t.features.mission.desc}
+                            {getText('mission_desc', t.features.mission.desc)}
                         </p>
                     </div>
 
@@ -37,9 +71,11 @@ export default function AboutUs() {
                         <div className="bg-green-100 p-4 rounded-full mb-4">
                             <Users className="w-8 h-8 text-green-700" />
                         </div>
-                        <h3 className="text-2xl font-serif text-green-900 mb-2">{t.features.vision.title}</h3>
+                        <h3 className="text-2xl font-serif text-green-900 mb-2">
+                            {getText('vision_title', t.features.vision.title)}
+                        </h3>
                         <p className="text-gray-600">
-                            {t.features.vision.desc}
+                            {getText('vision_desc', t.features.vision.desc)}
                         </p>
                     </div>
 
@@ -48,9 +84,11 @@ export default function AboutUs() {
                         <div className="bg-green-100 p-4 rounded-full mb-4">
                             <ShieldCheck className="w-8 h-8 text-green-700" />
                         </div>
-                        <h3 className="text-2xl font-serif text-green-900 mb-2">{t.features.trust.title}</h3>
+                        <h3 className="text-2xl font-serif text-green-900 mb-2">
+                            {getText('trust_title', t.features.trust.title)}
+                        </h3>
                         <p className="text-gray-600">
-                            {t.features.trust.desc}
+                            {getText('trust_desc', t.features.trust.desc)}
                         </p>
                     </div>
                 </div>
@@ -58,9 +96,11 @@ export default function AboutUs() {
                 {/* Story Section */}
                 <div className="bg-green-800 text-white rounded-3xl p-8 md:p-12 shadow-xl mt-8 flex flex-col md:flex-row items-center gap-8">
                     <div className="flex-1 space-y-4">
-                        <h2 className="text-3xl font-serif font-bold">{t.story.title}</h2>
+                        <h2 className="text-3xl font-serif font-bold">
+                            {getText('story_title', t.story.title)}
+                        </h2>
                         <p className="text-green-100 text-lg leading-relaxed">
-                            {t.story.desc}
+                            {getText('story_desc', t.story.desc)}
                         </p>
                     </div>
                     {/* Placeholder for team image or illustration */}
