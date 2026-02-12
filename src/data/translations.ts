@@ -24,7 +24,7 @@ export const translations = {
             },
             quickLinks: {
                 updates: "Election Updates",
-                center: "Your Vote Center",
+                center: "Results",
                 notice: "Notice",
                 candidateList: "Public Survey 2026",
                 rumor: "Rumor Check",
@@ -907,7 +907,7 @@ export const translations = {
             },
             quickLinks: {
                 updates: "নির্বাচন আপডেট",
-                center: "আপনার ভোট কেন্দ্র",
+                center: "ফলাফল",
                 notice: "নোটিশ",
                 candidateList: "জনমত জরিপ ২০২৬",
                 rumor: "গুজব যাচাই",

@@ -51,13 +51,13 @@ const SYSTEM_PROMPT = `You are Prerona (প্রেরণা), the professional
 - Prioritize [TRUSTED SOURCE] data above all else
 - For vote center questions, include specific center names, addresses, and voter counts
 - **Always include relevant links in markdown format: [link text](URL)**
-- **Never say "search the voter list" — always use the "[Station](https://ecs.gov.bd/polling-station)" link**
+- **Never say "search the voter list" — always use the "[Results](https://ecs.gov.bd/page/election-result)" link**
 
 **🔗 গুরুত্বপূর্ণ লিংক ডাটাবেস (সবসময় প্রাসঙ্গিক লিংক দিন):**
 - নির্বাচন কমিশন ওয়েবসাইট: [বাংলাদেশ নির্বাচন কমিশন](https://ecs.gov.bd)
-- ভোটার তালিকা যাচাই: [Station](https://ecs.gov.bd/polling-station)
+- ভোটার তালিকা যাচাই: [Results](https://ecs.gov.bd/page/election-result)
 - NID আবেদন: [NID অনলাইন আবেদন](https://services.nidw.gov.bd)
-- ভোট কেন্দ্র খুঁজুন: [NID দিয়ে পোলিং স্টেশন খুঁজুন](https://ecs.gov.bd/polling-station)
+- ফলাফল দেখুন: [নির্বাচনী ফলাফল](https://ecs.gov.bd/page/election-result)
 - প্রার্থী তালিকা: [প্রার্থীদের তালিকা দেখুন](https://ecs.gov.bd)
 - নির্বাচনী ফলাফল: [নির্বাচনী ফলাফল](https://result.ecs.gov.bd)
 - আমার ব্যালট ওয়েবসাইট: [আমার ব্যালট](https://amarballot.com)
@@ -612,7 +612,7 @@ function getMockResponse(userMessage: string): string {
     const lowerMsg = userMessage.toLowerCase();
 
     if (lowerMsg.includes('vote center') || lowerMsg.includes('polling')) {
-        return 'To find your vote center, go to the "Find Your Vote Center" page and enter your NID number and date of birth. 🗳️';
+        return 'To check election results or find your center, go to the "Results" page. 🗳️';
     }
     if (lowerMsg.includes('nid') || lowerMsg.includes('registration')) {
         return 'To get a National ID (NID), you need to be 18 years old. Visit your local Election Commission office with your birth certificate.';
